@@ -1,0 +1,155 @@
+/////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
+
+function doCheckTriggers() 
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = ss.getSheetByName('Config');
+  var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+  var Triggers = ScriptApp.getProjectTriggers().length;
+
+  console.log("Number of existing triggers:", Triggers);
+
+  if (Class == 'STOCK') 
+  {
+    if (Triggers == 0) 
+    {
+      console.log("No triggers found. Creating new triggers...");
+      doCreateTriggers();
+    } 
+    else if (Triggers > 0 && Triggers < 5) 
+    {
+      console.log("Found 1-4 triggers. Deleting and creating new triggers...");
+      doDeleteTriggers();
+      doCreateTriggers();
+    } 
+    else if (Triggers > 5) 
+    {
+      console.log("Found more than 5 triggers. Deleting and creating new triggers...");
+      doDeleteTriggers();
+      doCreateTriggers();
+    }
+  }
+  else 
+  {
+    if (Triggers == 0) 
+    {
+      console.log("No triggers found. Creating new triggers...");
+      doCreateTriggers();
+    } 
+    else if (Triggers > 1) 
+    {
+      console.log("Found more than 1 triggers. Deleting and creating new triggers...");
+      doDeleteTriggers();
+      doCreateTriggers();
+    }
+  }
+};
+
+function doCreateTriggers()
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = ss.getSheetByName('Config');
+  var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+
+  var triggers = ScriptApp.getProjectTriggers();
+  var shouldCreateTrigger = true;
+  triggers.forEach(function (trigger)
+  {
+    if(trigger.getEventType() === ScriptApp.EventType.CLOCK ) 
+    {
+      shouldCreateTrigger = false; 
+    }
+  });
+  
+  if(shouldCreateTrigger)
+  {
+    if (Class == 'STOCK') 
+    {
+      console.log("Creating new triggers...");
+
+      var Hour_1 = sheet_co.getRange(TG1).getValue();                              // TG1 = Sheet Trigger Event
+      var Hour_2 = sheet_co.getRange(TG2).getValue();                              // TG2 = Data  Trigger Event
+      var Hour_3 = sheet_co.getRange(TG3).getValue();                              // TG3 = Extra Trigger Event
+      var Hour_4 = sheet_co.getRange(TG4).getValue();                              // TG4 = Settings Trigger Event
+      var Hour_5 = sheet_co.getRange(TG5).getValue();                              // TG5 = SaveAll Trigger Event
+
+      ScriptApp.newTrigger("doSaveAllSheets")
+       .timeBased()
+       .atHour(Hour_1)
+       .everyDays(1)
+       .create();
+
+      ScriptApp.newTrigger("doSaveAllDatas")
+       .timeBased()
+       .atHour(Hour_2)
+       .everyDays(1)
+       .create();
+
+      ScriptApp.newTrigger("doSaveAllExtras")
+       .timeBased()
+       .atHour(Hour_3)
+       .everyDays(1)
+       .create();
+
+      ScriptApp.newTrigger("doSettings")
+       .timeBased()
+       .atHour(Hour_4)
+       .everyDays(1)
+       .create();
+
+        ScriptApp.newTrigger("doSaveAll")
+       .timeBased()
+       .atHour(Hour_5)
+       .everyDays(1)
+       .create();
+    }
+    else if (Class == 'BDR' || Class == 'ETF') 
+    {
+      ScriptApp.newTrigger("doSaveAllSheets")                                   // Change to not stock settings, to not export, etc
+       .timeBased()
+       .atHour(20)
+       .everyDays(1)
+       .create();
+    }
+    else if (Class == 'ADR') 
+    {
+      ScriptApp.newTrigger("menuSaveSwing_12")                                   // Change to not stock settings, to not export, etc
+       .timeBased()
+       .atHour(20)
+       .everyDays(1)
+       .create();
+    }
+  }
+}
+
+function getSheetTriggers()
+{
+  const sheet_Triggers = ScriptApp.getProjectTriggers();
+
+  return sheet_Triggers.length;
+};
+
+function getSheetTriggersHandle() 
+{
+  const triggers = ScriptApp.getProjectTriggers();
+  const handlerFunctions = [];
+
+  for (let i = 0; i < triggers.length; i++) {
+    const funcName = triggers[i].getHandlerFunction();
+    handlerFunctions.push(funcName);
+  }
+  return handlerFunctions;
+}
+
+function doDeleteTriggers()
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = ss.getSheetByName('Config');
+
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++)
+  {
+    ScriptApp.deleteTrigger(triggers[i]);
+    console.log("Deleting triggers...");
+  }
+};
