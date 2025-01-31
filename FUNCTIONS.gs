@@ -1,4 +1,42 @@
 //@NotOnlyCurrentDoc
+/////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
+
+function getSheetnameByName(SheetName) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
+  if (!sheet) {
+    console.log(`Sheet not found: ${SheetName}`);
+    return null;
+  }
+  return sheet;
+}
+
+function getConfigValue(range) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Get the Settings sheet
+  const sheet_se = ss.getSheetByName('Settings');
+  if (!sheet_se) {
+    console.log('Settings sheet not found');
+    return null;
+  }
+
+  // Get the Config sheet
+  const sheet_co = ss.getSheetByName('Config');
+  if (!sheet_co) {
+    console.log('Config sheet not found');
+    return null;
+  }
+
+  // Get the value from Settings
+  const Value = sheet_se.getRange(range).getDisplayValue().trim();
+
+  // Use ternary operator to handle fallback logic
+  return (Value === "DEFAULT") 
+    ? sheet_co.getRange(range).getDisplayValue().trim()                    // Use Config value if Settings has "DEFAULT"
+    : Value; // Otherwise, use the value from Settings
+
+}
+
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
 function doSettings()

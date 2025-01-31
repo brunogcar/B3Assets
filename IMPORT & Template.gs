@@ -272,136 +272,108 @@ function doImportProv(ProvName)
 
 function doImportSheet(SheetName) 
 {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
-    var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
-  const sheet_se = ss.getSheetByName('Settings');
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
-  if (!sheet_sr) 
-  {
-    console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id);
-    return;
-  }
-
-  const sheet_tr = ss.getSheetByName(SheetName);                                    // Target Sheet
-  if (!sheet_tr) 
-  {
-      console.log('WARNING: Target sheet', SheetName, 'does not exist. Skipping.');
-    return; // Skip to the next sheet
-  }
   console.log('IMPORT:', SheetName);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = getSheetnameByName('Config');                                    // Config sheet
+    var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
+  const sheet_se = getSheetnameByName('Settings');                                  // Settings sheet
+  if (!sheet_co || !sheet_se) return;
+  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
+  if (!sheet_sr) { console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
+  const sheet_tr = getSheetnameByName(SheetName);                                   // Target Sheet
+  if (!sheet_tr) { console.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;
-  let Value_se = "DEFAULT";                                                         // Initialize Value_se with "DEFAULT" as the fallback
 
   switch (SheetName) 
   {
+
+//-------------------------------------------------------------------Swing-------------------------------------------------------------------//
+
     case SWING_4:
     case SWING_12:
     case SWING_52:
 
-    Value_se = sheet_se.getRange(ITR).getDisplayValue().trim();                    // ITR = Import to Swing
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(ITR).getDisplayValue().trim()                            // Use Config value if Settings has "DEFAULT"
-      : Value_se;                                                                  // Use Settings value
+    Import = getConfigValue(ITR)                                                     // ITR = Import to Swing
 
     break;
+
+//-------------------------------------------------------------------Opções-------------------------------------------------------------------//
 
     case OPCOES:
 
-    Value_se = sheet_se.getRange(IOP).getDisplayValue().trim();                    // IOP = Import to Option
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IOP).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IOP)                                                     // IOP = Import to Option
 
     break;
+
+//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
 
     case BTC:
 
-    Value_se = sheet_se.getRange(IBT).getDisplayValue().trim();                    // IBT = Import to BTC
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IBT).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IBT)                                                     // IBT = Import to BTC
 
     break;
+
+//-------------------------------------------------------------------Termo-------------------------------------------------------------------//
 
     case TERMO:
 
-    Value_se = sheet_se.getRange(ITE).getDisplayValue().trim();                    // ITE = Import to Termo
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(ITE).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(ITE)                                                     // ITE = Import to Termo
 
     break;
+
+//-------------------------------------------------------------------Future-------------------------------------------------------------------//
 
     case FUTURE:
     case FUTURE_1:
     case FUTURE_2:
     case FUTURE_3:
 
-    Value_se = sheet_se.getRange(IFT).getDisplayValue().trim();                    // IFT = Import to Future
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IFT).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IFT)                                                     // IFT = Import to Future
 
     break;
+
+//-------------------------------------------------------------------Fund-------------------------------------------------------------------//
 
     case FUND:
 
-    Value_se = sheet_se.getRange(IFU).getDisplayValue().trim();                    // IFU = Import to Fund
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IFU).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IFU)                                                     // IFU = Import to Fund
 
     break;
+
+//-------------------------------------------------------------------Right-------------------------------------------------------------------//
 
     case RIGHT_1:
     case RIGHT_2:
 
-    Value_se = sheet_se.getRange(IRT).getDisplayValue().trim();                    // IRT = Import to Right
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IRT).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IRT)                                                     // IRT = Import to Right
 
     break;
+
+//-------------------------------------------------------------------Receipt-------------------------------------------------------------------//
 
     case RECEIPT_9:
     case RECEIPT_10:
 
-    Value_se = sheet_se.getRange(IRC).getDisplayValue().trim();                    // IRC = Import to Receipt
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IRC).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IRC)                                                     // IRC = Import to Receipt
 
     break;
+
+//-------------------------------------------------------------------Warrant-------------------------------------------------------------------//
 
     case WARRANT_11:
     case WARRANT_12:
     case WARRANT_13:
 
-    Value_se = sheet_se.getRange(IWT).getDisplayValue().trim();                    // IWT = Import to Warrant
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IWT).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IWT)                                                     // IWT = Import to Warrant
 
     break;
 
+//-------------------------------------------------------------------Block-------------------------------------------------------------------//
+
     case BLOCK:
 
-    Value_se = sheet_se.getRange(IBK).getDisplayValue().trim();                    //  IBK = Import to Block
-
-    Import = (Value_se === "DEFAULT") 
-      ? sheet_co.getRange(IBK).getDisplayValue().trim()
-      : Value_se; 
+    Import = getConfigValue(IBK)                                                     // IBK = Import to Block
 
     break;
       
@@ -444,307 +416,229 @@ function doImportSheet(SheetName)
 
 function doImportData(SheetName) 
 {
+  console.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = getSheetnameByName('Config');                                         // Config sheet
     var Source_Id = sheet_co.getRange(SIR).getValues();                                  // SIR = Source ID Range
-  const sheet_se = ss.getSheetByName('Settings');
+  const sheet_se = getSheetnameByName('Settings');                                       // Settings sheet
+  if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);         // Source Sheet
-
-  if (!sheet_sr) 
-  {
-    console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportData from', Source_Id);
-    return;                                                                              // Exit the function
-  }
-
+  if (!sheet_sr) { console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportData from', Source_Id); return; }
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
-  const sheet_tr = ss.getSheetByName(SheetName);                                         // Target Sheet
-
-  console.log('IMPORT:', SheetName);
+  const sheet_tr = getSheetnameByName(SheetName);                                        // Target Sheet
+  if (!sheet_tr) { console.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;
-  let Value_se = "DEFAULT";   // Initialize Value_se with "DEFAULT" as the fallback
 
 //-------------------------------------------------------------------BLC-------------------------------------------------------------------//
 
-   if (SheetName === BLC) 
-   {
-     Value_se = sheet_se.getRange(IBL).getDisplayValue().trim();            // IBL = Import to BLC / Balanco
+  if (SheetName === BLC) 
+  {
+    Import = getConfigValue(IBL)                                                     // IBL = Import to BLC / Balanco
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IBL).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('B1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('B1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
-         sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
+        sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
 
-   if (SheetName === Balanco) 
-   {
-     Value_se = sheet_se.getRange(IBL).getDisplayValue().trim();            // IBL = Import to BLC / Balanco
+  if (SheetName === Balanco) 
+  {
+    Import = getConfigValue(IBL)                                                     // IBL = Import to BLC / Balanco
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IBL).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('C1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('C1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,3,LR,LC-2).getValues();
-         sheet_tr.getRange(1,3,LR,LC-2).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,3,LR,LC-2).getValues();
+        sheet_tr.getRange(1,3,LR,LC-2).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------DRE-------------------------------------------------------------------//
 
-   if (SheetName === DRE) 
-   {
-     Value_se = sheet_se.getRange(IDE).getDisplayValue().trim();            // IDE = Import to DRE / Resultado
+  if (SheetName === DRE) 
+  {
+    Import = getConfigValue(IDE)                                                     // IDE = Import to DRE / Resultado
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IDE).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('B1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('B1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
-         sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
+        sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------Resultado-------------------------------------------------------------------//
 
-   if (SheetName === Resultado) 
-   {
-     Value_se = sheet_se.getRange(IDE).getDisplayValue().trim();            // IDE = Import to DRE / Resultado
+  if (SheetName === Resultado) 
+  {
+    Import = getConfigValue(IDE)                                                     // IDE = Import to DRE / Resultado
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IDE).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('D1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('D1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
-         sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'D1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
+        sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'D1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------FLC-------------------------------------------------------------------//
 
-   if (SheetName === FLC) 
-   {
-     Value_se = sheet_se.getRange(IFL).getDisplayValue().trim();            // IFL = Import to FLC / Fluxo
+  if (SheetName === FLC) 
+  {
+    Import = getConfigValue(IFL)                                                     // IFL = Import to FLC / Fluxo
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IFL).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('B1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('B1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
-         sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
+        sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------Fluxo-------------------------------------------------------------------//
 
-   if (SheetName === Fluxo) 
-   {
-     Value_se = sheet_se.getRange(IFL).getDisplayValue().trim();            // IFL = Import to FLC / Fluxo
+  if (SheetName === Fluxo) 
+  {
+    Import = getConfigValue(IFL)                                                     // IFL = Import to FLC / Fluxo
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IFL).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('D1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('D1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
-         sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
+        sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------DVA-------------------------------------------------------------------//
 
-   if (SheetName === DVA) 
-   {
-     Value_se = sheet_se.getRange(IDV).getDisplayValue().trim();            // IDV = Import to DVA / Valor
+  if (SheetName === DVA) 
+  {
+    Import = getConfigValue(IDV)                                                     // IDV = Import to DVA / Valor
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IDV).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('B1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('B1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
-         sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,2,LR,LC-1).getValues();
+        sheet_tr.getRange(1,2,LR,LC-1).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
 
 //-------------------------------------------------------------------Valor-------------------------------------------------------------------//
 
-   if (SheetName === Valor) 
-   {
-     Value_se = sheet_se.getRange(IDV).getDisplayValue().trim();            // IDV = Import to DVA / Valor
+  if (SheetName === Valor) 
+  {
+    Import = getConfigValue(IDV)                                                     // IDV = Import to DVA / Valor
 
-     if (Value_se === "DEFAULT") 
-     {
-       Import = sheet_co.getRange(IDV).getDisplayValue().trim();            // Use Config value if Settings has "DEFAULT"
-     } 
-     else 
-     {
-       Import = Value_se;                                                   // Use the imported value from Settings
-     }
+    if ( Import == "TRUE" )
+    {
+      var Check = sheet_sr.getRange('D1').getValue();
 
-     if ( Import == "TRUE" )
-     {
-       var Check = sheet_sr.getRange('D1').getValue();
-
-       if( Check !== "" )
-       {
-         var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
-         sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
-       }
-       else
-       {
-         console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
-       }
-     }
-     else
-     {
-       console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
-     }
-   }
-   console.log(`SUCESS IMPORT for sheet ${SheetName}.`);
+      if( Check !== "" )
+      {
+        var Data = sheet_sr.getRange(1,4,LR,LC-3).getValues();
+        sheet_tr.getRange(1,4,LR,LC-3).setValues(Data);
+      }
+      else
+      {
+        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+      }
+    }
+    else
+    {
+      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    }
+  }
+  console.log(`SUCESS IMPORT for sheet ${SheetName}.`);
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT/////////////////////////////////////////////////////////////////////
