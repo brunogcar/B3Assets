@@ -21,7 +21,7 @@ function doCheckDATAS()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error checking DATA for sheet ${SheetName}:`, error);
+      Logger.error(`Error checking DATA for sheet ${SheetName}:`, error);
     }
   });
 }
@@ -43,7 +43,7 @@ function doCheckDATA(SheetName)
 
   let Check;
 
-  console.log('CHECK Sheet:', SheetName);
+  Logger.log('CHECK Sheet:', SheetName);
 
 
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
@@ -63,14 +63,14 @@ function doCheckDATA(SheetName)
     if (Check === '') 
     {
       sheet_o.hideSheet();
-      console.log('HIDDEN:', 'OPT');
+      Logger.log('HIDDEN:', 'OPT');
     }
     if (Check !== '') 
     {
       if (sheet_o.isSheetHidden()) 
       {
         sheet_o.showSheet();
-        console.log('DISPLAYED:', SheetName);
+        Logger.log('DISPLAYED:', SheetName);
       }
     }
     return processCheckDATA(sheet_s, SheetName, Check);
@@ -262,16 +262,16 @@ function processCheckDATA(sheet_s, SheetName, Check)
     if (sheet_s.isSheetHidden()) 
     {
       sheet_s.showSheet();
-      console.log('DISPLAYED:', SheetName);
+      Logger.log('DISPLAYED:', SheetName);
     }
-    console.log("DATA Check: TRUE");
+    Logger.log("DATA Check: TRUE");
     return "TRUE";
   }
   else
   {
     if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) 
     {
-      console.log("DATA Check: FALSE");
+      Logger.log("DATA Check: FALSE");
       return "FALSE"; // Add a default return value if the conditions are not met
     }
     else
@@ -279,9 +279,9 @@ function processCheckDATA(sheet_s, SheetName, Check)
       if (!sheet_s.isSheetHidden()) 
       {
         sheet_s.hideSheet();
-        console.log('HIDDEN:', SheetName);
+        Logger.log('HIDDEN:', SheetName);
       }
-      console.log("DATA Check: FALSE");
+      Logger.log("DATA Check: FALSE");
       return "FALSE"; // Add a default return value if the conditions are not met
     }
   }
@@ -305,7 +305,7 @@ function doTrim()
     } 
     catch (error) 
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -315,11 +315,11 @@ function doTrimSheet(SheetName)
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_s = ss.getSheetByName(SheetName); // Target
 
-  console.log('TRIM:', SheetName);
+  Logger.log('TRIM:', SheetName);
 
   if (!sheet_s) 
   {
-    console.error(`Sheet ${SheetName} not found.`);
+    Logger.error(`Sheet ${SheetName} not found.`);
     return;
   }
 
@@ -331,8 +331,8 @@ function doTrimSheet(SheetName)
     if (LR > 126) 
     {
       sheet_s.getRange(127, 1, LR - 126, LC).clearContent();
-      console.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
-      console.log(`Cleared data below row 126 in ${SheetName}.`);
+      Logger.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`Cleared data below row 126 in ${SheetName}.`);
     }
   } 
   else if (SheetName === SWING_12) 
@@ -340,18 +340,18 @@ function doTrimSheet(SheetName)
     if (LR > 366) 
     {
       sheet_s.getRange(367, 1, LR - 366, LC).clearContent();
-      console.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
-      console.log(`Cleared data below row 366 in ${SheetName}.`);
+      Logger.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`Cleared data below row 366 in ${SheetName}.`);
     }
   } 
   else if (SheetName === SWING_52) 
   {
-      console.log(`NOTHING TO TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`NOTHING TO TRIM. Sheet: ${SheetName}.`);
   } 
   else 
   {
     // Default logic for other sheets
-    console.log(`No specific logic defined for ${SheetName}.`);
+    Logger.log(`No specific logic defined for ${SheetName}.`);
   }
 
 }
@@ -375,7 +375,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) !== -1 && !sheet.isSheetHidden()) {
         sheet.hideSheet();
-        console.log('Sheet:', sheet.getName(), 'HIDDEN');
+        Logger.log('Sheet:', sheet.getName(), 'HIDDEN');
       }
     }
   } 
@@ -388,7 +388,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
       {                                                                                                               // Delete all but SheetNames
-        console.log('Deleting sheet:', sheet.getName());
+        Logger.log('Deleting sheet:', sheet.getName());
         ss.deleteSheet(sheet);
       }
     }
@@ -402,7 +402,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
       { // Delete all but SheetNames
-        console.log('Deleting sheet:', sheet.getName());
+        Logger.log('Deleting sheet:', sheet.getName());
         ss.deleteSheet(sheet);
       }
     }
@@ -425,12 +425,12 @@ function hideConfig()
     if (sheet_s && !sheet_s.isSheetHidden())
     {
       sheet_s.hideSheet();
-      console.log('HIDDEN:', sheet_s.getName()); 
+      Logger.log('HIDDEN:', sheet_s.getName()); 
     }
     if (sheet_c && !sheet_c.isSheetHidden())
     {
       sheet_c.hideSheet();
-      console.log('HIDDEN:', sheet_c.getName()); 
+      Logger.log('HIDDEN:', sheet_c.getName()); 
     }
   }
 };

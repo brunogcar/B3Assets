@@ -66,7 +66,7 @@ function Import()
 
 function import_Current()
 {
-  console.log('Import: import_Current');
+  Logger.log('Import: import_Current');
 
   import_config();
 
@@ -126,7 +126,7 @@ function doImportProventos()
     catch (error)
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error importing ${ProvName}:`, error);
+      Logger.error(`Error importing ${ProvName}:`, error);
     }
   });
 }
@@ -151,7 +151,7 @@ function doImportSheets()
     catch (error)
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error importing sheet ${SheetName}:`, error);
+      Logger.error(`Error importing sheet ${SheetName}:`, error);
     }
   });
 }
@@ -170,7 +170,7 @@ function doImportDatas()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error importing sheet ${SheetName}:`, error);
+      Logger.error(`Error importing sheet ${SheetName}:`, error);
     }
   });
 }
@@ -192,7 +192,7 @@ function update_form()
       break;
 
     default:
-      console.error('Invalid update form value:', Update_Form);
+      Logger.error('Invalid update form value:', Update_Form);
       break;
   }
 }
@@ -226,7 +226,7 @@ function doImportShares()
   const sheet_tr = ss.getSheetByName('DATA');                                    // Target Sheet
     var SheetName =  sheet_tr.getName()
 
-  console.log('IMPORT: Shares and FF');
+  Logger.log('IMPORT: Shares and FF');
 
   if (!ErrorValues.includes(L1) && !ErrorValues.includes(L2)) 
   {
@@ -235,9 +235,9 @@ function doImportShares()
   }
   else
   {
-    console.log('ERROR IMPORT:', SheetName, 'ErrorValues on L1 or L2 on doImportShares');
+    Logger.log('ERROR IMPORT:', SheetName, 'ErrorValues on L1 or L2 on doImportShares');
   }
-console.log(`SUCESS IMPORT: Shares and FF`);
+Logger.log(`SUCESS IMPORT: Shares and FF`);
 }
 
 /////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
@@ -250,7 +250,7 @@ function doImportProv(ProvName)
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');     // Source Sheet
   const sheet_tr = ss.getSheetByName('Prov');  
 
-  console.log('IMPORT:', ProvName);
+  Logger.log('IMPORT:', ProvName);
 
   if (ProvName == 'Proventos') 
   {
@@ -263,7 +263,7 @@ function doImportProv(ProvName)
     }
     else
     {
-      console.log('ERROR IMPORT:', ProvName, 'B3 != Proventos on doImportProv');
+      Logger.log('ERROR IMPORT:', ProvName, 'B3 != Proventos on doImportProv');
     }
   }
 }
@@ -272,16 +272,16 @@ function doImportProv(ProvName)
 
 function doImportSheet(SheetName) 
 {
-  console.log('IMPORT:', SheetName);
+  Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                                    // Config sheet
     var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
   const sheet_se = getSheetnameByName('Settings');                                  // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
-  if (!sheet_sr) { console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
+  if (!sheet_sr) { Logger.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
   const sheet_tr = getSheetnameByName(SheetName);                                   // Target Sheet
-  if (!sheet_tr) { console.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
+  if (!sheet_tr) { Logger.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;
 
@@ -399,16 +399,16 @@ function doImportSheet(SheetName)
       var Data_1 = sheet_sr.getRange(1,1,1,LC).getValues();
         sheet_tr.getRange(1,1,1,LC).setValues(Data_1);
 
-        console.log(`SUCESS IMPORT. Sheet:  ${SheetName}.`);
+        Logger.log(`SUCESS IMPORT. Sheet:  ${SheetName}.`);
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'A5 cell is Blank on doImportSheet');
+      Logger.log('ERROR IMPORT:', SheetName, 'A5 cell is Blank on doImportSheet');
     }
   }
   else
   {
-    console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+    Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
   }
 }
 
@@ -416,18 +416,18 @@ function doImportSheet(SheetName)
 
 function doImportData(SheetName) 
 {
-  console.log('IMPORT:', SheetName);
+  Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet_co = getSheetnameByName('Config');                                         // Config sheet
     var Source_Id = sheet_co.getRange(SIR).getValues();                                  // SIR = Source ID Range
   const sheet_se = getSheetnameByName('Settings');                                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);         // Source Sheet
-  if (!sheet_sr) { console.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportData from', Source_Id); return; }
+  if (!sheet_sr) { Logger.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportData from', Source_Id); return; }
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
   const sheet_tr = getSheetnameByName(SheetName);                                        // Target Sheet
-  if (!sheet_tr) { console.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
+  if (!sheet_tr) { Logger.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;
 
@@ -448,12 +448,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -474,12 +474,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -500,12 +500,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -526,12 +526,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'D1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'D1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -552,12 +552,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -578,12 +578,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -604,12 +604,12 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'B1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
 
@@ -630,15 +630,15 @@ function doImportData(SheetName)
       }
       else
       {
-        console.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
+        Logger.log('ERROR IMPORT:', SheetName, 'C1 cell is Blank on doImportData');
       }
     }
     else
     {
-      console.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
+      Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
-  console.log(`SUCESS IMPORT for sheet ${SheetName}.`);
+  Logger.log(`SUCESS IMPORT for sheet ${SheetName}.`);
 }
 
-/////////////////////////////////////////////////////////////////////IMPORT/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////IMPORT TEMPLATE/////////////////////////////////////////////////////////////////////

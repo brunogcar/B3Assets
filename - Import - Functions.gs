@@ -7,24 +7,24 @@ function doCheckTriggers()
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
   var Triggers = ScriptApp.getProjectTriggers().length;
 
-  console.log("Number of existing triggers:", Triggers);
+  Logger.log("Number of existing triggers:", Triggers);
 
   if (Class == 'STOCK') 
   {
     if (Triggers == 0) 
     {
-      console.log("No triggers found. Creating new triggers...");
+      Logger.log("No triggers found. Creating new triggers...");
       doCreateTriggers();
     } 
     else if (Triggers > 0 && Triggers < 5) 
     {
-      console.log("Found 1-4 triggers. Deleting and creating new triggers...");
+      Logger.log("Found 1-4 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
       doCreateTriggers();
     } 
     else if (Triggers > 5) 
     {
-      console.log("Found more than 5 triggers. Deleting and creating new triggers...");
+      Logger.log("Found more than 5 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
       doCreateTriggers();
     }
@@ -33,12 +33,12 @@ function doCheckTriggers()
   {
     if (Triggers == 0) 
     {
-      console.log("No triggers found. Creating new triggers...");
+      Logger.log("No triggers found. Creating new triggers...");
       doCreateTriggers();
     } 
     else if (Triggers > 1) 
     {
-      console.log("Found more than 1 triggers. Deleting and creating new triggers...");
+      Logger.log("Found more than 1 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
       doCreateTriggers();
     }
@@ -65,7 +65,7 @@ function doCreateTriggers()
   {
     if (Class == 'STOCK') 
     {
-      console.log("Creating new triggers...");
+      Logger.log("Creating new triggers...");
 
       var Hour_1 = sheet_co.getRange(TG1).getValue();                              // TG1 = Sheet Trigger Event
       var Hour_2 = sheet_co.getRange(TG2).getValue();                              // TG2 = Data  Trigger Event
@@ -150,6 +150,6 @@ function doDeleteTriggers()
   for (var i = 0; i < triggers.length; i++)
   {
     ScriptApp.deleteTrigger(triggers[i]);
-    console.log("Deleting triggers...");
+    Logger.log("Deleting triggers...");
   }
 };

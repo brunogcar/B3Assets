@@ -2,13 +2,13 @@
 
 function doSaveSheet(SheetName)
 {
-  console.log('SAVE:', SheetName);
+  Logger.log('SAVE:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = getSheetnameByName(SheetName);                        // Source sheet
-  if (!sheet_sr) { console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveSheet from sheet_sr'); return; }
 
   const sheet_co = getSheetnameByName('Config');                         // Config sheet
-  const sheet_se = getSheetnameByName('Settings');
+  const sheet_se = getSheetnameByName('Settings');                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
   Utilities.sleep(2500); // 2,5 secs
@@ -37,7 +37,7 @@ function doSaveSheet(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
       }
     }
     if (Class == 'BDR' || Class == 'ETF' || Class == 'ADR') 
@@ -49,7 +49,7 @@ function doSaveSheet(SheetName)
       }
       else
       {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
       }
     }
   }
@@ -73,7 +73,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -92,7 +92,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -111,7 +111,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -130,7 +130,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -151,7 +151,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -168,7 +168,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -187,7 +187,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -206,7 +206,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -225,7 +225,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 
@@ -244,7 +244,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
     }
   }
 }
@@ -255,7 +255,7 @@ function doSaveSheet(SheetName)
 
 function doSaveData(SheetName)
 {
-  console.log('SAVE:', SheetName);
+  Logger.log('SAVE:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                         // Config sheet
   const sheet_se = getSheetnameByName('Settings');
@@ -308,12 +308,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
     }
   }
 
@@ -343,7 +343,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
     }
   }
 
@@ -389,12 +389,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
     }
   }
 
@@ -427,12 +427,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
     }
   }
 
@@ -477,12 +477,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
     }
   }
 
@@ -512,7 +512,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
     }
   }
 
@@ -557,12 +557,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
     }
   }
 
@@ -592,7 +592,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
     }
   }
 }
@@ -621,7 +621,7 @@ function doSaveProventos()
     try {
       doSaveProv(config);
     } catch (error) {
-      console.error(`Error saving ${config.name}:`, error);
+      Logger.error(`Error saving ${config.name}:`, error);
     }
   });
 }
@@ -633,7 +633,7 @@ function doSaveProv(config)
 
   if (!sheet_sr) 
   {
-    console.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
+    Logger.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
     return; // Exit the function
   }
 
@@ -641,7 +641,7 @@ function doSaveProv(config)
 
   if (!sheet_tr) 
   {
-    console.log('ERROR: Target sheet "Prov" does not exist. Skipping operation.');
+    Logger.log('ERROR: Target sheet "Prov" does not exist. Skipping operation.');
     return; // Exit the function
   }
   const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
@@ -671,11 +671,11 @@ function doSaveProv(config)
       targetRange.setValues(data);
     }
     
-    console.log(`SUCCESS SAVE: ${config.name}.`);
+    Logger.log(`SUCCESS SAVE: ${config.name}.`);
   } 
   else 
   {
-    console.log(`ERROR SAVE: ${config.name}, ${config.checkCell} != ${config.expectedValue}`);
+    Logger.log(`ERROR SAVE: ${config.name}, ${config.checkCell} != ${config.expectedValue}`);
   }
 }
 
@@ -687,7 +687,7 @@ function doGetProventos()
 
   if (!sheet_tr) 
   {
-    console.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
+    Logger.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
     return; // Exit the function
   }
 
@@ -703,22 +703,22 @@ function doGetProventos()
   const base64Params = Utilities.base64Encode(data);
 
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  console.log("URL:", url);
+  Logger.log("URL:", url);
 
   let responseText;
   try 
   {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    console.log("API Response:", responseText);
+    Logger.log("API Response:", responseText);
   } catch (error) {
-    console.log("ERROR: Failed to fetch API response.", error);
+    Logger.log("ERROR: Failed to fetch API response.", error);
     return; // Exit if the API request fails
   }
 
   if (!responseText) 
   {
-    console.log("ERROR: Empty response from API.");
+    Logger.log("ERROR: Empty response from API.");
     return; // Exit if the response is empty
   }
 
@@ -729,13 +729,13 @@ function doGetProventos()
   } 
   catch (error) 
   {
-    console.log("ERROR: Failed to parse JSON response.", error);
+    Logger.log("ERROR: Failed to parse JSON response.", error);
     return; // Exit if parsing fails
   }
 
   if (!content || !content[0]) 
   {
-    console.log("ERROR: No data returned from API.");
+    Logger.log("ERROR: No data returned from API.");
     return; // Exit if no data is available
   }
 
@@ -811,7 +811,7 @@ function doGetCodeCVM()
 
   if (!sheet_tr) 
   {
-    console.log('ERROR: Target sheet "Info" does not exist. Skipping operation.');
+    Logger.log('ERROR: Target sheet "Info" does not exist. Skipping operation.');
     return; // Exit the function if the target sheet does not exist
   }
 
@@ -828,24 +828,24 @@ function doGetCodeCVM()
   const base64Params = Utilities.base64Encode(data);
 
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  console.log("URL:", url);
+  Logger.log("URL:", url);
 
   let responseText;
   try 
   {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    console.log("API Response:", responseText);
+    Logger.log("API Response:", responseText);
   } 
   catch (error) 
   {
-    console.log("ERROR: Failed to fetch API response.", error);
+    Logger.log("ERROR: Failed to fetch API response.", error);
     return; // Exit if the API request fails
   }
 
   if (!responseText) 
   {
-    console.log("ERROR: Empty response from API.");
+    Logger.log("ERROR: Empty response from API.");
     return; // Exit if the response is empty
   }
 
@@ -856,18 +856,18 @@ function doGetCodeCVM()
   } 
   catch (error) 
   {
-    console.log("ERROR: Failed to parse JSON response.", error);
+    Logger.log("ERROR: Failed to parse JSON response.", error);
     return; // Exit if parsing fails
   }
 
   if (!content || !content[0]) 
   {
-    console.log("ERROR: No data returned from API.");
+    Logger.log("ERROR: No data returned from API.");
     return; // Exit if no data is available
   }
 
   const codeCVM = content[0]?.codeCVM || 'N/A'; // Default to 'N/A' if codeCVM is missing
-  console.log("Extracted codeCVM:", codeCVM);
+  Logger.log("Extracted codeCVM:", codeCVM);
 
   // Write to the Info sheet
   sheet_tr.getRange('C3').setValue(codeCVM); // Set data
@@ -885,7 +885,7 @@ function doSaveShares()
   var M1 = sheet_sr.getRange('M1').getValue();
   var M2 = sheet_sr.getRange('M2').getValue();
 
-  console.log('SAVE: Shares and FF');
+  Logger.log('SAVE: Shares and FF');
 
   // Validate if M1 and M2 are numeric or can be converted to numbers
   if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) 
@@ -898,16 +898,16 @@ function doSaveShares()
       var Data = sheet_sr.getRange("M1:M2").getValues();
       sheet_sr.getRange("L1:L2").setValues(Data);
 
-      console.log(`SUCCESS SAVE: Shares and FF`);
+      Logger.log(`SUCCESS SAVE: Shares and FF`);
     }
     else
     {
-       console.log('ERROR SAVE:', SheetName, 'M1 or M2 is 0');
+       Logger.log('ERROR SAVE:', SheetName, 'M1 or M2 is 0');
     }
   }
   else
   {
-    console.log('ERROR SAVE:', SheetName, 'Invalid values in M1 or M2');
+    Logger.log('ERROR SAVE:', SheetName, 'Invalid values in M1 or M2');
   }
 }
 

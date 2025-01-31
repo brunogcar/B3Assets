@@ -2,7 +2,7 @@
 
 function doSaveAll()
 {
-  console.log(SNAME(2));
+  Logger.log(SNAME(2));
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
@@ -22,7 +22,7 @@ function doSaveAll()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -37,7 +37,7 @@ function doSaveAll()
   }
   else
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
   doSaveShares();
@@ -61,7 +61,7 @@ function doSaveAll()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -76,7 +76,7 @@ function doSaveAll()
   }
   else
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
   doSaveSheet(FUND);
@@ -111,7 +111,7 @@ function doSaveAll()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -126,7 +126,7 @@ function doSaveAll()
   }
   else 
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
 //  doExportAll();             // sheets are exported individually
@@ -142,7 +142,7 @@ function doSaveAll()
 
 function doSaveAllSheets()
 {
-  console.log(SNAME(2));
+  Logger.log(SNAME(2));
 
   doSaveShares();
   doProventos();
@@ -163,7 +163,7 @@ function doSaveAllSheets()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -178,7 +178,7 @@ function doSaveAllSheets()
   }
   else 
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
   doSaveSheet(FUND);
@@ -199,7 +199,7 @@ function doSaveAllSheets()
 
 function doSaveAllExtras()
 {
-  console.log(SNAME(2));
+  Logger.log(SNAME(2));
 
   var sheetsToCheck = [
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
@@ -223,7 +223,7 @@ function doSaveAllExtras()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -238,7 +238,7 @@ function doSaveAllExtras()
   } 
   else 
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
   doSaveShares();
@@ -256,7 +256,7 @@ function doSaveAllExtras()
 
 function doSaveAllDatas()
 {
-  console.log(SNAME(2));
+  Logger.log(SNAME(2));
 
   var sheetsToCheck = [BLC, DRE, FLC, DVA];
   var sheetsToSave = [];
@@ -274,7 +274,7 @@ function doSaveAllDatas()
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
     }
   });
 
@@ -289,7 +289,7 @@ function doSaveAllDatas()
   }
   else
   {
-    console.log('No valid data found. Skipping save operation.');
+    Logger.log('No valid data found. Skipping save operation.');
   }
 
   doSaveShares();
@@ -322,7 +322,7 @@ function doSaveSheets()
     }
     catch (error)
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -341,7 +341,7 @@ function doSaveExtras()                                           // doSaveExtra
     }
     catch (error)
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -368,7 +368,7 @@ function doSaveDatas()
       }
       catch (error)
       {
-        console.error(`Error saving sheet ${SheetName}:`, error);
+        Logger.error(`Error saving sheet ${SheetName}:`, error);
       }
     });
   }

@@ -40,7 +40,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportSheet(SheetName);
         }
@@ -53,7 +53,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportSheet(SheetName);
         }
@@ -67,27 +67,27 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
           }
           if ( Edit != "TRUE" )
           {
-            console.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
+            Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
           }
         }
         else
         {
-          console.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveSheet');
+          Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveSheet');
         }
       }
       if ( Save != "TRUE" )
       {
-        console.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+        Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveSheet');
+      Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveSheet');
     }
   }
   else
   {
-    console.log('ERROR SAVE:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR SAVE:', SheetName, 'Sheet does not exist');
   }
 }
 
@@ -133,7 +133,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportExtra(SheetName);
         }
@@ -146,7 +146,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportExtra(SheetName);
         }
@@ -160,27 +160,27 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
           }
           if ( Edit != "TRUE" )
           {
-            console.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
+            Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
           }
         }
         else
         {
-          console.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveExtra');
+          Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveExtra');
         }
       }
       if ( Save != "TRUE" )
       {
-        console.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+        Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
       }
     }
     else
     {
-      console.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveExtra');
+      Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveExtra');
     }
   }
   else
   {
-    console.log('ERROR SAVE:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR SAVE:', SheetName, 'Sheet does not exist');
   }
 }
 
@@ -209,7 +209,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1, 2, LR, 1).getValues();
           sheet_tr.getRange(1, 2, LR, 1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportData(SheetName);
         }
@@ -221,14 +221,14 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1, 2, LR, 1).getValues();
           sheet_tr.getRange(1, 2, LR, 1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
 
         doExportData(SheetName);
         }
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
       }
     }
     if ( Edit == "TRUE" )
@@ -247,11 +247,11 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     }
     if ( Edit != "TRUE" )
     {
-      console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+      Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
     }
     if ( Save != "TRUE" )
     {
-      console.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+      Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
     }
   }
 
@@ -268,7 +268,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,2,LR,1).getValues();
           sheet_sr.getRange(1,3,LR,1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
         }
         else
         {
@@ -278,12 +278,12 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,2,LR,1).getValues();
           sheet_sr.getRange(1,3,LR,1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
         }
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
       }
     }
     if (Edit == "TRUE")
@@ -302,11 +302,11 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     }
     if ( Edit != "TRUE" )
     {
-      console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+      Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
     }
     if ( Save != "TRUE" )
     {
-      console.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+      Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
     }
 
   }
@@ -324,7 +324,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,3,LR,1).getValues();
           sheet_sr.getRange(1,4,LR,1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
         }
         else
         {
@@ -334,12 +334,12 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,3,LR,1).getValues();
           sheet_sr.getRange(1,4,LR,1).setValues(Data);
 
-          console.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
         }
       }
       else
       {
-        console.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
+        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveData');
       }
     }
     if (Edit == "TRUE")
@@ -359,11 +359,11 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     }
     if ( Edit != "TRUE" )
     {
-      console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+      Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
     }
     if ( Save != "TRUE" )
     {
-      console.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+      Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
     }
   }
 }

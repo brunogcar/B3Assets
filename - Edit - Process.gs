@@ -28,7 +28,7 @@ function processEditSheet(sheet_sr, SheetName, Edit)
             sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
             sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+            Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
 
             doExportSheet(SheetName);
           }
@@ -38,29 +38,29 @@ function processEditSheet(sheet_sr, SheetName, Edit)
             sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
             sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+            Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
 
             doExportSheet(SheetName);
           }
         }
         else
         {
-          console.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
+          Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
         }
       }
        if ( Edit != "TRUE" )
       {
-        console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+        Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
       }
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditSheet');
     }
   }
   else
   {
-    console.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
   }
 }
 
@@ -94,7 +94,7 @@ function processEditExtra(sheet_sr, SheetName, Edit)
             sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
             sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+            Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
 
             doExportExtra(SheetName);
           }
@@ -104,29 +104,29 @@ function processEditExtra(sheet_sr, SheetName, Edit)
             sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
             sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+            Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
 
             doExportExtra(SheetName);
           }
         }
         else
         {
-          console.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditExtra');
+          Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditExtra');
         }
       }
        if ( Edit != "TRUE" )
       {
-        console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+        Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
       }
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditExtra');
+      Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditExtra');
     }
   }
   else
   {
-    console.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
   }
 }
 
@@ -158,13 +158,13 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit)
         var Data = B.map(function(row, index) {return [row[0] != B_S[index][0] ? B_S[index][0] : row[0]];});
         sheet_tr.getRange(1,2,LR,1).setValues(Data);
 
-        console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+        Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
 
         doExportData(SheetName);
       }
       else
       {
-        console.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
+        Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
       }
     }
 
@@ -184,11 +184,11 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit)
         var Data = B.map(function(row, index) {return [row[0] != C[index][0] ? row[0] : C[index][0]];});
         sheet_sr.getRange(1,3,LR,1).setValues(Data);
 
-        console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+        Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
       }
       else
       {
-        console.log('ERROR EDIT:', SheetName, 'Check conditions in processEditSheet');
+        Logger.log('ERROR EDIT:', SheetName, 'Check conditions in processEditSheet');
       }
     }
 
@@ -208,11 +208,11 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit)
         var Data = C.map(function(row, index) {return [row[0] != D[index][0] ? row[0] : D[index][0]];});
         sheet_sr.getRange(1,4,LR,1).setValues(Data);
 
-        console.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
+        Logger.log(`SUCESS EDIT. Sheet: ${SheetName}.`);
       }
       else
       {
-        console.log('ERROR EDIT:', SheetName, 'Check conditions in processEditSheet');
+        Logger.log('ERROR EDIT:', SheetName, 'Check conditions in processEditSheet');
       }
     }
   }
@@ -221,7 +221,7 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit)
 
   if ( Edit != "TRUE" )
   {
-    console.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+    Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
   }
 }
 

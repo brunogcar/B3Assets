@@ -3,7 +3,7 @@
 
 function import_15x_to_161()
 {
-  console.log('Import: import_15x_to_161');
+  Logger.log('Import: import_15x_to_161');
 
   import_config();
 
@@ -64,11 +64,11 @@ function doImport_SWING_12_to_SWING_4()
   const sourceSpreadsheet = SpreadsheetApp.openById(Source_Id);
   const sheet_sr = sourceSpreadsheet.getSheetByName(SWING_12);                            // Source Sheet (Trade)
 
-  console.log('Import: Trade to Swing Sheets');
+  Logger.log('Import: Trade to Swing Sheets');
 
   // Check if the source sheet exists
   if (!sheet_sr) {
-    console.log('ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.');
+    Logger.log('ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.');
     return;
   }
 
@@ -85,7 +85,7 @@ function doImport_SWING_12_to_SWING_4()
     let targetSheet = ss.getSheetByName(config.name);
 
     if (!targetSheet) {
-      console.log(`${config.name} sheet does not exist.`);
+      Logger.log(`${config.name} sheet does not exist.`);
     }
 
     // Loop through source and target ranges
@@ -99,7 +99,7 @@ function doImport_SWING_12_to_SWING_4()
       targetSheet.getRange(targetRange).clearContent();
       targetSheet.getRange(targetRange).setValues(data);
 
-      console.log(`SUCCESS IMPORT. Data from 'Trade' (${sourceRange}) copied to '${config.name}' (${targetRange}).`);
+      Logger.log(`SUCCESS IMPORT. Data from 'Trade' (${sourceRange}) copied to '${config.name}' (${targetRange}).`);
     });
   });
 }

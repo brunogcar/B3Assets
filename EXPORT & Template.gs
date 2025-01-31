@@ -22,7 +22,7 @@ function doExportSheets()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.error(`Error exporting sheet ${SheetName}:`, error);
     }
   });
 }
@@ -40,7 +40,7 @@ function doExportDatas()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.error(`Error exporting sheet ${SheetName}:`, error);
     }
   });
 }
@@ -58,7 +58,7 @@ function doExportExtras()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.error(`Error exporting sheet ${SheetName}:`, error);
     }
   });
 }
@@ -67,7 +67,7 @@ function doExportExtras()
 
 function doExportSheet(SheetName) 
 {
-  console.log('EXPORT:', SheetName);
+  Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                                      // Config sheet
     var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
@@ -78,14 +78,14 @@ function doExportSheet(SheetName)
     var Maximum = sheet_se.getRange(MAX).getValue();                                  //  1000 - Default
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = getSheetnameByName(SheetName);                                     // Source sheet
-  if (!sheet_sr) { console.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_sr'); return; }
     var A2 = sheet_sr.getRange('A2').getValue();
     var A5 = sheet_sr.getRange('A5').getValue();
     var LR_S = sheet_sr.getLastRow();
     var LC_S = sheet_sr.getLastColumn();
   const trg = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use getSheetnameByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) { console.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_tr'); return; }
+  if (!sheet_tr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_tr'); return; }
     var LR_T = sheet_tr.getLastRow();
     var LC_T = sheet_tr.getLastColumn();
 
@@ -211,7 +211,7 @@ function doExportSheet(SheetName)
         break;
 
         default:
-          console.log('ERROR EXPORT:', SheetName, 'Sheet name not recognized.');
+          Logger.log('ERROR EXPORT:', SheetName, 'Sheet name not recognized.');
           return;
       }
 
@@ -250,30 +250,30 @@ function doExportSheet(SheetName)
         if (Search) 
         {
           Search.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);            // Ensure it's a 2D array
-          console.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
         } 
         else 
         {
           var NewRow = sheet_tr.getRange(LR_T + 1, 1, 1, 1).setValue([TKT]);
-          console.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
           NewRow.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);            // Ensure it's a 2D array
-          console.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
         }
       }
       else 
       {
-        console.log('ERROR EXPORT:', SheetName, 'EXPORT on config is set to FALSE or Conditions arent met on doExportSheet');
+        Logger.log('ERROR EXPORT:', SheetName, 'EXPORT on config is set to FALSE or Conditions arent met on doExportSheet');
       }
     }
     else 
     {
-      console.log('ERROR EXPORT:', SheetName, 'ErrorValues in A2 or A5_ = "" on doExportSheet');
+      Logger.log('ERROR EXPORT:', SheetName, 'ErrorValues in A2 or A5_ = "" on doExportSheet');
     }
   }
   else 
   {
-    console.log('ERROR EXPORT:', SheetName, 'Class != STOCK', Class);
+    Logger.log('ERROR EXPORT:', SheetName, 'Class != STOCK', Class);
   }
 }
 
@@ -281,7 +281,7 @@ function doExportSheet(SheetName)
 
 function doExportData(SheetName) 
 {
-  console.log('EXPORT:', SheetName);
+  Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                                      // Config sheet
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
@@ -291,11 +291,11 @@ function doExportData(SheetName)
   if (!sheet_co || !sheet_se) return;
   
   const sheet_sr = getSheetnameByName('Index');                                     // Source sheet
-  if (!sheet_sr) { console.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_sr'); return; }
    const trg = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
 
   const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use getSheetnameByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) { console.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_tr'); return; }
+  if (!sheet_tr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_tr'); return; }
     var LR_T = sheet_tr.getLastRow();
     var LC_T = sheet_tr.getLastColumn();
 
@@ -403,20 +403,20 @@ function doExportData(SheetName)
     if (Search)
     {
       Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
-      console.log(`SUCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+      Logger.log(`SUCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
     }
     else
     {
       var NewRow = sheet_tr.getRange(LR_T+1,1,1,1).setValue([TKT]);
-      console.log(`SUCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
+      Logger.log(`SUCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
       NewRow.offset(0, 1, 1 , Data[0].length).setValues(Data);
-      console.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+      Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
     }
   }
   else
   {
-    console.log('ERROR EXPORT:', SheetName, 'EXPORT on config is set to FALSE');
+    Logger.log('ERROR EXPORT:', SheetName, 'EXPORT on config is set to FALSE');
   }
 }
 
@@ -424,13 +424,13 @@ function doExportData(SheetName)
 
 function doExportExtra(SheetName)
 {
-  console.log('EXPORT:', SheetName);
+  Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                                      // Config sheet
     var Target_Id = sheet_co.getRange(TDR).getValues();                               // TDR = Target ID Range
   const sheet_se = getSheetnameByName('Settings');                                    // Settings sheet
   const sheet_sr = getSheetnameByName(SheetName);                                     // Source sheet
-  if (!sheet_sr) { console.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportExtra from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportExtra from sheet_sr'); return; }
 
   let ShouldExport = false; // Initialize ShouldExport as false
   let Data = [];
@@ -549,32 +549,32 @@ function doExportExtra(SheetName)
         if (Search)
         {
           Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
-          console.log(`SUCESS EXPORT. Data for ${M} . Sheet: ${SheetName}.`);
+          Logger.log(`SUCESS EXPORT. Data for ${M} . Sheet: ${SheetName}.`);
         }
         else
         {
           // Value not found, add a new row with the ticker (M)
           var NewRow = sheet_tr.getRange(LR_T + 1, 1, 1, 1).setValue([M]);
-          console.log(`SUCCESS EXPORT. Ticker: ${M}. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Ticker: ${M}. Sheet: ${SheetName}.`);
 
           // Now set the adjacent values (Data) in the new row
           NewRow.offset(0, 1, 1, Data[0].length).setValues(Data);
-          console.log(`SUCCESS EXPORT. Data for ${M}. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Data for ${M}. Sheet: ${SheetName}.`);
         }
       }
       else
       {
-        console.log('EXPORT:', SheetName, 'Export on config is set to FALSE');
+        Logger.log('EXPORT:', SheetName, 'Export on config is set to FALSE');
       }
     }
     else
     {
-      console.log('EXPORT:', SheetName, 'ShouldExport is FALSE');
+      Logger.log('EXPORT:', SheetName, 'ShouldExport is FALSE');
     }
   }
   else
   {
-    console.log('EXPORT:', SheetName, 'Data (A) failed ErrorValues');
+    Logger.log('EXPORT:', SheetName, 'Data (A) failed ErrorValues');
   }
 }
 
@@ -590,7 +590,7 @@ function doExportInfo()
 
   const sheet_in = getSheetnameByName('Info');                                      // Info sheet
   var SheetName =  sheet_in.getName()
-  console.log('Export:', SheetName);
+  Logger.log('Export:', SheetName);
 
   var A = sheet_co.getRange('B3').getValue();                 // Ticket
   var B = sheet_in.getRange('C3').getValue();                 // Codigo CVM
@@ -621,7 +621,7 @@ function doExportInfo()
 
     setSheetID()
 
-    console.log(`SUCESS EXPORT. Sheet: ${SheetName}.`);
+    Logger.log(`SUCESS EXPORT. Sheet: ${SheetName}.`);
   }
 };
 

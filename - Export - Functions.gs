@@ -18,7 +18,7 @@ function setSheetID()
   var EXP = sheet_co.getRange(EXR).getDisplayValue();                              // EXR = Export 
   var SHI = sheet_co.getRange(ICR).getDisplayValue();                              // ICR = Sheet ID 
 
-  console.log('Setting Sheet ID');
+  Logger.log('Setting Sheet ID');
 
   const Sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
 
@@ -40,7 +40,7 @@ function setSheetID()
       search.offset(0, 11).setValue(Sheet_Id);
       search.offset(0, 12).setValue(SNAME(3));
 
-      console.log('Sheet ID Set:', Sheet_Id);
+      Logger.log('Sheet ID Set:', Sheet_Id);
     }
   }
 };
@@ -78,7 +78,7 @@ function doClearSheetID()
   {
     search.offset(0, 11, 1, 2).clearContent();
 
-    console.log('Sheet ID Cleared');
+    Logger.log('Sheet ID Cleared');
   }
 };
 
@@ -174,7 +174,7 @@ function clearExport(SheetName)
 
   var search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
 
-  console.log('Clear Export:', SheetName);
+  Logger.log('Clear Export:', SheetName);
 
   if (search) 
   {
@@ -184,10 +184,12 @@ function clearExport(SheetName)
   }
   if (success) 
   {
-    console.log(`Exported data cleared successfully. Sheet: ${SheetName}.`);
+    Logger.log(`Exported data cleared successfully. Sheet: ${SheetName}.`);
   } 
   else 
   {
-    console.log('Clear EXPORT:', SheetName, "Didn't find Ticket:", TKT);
+    Logger.log('Clear EXPORT:', SheetName, "Didn't find Ticket:", TKT);
   }
 }
+
+/////////////////////////////////////////////////////////////////////EXPORT FUNCTIONS/////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@ function doEditSheets()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error editing sheet ${SheetName}:`, error);
+      Logger.error(`Error editing sheet ${SheetName}:`, error);
     }
   });
 }
@@ -42,7 +42,7 @@ function doEditExtras()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error editing sheet ${SheetName}:`, error);
+      Logger.error(`Error editing sheet ${SheetName}:`, error);
     }
   });
 }
@@ -60,7 +60,7 @@ function doEditDatas()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error editing sheet ${SheetName}:`, error);
+      Logger.error(`Error editing sheet ${SheetName}:`, error);
     }
   });
 }
@@ -69,10 +69,10 @@ function doEditDatas()
 
 function doEditSheet(SheetName) 
 {
-  console.log('EDIT:', SheetName);
+  Logger.log('EDIT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = getSheetnameByName(SheetName);                        // Source sheet
-  if (!sheet_sr) { console.log('ERROR EDIT:', SheetName, 'Does not exist on doEditSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditSheet from sheet_sr'); return; }
 
   const sheet_co = getSheetnameByName('Config');                         // Config sheet
   const sheet_se = getSheetnameByName('Settings');
@@ -107,7 +107,7 @@ function doEditSheet(SheetName)
       }
       else
       {
-        console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+        Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
       }
     }
   }
@@ -128,7 +128,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -146,7 +146,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -164,7 +164,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -182,7 +182,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -202,7 +202,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -218,7 +218,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -236,7 +236,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -254,7 +254,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -272,7 +272,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 
@@ -290,7 +290,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
     }
   }
 }
@@ -301,7 +301,7 @@ function doEditSheet(SheetName)
 
 function doEditData(SheetName) 
 {
-  console.log('EDIT:', SheetName);
+  Logger.log('EDIT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = getSheetnameByName('Config');                         // Config sheet
   const sheet_se = getSheetnameByName('Settings');
@@ -345,7 +345,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -374,7 +374,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -415,7 +415,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -445,7 +445,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -485,7 +485,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -514,7 +514,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -559,7 +559,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 
@@ -588,7 +588,7 @@ function doEditData(SheetName)
     }
     else
     {
-      console.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
     }
   }
 }
