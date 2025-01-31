@@ -1,40 +1,41 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
 
-function getSheetnameByName(SheetName) {
+function getSheetnameByName(SheetName) 
+{
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
   if (!sheet) {
-    console.log(`Sheet not found: ${SheetName}`);
+    Logger.log(`Sheet not found: ${SheetName}`);
     return null;
   }
   return sheet;
 }
 
-function getConfigValue(range) {
+function getConfigValue(Acronym) 
+{
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   // Get the Settings sheet
   const sheet_se = ss.getSheetByName('Settings');
   if (!sheet_se) {
-    console.log('Settings sheet not found');
+    Logger.log('Settings sheet not found');
     return null;
   }
 
   // Get the Config sheet
   const sheet_co = ss.getSheetByName('Config');
   if (!sheet_co) {
-    console.log('Config sheet not found');
+    Logger.log('Config sheet not found');
     return null;
   }
 
   // Get the value from Settings
-  const Value = sheet_se.getRange(range).getDisplayValue().trim();
+  const Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
 
   // Use ternary operator to handle fallback logic
   return (Value === "DEFAULT") 
-    ? sheet_co.getRange(range).getDisplayValue().trim()                    // Use Config value if Settings has "DEFAULT"
+    ? sheet_co.getRange(Acronym).getDisplayValue().trim()                    // Use Config value if Settings has "DEFAULT"
     : Value; // Otherwise, use the value from Settings
-
 }
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
@@ -106,41 +107,52 @@ function doRetire()
 
 function copypasteSheets() 
 {
-  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-  var SheetNames = ['Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT' , 'DATA', 'Value', Balanco, Resultado, Fluxo, Valor];
-  for (var i = 0; i < sheets.length; i++) {
-    var sheet = sheets[i];
-    if(SheetNames.indexOf(sheet.getName()) != -1){
-      // Copy the values of the sheet
-      var source = sheet.getDataRange();
-      source.copyTo(source, {contentsOnly: true});
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = ss.getSheets();
+  const SheetNames = new Set(['Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT', 'DATA', 'Value', Balanco, Resultado, Fluxo, Valor]);
+
+  sheets.forEach(sheet => {
+    if (SheetNames.has(sheet.getName())) 
+    {
+      sheet.getDataRange().copyTo(sheet.getDataRange(), { contentsOnly: true });
     }
-  }
+  });
 }
 
 function doDeleteSheets() 
 {
-  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-  var SheetNames = ['Balanço Ativo', 'Balanço Passivo', 'Demonstração', 'Fluxo de Caixa', 'Demonstração do Valor Adicionado'];
-  for (var i = 0; i < sheets.length; i++) {
-    var sheet = sheets[i];
-    if(SheetNames.indexOf(sheet.getName()) != -1)
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const SheetNames = new Set(['Balanço Ativo', 'Balanço Passivo', 'Demonstração', 'Fluxo de Caixa', 'Demonstração do Valor Adicionado']);
+  
+  ss.getSheets().forEach(sheet => {
+    if (SheetNames.has(sheet.getName())) 
     {
-      SpreadsheetApp.getActiveSpreadsheet().deleteSheet(sheet);
+      ss.deleteSheet(sheet);
     }
+  });
+}
+
+function moveSpreadsheetToFolder(folderName) 
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const file = DriveApp.getFileById(ss.getId());
+
+  const folders = DriveApp.getFoldersByName(folderName);
+  if (!folders.hasNext()) {
+    Logger.log(`Folder "${folderName}" not found.`);
+    return;
   }
+
+  const folder = folders.next();
+  folder.addFile(file);
+  DriveApp.getRootFolder().removeFile(file);
+
+  Logger.log(`Spreadsheet moved to ${folderName}`);
 }
 
 function moveSpreadsheetToARQUIVO() 
 {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var folder = DriveApp.getFoldersByName(`-=ARQUIVO=-`).next();
-  var file = DriveApp.getFileById(spreadsheet.getId());
-  
-  folder.addFile(file);
-  DriveApp.getRootFolder().removeFile(file);
-
-  console.log('Spreadsheet Moved To ARQUIVO');
+  moveSpreadsheetToFolder("-=ARQUIVO=-");
 }
 
 /////////////////////////////////////////////////////////////////////DELETE/////////////////////////////////////////////////////////////////////
@@ -166,14 +178,7 @@ function revokeOwnAccess()
 
 function moveSpreadsheetToBACKUP() 
 {
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var folder = DriveApp.getFoldersByName(`-=BACKUP=-`).next();
-  var file = DriveApp.getFileById(spreadsheet.getId());
-  
-  folder.addFile(file);
-  DriveApp.getRootFolder().removeFile(file);
-
-  console.log('Spreadsheet Moved To BACKUP');
+  moveSpreadsheetToFolder("-=BACKUP=-");
 }
 
 function doDeleteSpreadsheet() 
@@ -235,84 +240,53 @@ function SNAME(option)
 
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
-function doCleanZeros() 
-{
+function doCleanZeros() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND];
-  
-  for (var k = 0; k < SheetNames.length; k++) 
-  {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetNames[k]);
 
-    if (!sheet) 
-    {
-      Logger.log(`Sheet not found: ${SheetNames[k]}`);                               // Log the missing sheet for debugging
-      continue;                                                                      // Skip to the next sheet if not found
-    }    
-    var A5 = sheet.getRange('A5').getValue();
-
-    if (A5 !== "") 
-    {
-      var lastRow = sheet.getLastRow();
-      var lastColumn = sheet.getLastColumn();
-      var Data = sheet.getRange(5, 1, lastRow-4, lastColumn).getValues();
-    
-      for (var i = 0; i < Data.length; i++) 
-      {
-        for (var j = 0; j < Data[i].length; j++) 
-        {
-          if (Data[i][j] === 0) 
-          {
-            Data[i][j] = "";                                                         // Set the value to an empty string
-          }
-        }
-      }
-  
-      // Now, set the modified values back to the sheet
-      sheet.getRange(5, 1, lastRow-4, lastColumn).setValues(Data);
+  SheetNames.forEach(SheetName => {
+    const sheet = ss.getSheetByName(SheetName);
+    if (!sheet) {
+      Logger.log(`Sheet not found: ${SheetName}`);
+      return;
     }
-  }
+
+    const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
+    const Data = range.getValues();
+    let Modified = false;
+
+    Data.forEach(row => {
+      row.forEach((cell, i) => {
+        if (cell === 0) {
+          row[i] = "";
+          Modified = true;
+        }
+      });
+    });
+
+    if (Modified) range.setValues(Data); // Only update if changes were made
+  });
 }
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
 function reverseColumns() 
 {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var LC = sheet.getLastColumn();
-  var LR = sheet.getLastRow();
-  var range = sheet.getRange(1, 4, LR, LC - 2);                       // Adjust the range to start from column C dynamically
-  var values = range.getValues();
-  var numRows = values.length;
-  var numCols = values[0].length;
-  var reversedValues = [];
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const range = sheet.getRange(1, 4, sheet.getLastRow(), sheet.getLastColumn() - 2);
+  const values = range.getValues();
 
-  for (var i = 0; i < numRows; i++) 
-  {
-    reversedValues[i] = [];
-    for (var j = numCols - 1; j >= 0; j--) 
-    {
-      reversedValues[i][numCols - 1 - j] = values[i][j];
-    }
-  }
+  const reversedValues = values.map(row => row.reverse());
   range.setValues(reversedValues);
 }
 
 function reverseRows() 
 {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var LC = sheet.getLastColumn();
-  var LR = sheet.getLastRow();
-  var range = sheet.getRange(5, 1, LR - 4, LC);                       // Starting from row 5
-  var values = range.getValues();
-  var numRows = values.length;
-  var numCols = values[0].length;
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
+  const values = range.getValues();
 
-  for (var i = 0; i < Math.floor(numRows / 2); i++) 
-  {
-    var temp = values[i];
-    values[i] = values[numRows - 1 - i];
-    values[numRows - 1 - i] = temp;
-  }
+  values.reverse();
   range.setValues(values);
 }
 
