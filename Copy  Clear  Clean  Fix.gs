@@ -25,7 +25,7 @@ function doTrimSheets()
     } 
     catch (error) 
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -37,7 +37,7 @@ function doTrimSheet(SheetName)
 
   if (!sheet_sr) 
   {
-    console.error(`Sheet ${SheetName} not found.`);
+    Logger.error(`Sheet ${SheetName} not found.`);
     return;
   }
 
@@ -50,7 +50,7 @@ function doTrimSheet(SheetName)
     if (LR > 81) 
     {
       sheet_sr.getRange(82, 1, LR - 81, LC).clearContent(); // Clear data below row 128
-      console.log(`Cleared data below row 81 in ${SheetName}.`);
+      Logger.log(`Cleared data below row 81 in ${SheetName}.`);
     }
   } 
   else if (SheetName === SWING_12) 
@@ -58,7 +58,7 @@ function doTrimSheet(SheetName)
     if (LR > 208) 
     {
       sheet_sr.getRange(209, 1, LR - 208, LC).clearContent(); // Clear data below row 128
-      console.log(`Cleared data below row 208 in ${SheetName}.`);
+      Logger.log(`Cleared data below row 208 in ${SheetName}.`);
     }
   } 
   else if (SheetName === SWING_52) 
@@ -68,7 +68,7 @@ function doTrimSheet(SheetName)
   else 
   {
     // Default logic for other sheets
-    console.log(`No specific logic defined for ${SheetName}.`);
+    Logger.log(`No specific logic defined for ${SheetName}.`);
   }
 }
 
@@ -87,7 +87,7 @@ function doClearSheets()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error Clearing  ${SheetName}:`, error);
+      Logger.error(`Error Clearing  ${SheetName}:`, error);
     }
   });
 }
@@ -105,7 +105,7 @@ function doClearDatas()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      console.error(`Error Clearing  ${SheetName}:`, error);
+      Logger.error(`Error Clearing  ${SheetName}:`, error);
     }
   });
 }
@@ -122,7 +122,7 @@ function doCleanSheets()
     } 
     catch (error) 
     {
-      console.error(`Error cleaning sheet ${SheetName}:`, error);
+      Logger.error(`Error cleaning sheet ${SheetName}:`, error);
     }
   });
 }
@@ -145,7 +145,7 @@ function doCopyData(SheetName)
 
   if (!ss) 
   {
-    console.log('ERROR CLEAN:', SheetName, 'Does not exist');
+    Logger.log('ERROR CLEAN:', SheetName, 'Does not exist');
     return;
   }
 
@@ -166,7 +166,7 @@ function doCopyData(SheetName)
   }
   else 
   {
-    console.error(`Unsupported sheet name: ${SheetName}`);
+    Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
 }
 
@@ -189,12 +189,12 @@ function doClearSheet(SheetName)
   var LR = ss.getLastRow();
   var LC = ss.getLastColumn();
 
-  console.log('Clear:', SheetName);
+  Logger.log('Clear:', SheetName);
 
   ss.getRange(5, 1, LR, LC).clear({ contentsOnly: true, skipFilteredRows: false });
   ss.getRange(1, 1, 1, LC).clear({ contentsOnly: true, skipFilteredRows: false });
 
-  console.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+  Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
 
 }
 
@@ -202,7 +202,7 @@ function doClearData(SheetName)
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  console.log('Clear:', SheetName);
+  Logger.log('Clear:', SheetName);
 
   var LR = ss.getLastRow();
   var LC = ss.getLastColumn();
@@ -211,25 +211,25 @@ function doClearData(SheetName)
   {
     ss.getRange(1, 2, LR, LC - 1).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    console.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
   } 
   else if 
   (SheetName === Balanco) 
   {
     ss.getRange(1, 3, LR, LC - 2).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    console.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
   } 
   else if 
   (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) 
   {
     ss.getRange(1, 4, LR, LC - 3).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    console.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
   } 
   else 
   {
-    console.error(`Unsupported sheet name: ${SheetName}`);
+    Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
 
   if (SheetName === BLC) 
@@ -256,11 +256,11 @@ function doCleanSheet(SheetName)
 {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  console.log('CLEAN:', SheetName);
+  Logger.log('CLEAN:', SheetName);
 
   if (!sheet) 
   {
-    console.log('ERROR CLEAN:', SheetName, 'Does not exist');
+    Logger.log('ERROR CLEAN:', SheetName, 'Does not exist');
     return;
   }
 
@@ -273,7 +273,7 @@ function doCleanSheet(SheetName)
   sheet.createTextFinder("0,00").matchEntireCell(true).replaceAllWith("");
   sheet.createTextFinder("0,0000").matchEntireCell(true).replaceAllWith("");
 
-  console.log(`SUCESS CLEAN. Sheet: ${SheetName}.`);
+  Logger.log(`SUCESS CLEAN. Sheet: ${SheetName}.`);
 }
 
 /////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
@@ -327,7 +327,7 @@ function fixSWING_4Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -337,7 +337,7 @@ function fixSWING_4Split()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 
 }
 
@@ -352,7 +352,7 @@ function fixSWING_12Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -362,7 +362,7 @@ function fixSWING_12Split()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 
 }
 
@@ -377,7 +377,7 @@ function fixSWING_52Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -387,7 +387,7 @@ function fixSWING_52Split()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Opçoes-------------------------------------------------------------------//
@@ -403,7 +403,7 @@ function fixOptionsSplit()
   var Range = sheet.getRange("B" + SR + ":B" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -477,7 +477,7 @@ function fixOptionsSplit()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
@@ -493,7 +493,7 @@ function fixBTCSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -537,7 +537,7 @@ function fixBTCSplit()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Termo-------------------------------------------------------------------//
@@ -553,7 +553,7 @@ function fixTermoSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -613,7 +613,7 @@ function fixTermoSplit()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
@@ -629,7 +629,7 @@ function fixFutureSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -689,7 +689,7 @@ function fixFutureSplit()
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Fut-------------------------------------------------------------------//
@@ -706,7 +706,7 @@ function fixFUTPlusSplits()
     }
     catch (error)
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -722,7 +722,7 @@ function fixFUTPlusSplit(SheetName)
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -762,7 +762,7 @@ function fixFUTPlusSplit(SheetName)
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Extra-------------------------------------------------------------------//
@@ -779,7 +779,7 @@ function fixEXTRASplits()
     }
     catch (error)
     {
-      console.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}:`, error);
     }
   });
 }
@@ -795,7 +795,7 @@ function fixEXTRASplit(SheetName)
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -865,7 +865,7 @@ function fixEXTRASplit(SheetName)
     }
   }
   Range.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //-------------------------------------------------------------------Fund-------------------------------------------------------------------//
@@ -903,7 +903,7 @@ function multiplyColumn(columnLetter) {
   var Column = sheet.getRange(columnLetter + SR +":" +columnLetter + LR);
   var Values = Column.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -916,7 +916,7 @@ function multiplyColumn(columnLetter) {
     }
   }
   Column.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 //......................................................................................................................................//
@@ -932,7 +932,7 @@ function divideColumn(columnLetter) {
   var Column = sheet.getRange(columnLetter + SR +":" +columnLetter + LR);
   var Values = Column.getValues();
 
-  console.log('FIX:', sheet.getName());
+  Logger.log('FIX:', sheet.getName());
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -945,7 +945,7 @@ function divideColumn(columnLetter) {
     }
   }
   Column.setValues(Values);
-  console.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
+  Logger.log(`SUCESS FIX. Sheet: ${sheet.getName()}.`);
 }
 
 /////////////////////////////////////////////////////////////////////COPY / CLEAR / CLEAN / FIX /////////////////////////////////////////////////////////////////////
