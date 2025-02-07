@@ -69,22 +69,25 @@ function doExportSheet(SheetName)
 {
   Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                                      // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
     var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
     var Target_Id = sheet_co.getRange(TDR).getValues();                               // Target sheet ID
-  const sheet_se = getSheetnameByName('Settings');                                    // Settings sheet
+
+  const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
     var Minimum = sheet_se.getRange(MIN).getValue();                                  // -1000 - Default
     var Maximum = sheet_se.getRange(MAX).getValue();                                  //  1000 - Default
   if (!sheet_co || !sheet_se) return;
-  const sheet_sr = getSheetnameByName(SheetName);                                     // Source sheet
+
+  const sheet_sr = fetchSheetByName(SheetName);                                       // Source sheet
   if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_sr'); return; }
     var A2 = sheet_sr.getRange('A2').getValue();
     var A5 = sheet_sr.getRange('A5').getValue();
     var LR_S = sheet_sr.getLastRow();
     var LC_S = sheet_sr.getLastColumn();
+
   const trg = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
-  const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use getSheetnameByName, because gets data from diferent spreadsheet
+  const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_tr'); return; }
     var LR_T = sheet_tr.getLastRow();
     var LC_T = sheet_tr.getLastColumn();
@@ -106,7 +109,7 @@ function doExportSheet(SheetName)
         case SWING_12:
         case SWING_52:
 
-        Export = getConfigValue(ETR)                                                     // ETR = Export to Swing
+        Export = getConfigValue(ETR)                                                  // ETR = Export to Swing
 
         var C2 = sheet_sr.getRange('C2').getValue();
 
@@ -123,7 +126,7 @@ function doExportSheet(SheetName)
 
         case OPCOES:
 
-        Export = getConfigValue(EOP)                                                     // EOP = Export to Option
+        Export = getConfigValue(EOP)                                                  // EOP = Export to Option
 
         var [Call, Put] = ['C2', 'E2'].map(r => sheet_sr.getRange(r).getValue());
 
@@ -138,7 +141,7 @@ function doExportSheet(SheetName)
 
         case BTC:
 
-        Export = getConfigValue(EBT)                                                     // EBT = Export to BTC
+        Export = getConfigValue(EBT)                                                  // EBT = Export to BTC
 
         var D2 = sheet_sr.getRange('D2').getValue();
 
@@ -152,7 +155,7 @@ function doExportSheet(SheetName)
 
         case TERMO:
 
-        Export = getConfigValue(ETE)                                                     // ETE = Export to Termo
+        Export = getConfigValue(ETE)                                                  // ETE = Export to Termo
 
         var D2 = sheet_sr.getRange('D2').getValue();
 
@@ -166,7 +169,7 @@ function doExportSheet(SheetName)
 
         case FUTURE:
 
-        Export = getConfigValue(ETF)                                                     // ETF = Export to Future
+        Export = getConfigValue(ETF)                                                  // ETF = Export to Future
 
         var C2 = sheet_sr.getRange('C2').getValue();
         var E2 = sheet_sr.getRange('E2').getValue();
@@ -184,7 +187,7 @@ function doExportSheet(SheetName)
         case FUTURE_2:
         case FUTURE_3:
 
-        Export = getConfigValue(ETF)                                                     // ETF = Export to Future
+        Export = getConfigValue(ETF)                                                  // ETF = Export to Future
 
         var C2 = sheet_sr.getRange('C2').getValue();
         var B2 = sheet_sr.getRange('B2').getValue();
@@ -200,7 +203,7 @@ function doExportSheet(SheetName)
 
         case FUND:
 
-        Export = getConfigValue(EFU)                                                     // EFU = Export to Fund
+        Export = getConfigValue(EFU)                                                  // EFU = Export to Fund
 
         var B2 = sheet_sr.getRange('B2').getValue();
 
@@ -223,7 +226,7 @@ function doExportSheet(SheetName)
 
         if (SheetName === FUND) 
         {
-          var Data = sheet_sr.getRange(2, 1, 1, LC_S).getValues();                            // 2D array
+          var Data = sheet_sr.getRange(2, 1, 1, LC_S).getValues();                    // 2D array
           FilteredData = Data[0].map((Value, ColIndex) => 
           {
             if (ColIndex + 1 < 3) 
@@ -236,20 +239,20 @@ function doExportSheet(SheetName)
             } 
             else 
             {
-              return (Value > Minimum && Value < Maximum) ? Value : "";                      // Apply filtering for columns <= BJ (except column B)
+              return (Value > Minimum && Value < Maximum) ? Value : "";               // Apply filtering for columns <= BJ (except column B)
             }
           });
         } 
         else 
         {
-          FilteredData = sheet_sr.getRange(2, 1, 1, LC_S).getValues()[0];                    // Use unfiltered data
+          FilteredData = sheet_sr.getRange(2, 1, 1, LC_S).getValues()[0];             // Use unfiltered data
         }
 
         var Search = sheet_tr.getRange('A2:A' + LR_T).createTextFinder(TKT).findNext();
 
         if (Search) 
         {
-          Search.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);            // Ensure it's a 2D array
+          Search.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);      // Ensure it's a 2D array
           Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
         } 
         else 
@@ -257,7 +260,7 @@ function doExportSheet(SheetName)
           var NewRow = sheet_tr.getRange(LR_T + 1, 1, 1, 1).setValue([TKT]);
           Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
-          NewRow.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);            // Ensure it's a 2D array
+          NewRow.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);      // Ensure it's a 2D array
           Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
         }
       }
@@ -283,18 +286,18 @@ function doExportData(SheetName)
 {
   Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                                      // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
     var Target_Id = sheet_co.getRange(TDR).getValues();                               // Target sheet ID
 
-  const sheet_se = getSheetnameByName('Settings');                                    // Settings sheet
+  const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
   if (!sheet_co || !sheet_se) return;
   
-  const sheet_sr = getSheetnameByName('Index');                                     // Source sheet
+  const sheet_sr = fetchSheetByName('Index');                                         // Source sheet
   if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_sr'); return; }
-   const trg = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
+   const trg = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
 
-  const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use getSheetnameByName, because gets data from diferent spreadsheet
+  const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportData from sheet_tr'); return; }
     var LR_T = sheet_tr.getLastRow();
     var LC_T = sheet_tr.getLastColumn();
@@ -310,17 +313,17 @@ function doExportData(SheetName)
 
     case BLC:
 
-    Export = getConfigValue(EBL)                                                     // EBL = Export to BLC
+    Export = getConfigValue(EBL)                                                      // EBL = Export to BLC
 
-    var A = sheet_co.getRange('B18').getValue();                  // Balanço Atual
+    var A = sheet_co.getRange('B18').getValue();                                      // Balanço Atual
 
-    var B = sheet_sr.getRange('B43').getValue();                  // Ativo
-    var C = sheet_sr.getRange('B44').getValue();                  // A. Circulante
-    var D = sheet_sr.getRange('B45').getValue();                  // A. Não Circulante
-    var E = sheet_sr.getRange('B46').getValue();                  // Passivo
-    var F = sheet_sr.getRange('B47').getValue();                  // Passivo Circulante
-    var G = sheet_sr.getRange('B48').getValue();                  // Passivo Não Circ
-    var H = sheet_sr.getRange('B49').getValue();                  // Patrim. Líq
+    var B = sheet_sr.getRange('B43').getValue();                                      // Ativo
+    var C = sheet_sr.getRange('B44').getValue();                                      // A. Circulante
+    var D = sheet_sr.getRange('B45').getValue();                                      // A. Não Circulante
+    var E = sheet_sr.getRange('B46').getValue();                                      // Passivo
+    var F = sheet_sr.getRange('B47').getValue();                                      // Passivo Circulante
+    var G = sheet_sr.getRange('B48').getValue();                                      // Passivo Não Circ
+    var H = sheet_sr.getRange('B49').getValue();                                      // Patrim. Líq
 
     Data.push([A, B, C, D, E, F, G, H]);
 
@@ -332,19 +335,19 @@ function doExportData(SheetName)
 
     Export = getConfigValue(EDR)                                                     // EDR = Export to DRE
 
-    var A = sheet_co.getRange('B18').getValue();                  // Balanço Atual
+    var A = sheet_co.getRange('B18').getValue();                                     // Balanço Atual
 
-    var B = sheet_sr.getRange('B52').getValue();                  // Receita Líquida 12 MESES
-    var C = sheet_sr.getRange('B53').getValue();                  // Resultado Bruto 12 MESES
-    var D = sheet_sr.getRange('B54').getValue();                  // EBIT 12 MESES
-    var E = sheet_sr.getRange('B55').getValue();                  // EBITDA 12 MESES
-    var F = sheet_sr.getRange('B57').getValue();                  // Lucro Líquido 12 MESES
+    var B = sheet_sr.getRange('B52').getValue();                                     // Receita Líquida 12 MESES
+    var C = sheet_sr.getRange('B53').getValue();                                     // Resultado Bruto 12 MESES
+    var D = sheet_sr.getRange('B54').getValue();                                     // EBIT 12 MESES
+    var E = sheet_sr.getRange('B55').getValue();                                     // EBITDA 12 MESES
+    var F = sheet_sr.getRange('B57').getValue();                                     // Lucro Líquido 12 MESES
 
-    var G = sheet_sr.getRange('D52').getValue();                  // Receita Líquida 3 MESES
-    var H = sheet_sr.getRange('D53').getValue();                  // Resultado Bruto 3 MESES
-    var I = sheet_sr.getRange('D54').getValue();                  // EBIT 3 MESES
-    var J = sheet_sr.getRange('D55').getValue();                  // EBITDA 3 MESES
-    var K = sheet_sr.getRange('D57').getValue();                  // Lucro Líquido 3 MESES
+    var G = sheet_sr.getRange('D52').getValue();                                     // Receita Líquida 3 MESES
+    var H = sheet_sr.getRange('D53').getValue();                                     // Resultado Bruto 3 MESES
+    var I = sheet_sr.getRange('D54').getValue();                                     // EBIT 3 MESES
+    var J = sheet_sr.getRange('D55').getValue();                                     // EBITDA 3 MESES
+    var K = sheet_sr.getRange('D57').getValue();                                     // Lucro Líquido 3 MESES
 
     Data.push([A, B, C, D, E, F, G, H, I, J, K]);
 
@@ -356,15 +359,15 @@ function doExportData(SheetName)
 
     Export = getConfigValue(EFL)                                                     // EFL = Export to FLC
 
-    var A = sheet_co.getRange('B18').getValue();                  // Balanço Atual
+    var A = sheet_co.getRange('B18').getValue();                                     // Balanço Atual
 
-    var B = sheet_sr.getRange('B69').getValue();                  // FCO
-    var C = sheet_sr.getRange('B70').getValue();                  // FCI
-    var D = sheet_sr.getRange('B71').getValue();                  // FCF
-    var E = sheet_sr.getRange('B72').getValue();                  // FCT
-    var F = sheet_sr.getRange('B73').getValue();                  // FCL
-    var G = sheet_sr.getRange('B74').getValue();                  // Saldo Inicial
-    var H = sheet_sr.getRange('B75').getValue();                  // Saldo Final
+    var B = sheet_sr.getRange('B69').getValue();                                     // FCO
+    var C = sheet_sr.getRange('B70').getValue();                                     // FCI
+    var D = sheet_sr.getRange('B71').getValue();                                     // FCF
+    var E = sheet_sr.getRange('B72').getValue();                                     // FCT
+    var F = sheet_sr.getRange('B73').getValue();                                     // FCL
+    var G = sheet_sr.getRange('B74').getValue();                                     // Saldo Inicial
+    var H = sheet_sr.getRange('B75').getValue();                                     // Saldo Final
 
     Data.push([A, B, C, D, E, F, G, H]);
 
@@ -376,14 +379,14 @@ function doExportData(SheetName)
 
     Export = getConfigValue(EDV)                                                     // EDV = Export to DVA
 
-    var A = sheet_co.getRange('B18').getValue();                  // Balanço Atual
+    var A = sheet_co.getRange('B18').getValue();                                     // Balanço Atual
       
-    var B = sheet_sr.getRange('B77').getValue();                  // Receitas
-    var C = sheet_sr.getRange('B78').getValue();                  // Insumos Adquiridos de Terceiros
-    var D = sheet_sr.getRange('D77').getValue();                  // Valor Adicionado Bruto
-    var E = sheet_sr.getRange('B79').getValue();                  // Depreciação, Amortização e Exaustão
-    var F = sheet_sr.getRange('D78').getValue();                  // Valor Adicionado Recebido em Transferência
-    var G = sheet_sr.getRange('D79').getValue();                  // Valor Adicionado Total a Distribuir
+    var B = sheet_sr.getRange('B77').getValue();                                     // Receitas
+    var C = sheet_sr.getRange('B78').getValue();                                     // Insumos Adquiridos de Terceiros
+    var D = sheet_sr.getRange('D77').getValue();                                     // Valor Adicionado Bruto
+    var E = sheet_sr.getRange('B79').getValue();                                     // Depreciação, Amortização e Exaustão
+    var F = sheet_sr.getRange('D78').getValue();                                     // Valor Adicionado Recebido em Transferência
+    var G = sheet_sr.getRange('D79').getValue();                                     // Valor Adicionado Total a Distribuir
 
     Data.push([A, B, C, D, E, F, G]);
 
@@ -426,10 +429,10 @@ function doExportExtra(SheetName)
 {
   Logger.log('EXPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                                      // Config sheet
-    var Target_Id = sheet_co.getRange(TDR).getValues();                               // TDR = Target ID Range
-  const sheet_se = getSheetnameByName('Settings');                                    // Settings sheet
-  const sheet_sr = getSheetnameByName(SheetName);                                     // Source sheet
+  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
+    var Target_Id = sheet_co.getRange(TDR).getValues();                              // TDR = Target ID Range
+  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
+  const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
   if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportExtra from sheet_sr'); return; }
 
   let ShouldExport = false; // Initialize ShouldExport as false
@@ -480,33 +483,33 @@ function doExportExtra(SheetName)
     break;
   }
 
-  var M = sheet_sr.getRange('M2').getValue();                             // Ticker
+  var M = sheet_sr.getRange('M2').getValue();                                        // Ticker
 
-  var A = sheet_sr.getRange('A2').getValue();                             // Data
-  var B = sheet_sr.getRange('B2').getValue();                             // Cotação
-  var C = sheet_sr.getRange('C2').getValue();                             // PM
-  var D = sheet_sr.getRange('D2').getValue();                             // Contratos
-  var E = sheet_sr.getRange('E2').getValue();                             // Mínimo
-  var F = sheet_sr.getRange('F2').getValue();                             // Máximo
-  var G = sheet_sr.getRange('G2').getValue();                             // Volume
-  var H = sheet_sr.getRange('H2').getValue();                             // Negócios
-  var I = sheet_sr.getRange('I2').getValue();                             // Ratio
+  var A = sheet_sr.getRange('A2').getValue();                                        // Data
+  var B = sheet_sr.getRange('B2').getValue();                                        // Cotação
+  var C = sheet_sr.getRange('C2').getValue();                                        // PM
+  var D = sheet_sr.getRange('D2').getValue();                                        // Contratos
+  var E = sheet_sr.getRange('E2').getValue();                                        // Mínimo
+  var F = sheet_sr.getRange('F2').getValue();                                        // Máximo
+  var G = sheet_sr.getRange('G2').getValue();                                        // Volume
+  var H = sheet_sr.getRange('H2').getValue();                                        // Negócios
+  var I = sheet_sr.getRange('I2').getValue();                                        // Ratio
 
-  var N = sheet_sr.getRange('N2').getValue();                             // Início
-  var O = sheet_sr.getRange('O2').getValue();                             // Fim
+  var N = sheet_sr.getRange('N2').getValue();                                        // Início
+  var O = sheet_sr.getRange('O2').getValue();                                        // Fim
 
-  var J = sheet_sr.getRange('J2').getValue();                             // Emissão
-  var K = sheet_sr.getRange('K2').getValue();                             // Preço
-  var L = sheet_sr.getRange('L2').getValue();                             // Diff
+  var J = sheet_sr.getRange('J2').getValue();                                        // Emissão
+  var K = sheet_sr.getRange('K2').getValue();                                        // Preço
+  var L = sheet_sr.getRange('L2').getValue();                                        // Diff
 
   var Range = [B, C, D, E, F, G, H, I];
 
-  var hasNonBlankCell = Range.some(cell => cell !== '' && cell !== null); // Check if at least one cell is not blank
+  var hasNonBlankCell = Range.some(cell => cell !== '' && cell !== null);            // Check if at least one cell is not blank
 
   if (hasNonBlankCell && !ErrorValues.some(error => Range.includes(error))) 
   {
     Data.push([A, B, C, D, E, F, G, H, I, N, O, J, K, L]);
-    ShouldExport = true;                                                  // Set ShouldExport to true if conditions are met
+    ShouldExport = true;                                                             // Set ShouldExport to true if conditions are met
   }
 
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
@@ -517,28 +520,28 @@ function doExportExtra(SheetName)
     {
       if (Export == "TRUE") 
       {
-        const trg = SpreadsheetApp.openById(Target_Id);   // Target spreadsheet
-        let sheet_tr;                                      // Declare sheet_tr outside the conditional scope
+        const trg = SpreadsheetApp.openById(Target_Id);                             // Target spreadsheet
+        let sheet_tr;                                                               // Declare sheet_tr outside the conditional scope
 
         if (SheetName === RIGHT_1 || SheetName === RIGHT_2 ) 
         {
-          sheet_tr = trg.getSheetByName('Right');          // Target sheet
+          sheet_tr = trg.getSheetByName('Right');
         }
         else if (SheetName === RECEIPT_9 || SheetName === RECEIPT_10 ) 
         {
-          sheet_tr = trg.getSheetByName('Receipt');        // Target sheet
+          sheet_tr = trg.getSheetByName('Receipt');
         }
         else if (SheetName === WARRANT_11 || SheetName === WARRANT_12 || SheetName === WARRANT_13) 
         {
-          sheet_tr = trg.getSheetByName('Warrant');        // Target sheet
+          sheet_tr = trg.getSheetByName('Warrant');
         }
         else if (SheetName === BLOCK) 
         {
-          sheet_tr = trg.getSheetByName('Block');        // Target sheet
+          sheet_tr = trg.getSheetByName('Block');
         }
         else
         {
-          sheet_tr = trg.getSheetByName(SheetName);        // Target sheet
+          sheet_tr = trg.getSheetByName(SheetName);
         }
 
         var LR_T = sheet_tr.getLastRow();
@@ -583,32 +586,33 @@ function doExportExtra(SheetName)
 function doExportInfo()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                                      // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                      // Config sheet
 
-  var Exported = sheet_co.getRange(EXR).getDisplayValue();    // EXR = Exported?
-  var Target_Id = sheet_co.getRange(DIR).getValues();         // DIR = DATA Source ID
+  var Exported = sheet_co.getRange(EXR).getDisplayValue();                          // EXR = Exported?
+  var Target_Id = sheet_co.getRange(DIR).getValues();                               // DIR = DATA Source ID
 
-  const sheet_in = getSheetnameByName('Info');                                      // Info sheet
+  const sheet_in = fetchSheetByName('Info');                                        // Info sheet
   var SheetName =  sheet_in.getName()
   Logger.log('Export:', SheetName);
+  if (!sheet_co || !sheet_in) return;
 
-  var A = sheet_co.getRange('B3').getValue();                 // Ticket
-  var B = sheet_in.getRange('C3').getValue();                 // Codigo CVM
-  var C = sheet_in.getRange('C4').getValue();                 // CNPJ
-  var D = sheet_in.getRange('C5').getValue();                 // Empresa
-  var E = sheet_in.getRange('C6').getValue();                 // Razão Social
-  var F = sheet_in.getRange('C13').getValue();                // Tipo de Ação
-  var G = sheet_in.getRange('C9').getValue();                 // Listagem
-  var H = sheet_in.getRange('C18').getValue();                // Setor
-  var I = sheet_in.getRange('C19').getValue();                // Subsetor
-  var J = sheet_in.getRange('C20').getValue();                // Segmento
-  var K = sheet_in.getRange('C7').getValue();                 // Situação Registro
+  var A = sheet_co.getRange('B3').getValue();                                       // Ticket
+  var B = sheet_in.getRange('C3').getValue();                                       // Codigo CVM
+  var C = sheet_in.getRange('C4').getValue();                                       // CNPJ
+  var D = sheet_in.getRange('C5').getValue();                                       // Empresa
+  var E = sheet_in.getRange('C6').getValue();                                       // Razão Social
+  var F = sheet_in.getRange('C13').getValue();                                      // Tipo de Ação
+  var G = sheet_in.getRange('C9').getValue();                                       // Listagem
+  var H = sheet_in.getRange('C18').getValue();                                      // Setor
+  var I = sheet_in.getRange('C19').getValue();                                      // Subsetor
+  var J = sheet_in.getRange('C20').getValue();                                      // Segmento
+  var K = sheet_in.getRange('C7').getValue();                                       // Situação Registro
 
   var Data = [];
   Data.push(A,B,C,D,E,F,G,H,I,J,K);
 
-  var ss_t = SpreadsheetApp.openById(Target_Id);              // Target spreadsheet
-  var sheet_tr = ss_t.getSheetByName('Relação');              // Target sheet
+  var ss_t = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  var sheet_tr = ss_t.getSheetByName('Relação');                                    // Target sheet
 
   var LR = sheet_tr.getLastRow();
   var LC = sheet_tr.getLastColumn();

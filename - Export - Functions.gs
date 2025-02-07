@@ -10,7 +10,8 @@ function getSheetID()
 function setSheetID()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
+  if (!sheet_co) return;
 
   var Target_Id = sheet_co.getRange(DIR).getValues();                              // DIR = DATA ID Range
 
@@ -25,8 +26,8 @@ function setSheetID()
 //  const [sheet_co, sheet_tr] = ["Config", "Relação"].map(s => ss.getSheetByName(s));
 //  const [b3, d10] = ["B3", "D10"].map(r => sheet_co.getRange(r).getValue());
 
-  var dst = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
-  var sheet_tr = dst.getSheetByName('Relação');                                    // Target sheet
+  var trg = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  var sheet_tr = trg.getSheetByName('Relação');                                    // Target sheet
 
   var bgcolor = sheet_co.getRange(IDR).getBackground();
   var colour = '#d9ead3';
@@ -35,7 +36,7 @@ function setSheetID()
   if (!search) return;
   if( bgcolor == colour)
   {
-    if ( EXP == "TRUE" && SHI != "TRUE")                                          //Check conditions to export Sheet ID
+    if ( EXP == "TRUE" && SHI != "TRUE")                                           //Check conditions to export Sheet ID
     {
       search.offset(0, 11).setValue(Sheet_Id);
       search.offset(0, 12).setValue(SNAME(3));
@@ -48,12 +49,10 @@ function setSheetID()
 function doIsIdExported()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
+  if (!sheet_co) return;
 
-  var LR = sheet_co.getLastRow();
-  var LC = sheet_co.getLastColumn();
-
-  var IEP = sheet_co.getRange(IER).getDisplayValue();                                    // EXR = Export Range
+  var IEP = sheet_co.getRange(IER).getDisplayValue();                              // EXR = Export Range
 
   if( IEP === "FALSE" )
   {
@@ -64,14 +63,15 @@ function doIsIdExported()
 function doClearSheetID()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
+  if (!sheet_co) return;
 
-  var Target_Id = sheet_co.getRange(DIR).getValues(); // DIR = DATA ID Range
+  var Target_Id = sheet_co.getRange(DIR).getValues();                              // DIR = DATA ID Range
 
-  var TKT = sheet_co.getRange(TKR).getDisplayValue(); // TKR = Ticket Range
+  var TKT = sheet_co.getRange(TKR).getDisplayValue();                              // TKR = Ticket Range
 
-  var dst = SpreadsheetApp.openById(Target_Id);   // Target spreadsheet
-  var sheet_tr = dst.getSheetByName('Relação');  // Target sheet
+  var dst = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  var sheet_tr = dst.getSheetByName('Relação');                                    // Target sheet
 
   const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
   if (!search) return;
@@ -87,19 +87,17 @@ function doClearSheetID()
 function doIsFormula()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
+  if (!sheet_co) return;
 
-  var LR = sheet_co.getLastRow();
-  var LC = sheet_co.getLastColumn();
-
-  var Formula = sheet_co.getRange(FOR).getDisplayValue();                // FOR = Formula Range
-  var Sheet_ID = sheet_co.getRange(ICR).getDisplayValue();               // ICR = Sheet ID Check Range
+  var Formula = sheet_co.getRange(FOR).getDisplayValue();                          // FOR = Formula Range
+  var Sheet_ID = sheet_co.getRange(ICR).getDisplayValue();                         // ICR = Sheet ID Check Range
 
   if( Formula == "TRUE" ) //Check if formula true to export info
   {
     doIsExportable()
   }
-  else if ( Formula == "FALSE" && Sheet_ID != "TRUE" )                  //Check if formula true to export info
+  else if ( Formula == "FALSE" && Sheet_ID != "TRUE" )                             //Check if formula true to export info
   {
     setSheetID()
   }
@@ -108,10 +106,11 @@ function doIsFormula()
 function doIsExportable()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                    // Config sheet
+  if (!sheet_co) return;
 
-  var EPD = sheet_co.getRange(EPR).getDisplayValue();                    // EPR = Exportable? Check Range
-  var EXP = sheet_co.getRange(EXR).getDisplayValue();                    // EXR = Export Range
+  var EPD = sheet_co.getRange(EPR).getDisplayValue();                             // EPR = Exportable? Check Range
+  var EXP = sheet_co.getRange(EXR).getDisplayValue();                             // EXR = Export Range
 
   if( EPD === "TRUE" )
   {
@@ -122,22 +121,20 @@ function doIsExportable()
 function doIsInfoExported()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
+  if (!sheet_co) return;
 
-  var LR = sheet_co.getLastRow();
-  var LC = sheet_co.getLastColumn();
-
-  var EXP = sheet_co.getRange(EXR).getDisplayValue(); // EXR = Export Range
+  var EXP = sheet_co.getRange(EXR).getDisplayValue();                            // EXR = Export Range
 
   if( EXP === "TRUE" )
   {
     const sheet_in = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Info');
 
-    const Data = sheet_in.getRange(TIR).getValues();                                // TIR = Tab Info Range
-    sheet_in.getRange(TIR).setValues(Data);                                         // Copy Paste Info   
+    const Data = sheet_in.getRange(TIR).getValues();                             // TIR = Tab Info Range
+    sheet_in.getRange(TIR).setValues(Data);                                      // Copy Paste Info   
 
-    const Data_2 = sheet_co.getRange(EXR).getValues();                                   // TIR = Tab Info Range
-    sheet_co.getRange(EXR).setValues(Data_2);                                            // Set Formula to TRUE // EXP === "TRUE"
+    const Data_2 = sheet_co.getRange(EXR).getValues();                           // TIR = Tab Info Range
+    sheet_co.getRange(EXR).setValues(Data_2);                                    // Set Formula to TRUE // EXP === "TRUE"
 
     setSheetID()
   }
@@ -162,13 +159,14 @@ function clearExportALL()
 function clearExport(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
+  if (!sheet_co) return;
 
-  var TKT = sheet_co.getRange(TKR).getDisplayValue();          // TKR = Ticket Range
-  var Target_Id = sheet_co.getRange(TDR).getValues();          // TDR = Target ID Range
+  var TKT = sheet_co.getRange(TKR).getDisplayValue();                            // TKR = Ticket Range
+  var Target_Id = sheet_co.getRange(TDR).getValues();                            // TDR = Target ID Range
 
-  const trg = SpreadsheetApp.openById(Target_Id);             // Target spreadsheet
-  const sheet_tr = trg.getSheetByName(SheetName);              // Target sheet
+  const trg = SpreadsheetApp.openById(Target_Id);                                // Target spreadsheet
+  const sheet_tr = trg.getSheetByName(SheetName);                                // Target sheet
 
   let success = false; // Initialize success flag to false
 

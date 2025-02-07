@@ -1,7 +1,7 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
 
-function getSheetnameByName(SheetName) 
+function fetchSheetByName(SheetName) 
 {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
   if (!sheet) {
@@ -15,17 +15,11 @@ function getConfigValue(Acronym)
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // Get the Settings sheet
   const sheet_se = ss.getSheetByName('Settings');
-  if (!sheet_se) {
-    Logger.log('Settings sheet not found');
-    return null;
-  }
-
-  // Get the Config sheet
   const sheet_co = ss.getSheetByName('Config');
-  if (!sheet_co) {
-    Logger.log('Config sheet not found');
+  if (!sheet_se || !sheet_co) 
+  {
+    Logger.log('Settings or Config sheet not found');
     return null;
   }
 

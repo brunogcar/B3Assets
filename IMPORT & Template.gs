@@ -9,22 +9,13 @@ function Import()
   const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
   const sheet_sr = SpreadsheetApp.openById(Source_Id);                           // Open source spreadsheet by ID
 
-
-  // Helper function to check if a sheet exists in the source spreadsheet
-  function sheetExists(SheetName) 
-  {
-    const exists = sheet_sr.getSheetByName(SheetName) !== null;
-    Logger.log(`Sheet "${SheetName}" exists: ${exists}`); // Log the result
-    return exists;
-  }
-
   if (Option === "AUTO") 
   {
     // Check for specific sheets
-    const hasSwing4 = sheetExists(SWING_4);
-    const hasSwing12 = sheetExists(SWING_12);
-    const hasSwing52 = sheetExists(SWING_52);
-    const hasTrade = sheetExists('Trade');
+    const hasSwing4 = fetchSheetByName(SWING_4) !== null;
+    const hasSwing12 = fetchSheetByName(SWING_12) !== null;
+    const hasSwing52 = fetchSheetByName(SWING_52) !== null;
+    const hasTrade = fetchSheetByName('Trade') !== null;
 
     if (hasSwing4 && hasSwing12 && hasSwing52) 
     {
@@ -274,13 +265,13 @@ function doImportSheet(SheetName)
 {
   Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                                    // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                    // Config sheet
     var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
-  const sheet_se = getSheetnameByName('Settings');                                  // Settings sheet
+  const sheet_se = fetchSheetByName('Settings');                                  // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
   if (!sheet_sr) { Logger.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
-  const sheet_tr = getSheetnameByName(SheetName);                                   // Target Sheet
+  const sheet_tr = fetchSheetByName(SheetName);                                   // Target Sheet
   if (!sheet_tr) { Logger.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;
@@ -418,15 +409,15 @@ function doImportData(SheetName)
 {
   Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet_co = getSheetnameByName('Config');                                         // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                         // Config sheet
     var Source_Id = sheet_co.getRange(SIR).getValues();                                  // SIR = Source ID Range
-  const sheet_se = getSheetnameByName('Settings');                                       // Settings sheet
+  const sheet_se = fetchSheetByName('Settings');                                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);         // Source Sheet
   if (!sheet_sr) { Logger.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportData from', Source_Id); return; }
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
-  const sheet_tr = getSheetnameByName(SheetName);                                        // Target Sheet
+  const sheet_tr = fetchSheetByName(SheetName);                                        // Target Sheet
   if (!sheet_tr) { Logger.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
 
   let Import;

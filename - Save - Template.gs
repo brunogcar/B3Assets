@@ -4,11 +4,11 @@ function doSaveSheet(SheetName)
 {
   Logger.log('SAVE:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_sr = getSheetnameByName(SheetName);                        // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);                        // Source sheet
   if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveSheet from sheet_sr'); return; }
 
-  const sheet_co = getSheetnameByName('Config');                         // Config sheet
-  const sheet_se = getSheetnameByName('Settings');                       // Settings sheet
+  const sheet_co = fetchSheetByName('Config');                         // Config sheet
+  const sheet_se = fetchSheetByName('Settings');                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
   Utilities.sleep(2500); // 2,5 secs
@@ -257,9 +257,9 @@ function doSaveData(SheetName)
 {
   Logger.log('SAVE:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = getSheetnameByName('Config');                         // Config sheet
-  const sheet_se = getSheetnameByName('Settings');
-  const sheet_up = getSheetnameByName('UPDATE');
+  const sheet_co = fetchSheetByName('Config');                         // Config sheet
+  const sheet_se = fetchSheetByName('Settings');
+  const sheet_up = fetchSheetByName('UPDATE');
   if (!sheet_co || !sheet_se || !sheet_up) return;
 
   let Save;
@@ -272,7 +272,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SBL)                                                     // SBL = Save to BLC
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
-    const sheet_tr = getSheetnameByName(BLC);
+    const sheet_tr = fetchSheetByName(BLC);
     if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
@@ -281,7 +281,7 @@ function doSaveData(SheetName)
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
-    const sheet_sr = getSheetnameByName(Balanco);
+    const sheet_sr = fetchSheetByName(Balanco);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
@@ -324,7 +324,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SBL)                                                     // SBL = Save to BLC
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
-    const sheet_sr = getSheetnameByName(Balanco);
+    const sheet_sr = fetchSheetByName(Balanco);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
@@ -354,7 +354,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SDE)                                                     // SDE = Save to DRE
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
-    const sheet_tr = getSheetnameByName(DRE);
+    const sheet_tr = fetchSheetByName(DRE);
     if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
@@ -363,7 +363,7 @@ function doSaveData(SheetName)
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
-    const sheet_sr = getSheetnameByName(Resultado);
+    const sheet_sr = fetchSheetByName(Resultado);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
@@ -405,7 +405,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SDE)                                                     // SDE = Save to DRE
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
-    const sheet_sr = getSheetnameByName(Resultado);
+    const sheet_sr = fetchSheetByName(Resultado);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
@@ -443,7 +443,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SFL)                                                     // SFL = Save to FLC
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
-    const sheet_tr = getSheetnameByName(FLC);
+    const sheet_tr = fetchSheetByName(FLC);
     if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
@@ -452,7 +452,7 @@ function doSaveData(SheetName)
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
-    const sheet_sr = getSheetnameByName(Fluxo);
+    const sheet_sr = fetchSheetByName(Fluxo);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
@@ -493,7 +493,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SFL)                                                     // SFL = Save to FLC
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
-    const sheet_sr = getSheetnameByName(Fluxo);
+    const sheet_sr = fetchSheetByName(Fluxo);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
@@ -523,7 +523,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SDV)                                                     // SDV = Save to DVA
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
-    const sheet_tr = getSheetnameByName(DVA);
+    const sheet_tr = fetchSheetByName(DVA);
     if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
@@ -532,7 +532,7 @@ function doSaveData(SheetName)
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
-    const sheet_sr = getSheetnameByName(Valor);
+    const sheet_sr = fetchSheetByName(Valor);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
@@ -573,7 +573,7 @@ function doSaveData(SheetName)
     Save = getConfigValue(SDV)                                                     // SDV = Save to DVA
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
-    const sheet_sr = getSheetnameByName(Valor);
+    const sheet_sr = fetchSheetByName(Valor);
     if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
