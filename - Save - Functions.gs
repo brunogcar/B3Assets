@@ -85,7 +85,7 @@ function doCheckDATA(SheetName)
 
     if (Class == 'STOCK') 
     {
-      Check = sheet_d.getRange('B15').getValue();
+      Check = sheet_d.getRange('B16').getValue();
     }
     else
     {
@@ -108,7 +108,7 @@ function doCheckDATA(SheetName)
 
   if (SheetName === TERMO)
   {
-    Check = sheet_d.getRange('B23').getValue();
+    Check = sheet_d.getRange('B24').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
@@ -117,7 +117,7 @@ function doCheckDATA(SheetName)
 
   if (SheetName === FUTURE) 
   {
-    let Checks = ['B31', 'B32', 'B33'];
+    let Checks = ['B32', 'B33', 'B34'];
 
     for (let i = 0; i < Checks.length; i++) 
     {
@@ -131,21 +131,21 @@ function doCheckDATA(SheetName)
 
   if (SheetName === FUTURE_1)
   {
-    Check = sheet_d.getRange('B31').getValue();
+    Check = sheet_d.getRange('B32').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === FUTURE_2)
   {
-    Check = sheet_d.getRange('B32').getValue();
+    Check = sheet_d.getRange('B33').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === FUTURE_3)
   {
-    Check = sheet_d.getRange('B33').getValue();
+    Check = sheet_d.getRange('B34').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
@@ -154,14 +154,14 @@ function doCheckDATA(SheetName)
 
   if (SheetName === RIGHT_1)
   {
-    Check = sheet_d.getRange('C37').getValue();
+    Check = sheet_d.getRange('C38').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === RIGHT_2)
   {
-    Check = sheet_d.getRange('C38').getValue();
+    Check = sheet_d.getRange('C39').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
@@ -170,14 +170,14 @@ function doCheckDATA(SheetName)
 
   if (SheetName === RECEIPT_9)
   {
-    Check = sheet_d.getRange('C42').getValue();
+    Check = sheet_d.getRange('C44').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === RECEIPT_10)
   {
-    Check = sheet_d.getRange('C43').getValue();
+    Check = sheet_d.getRange('C45').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
@@ -186,21 +186,21 @@ function doCheckDATA(SheetName)
 
   if (SheetName === WARRANT_11)
   {
-    Check = sheet_d.getRange('C47').getValue();
+    Check = sheet_d.getRange('C50').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === WARRANT_12)
   {
-    Check = sheet_d.getRange('C48').getValue();
+    Check = sheet_d.getRange('C51').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
 
   if (SheetName === WARRANT_13)
   {
-    Check = sheet_d.getRange('C49').getValue();
+    Check = sheet_d.getRange('C52').getValue();
 
     return processCheckDATA(sheet_s, SheetName, Check);
   }
@@ -209,7 +209,7 @@ function doCheckDATA(SheetName)
 
   if (SheetName === BLOCK) 
   {
-    let Checks = ['C53', 'C54', 'C55'];
+    let Checks = ['C56', 'C57', 'C58'];
 
     for (let i = 0; i < Checks.length; i++) 
     {
@@ -331,7 +331,7 @@ function doTrimSheet(SheetName)
     if (LR > 126) 
     {
       sheet_s.getRange(127, 1, LR - 126, LC).clearContent();
-      Logger.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
       Logger.log(`Cleared data below row 126 in ${SheetName}.`);
     }
   } 
@@ -340,7 +340,7 @@ function doTrimSheet(SheetName)
     if (LR > 366) 
     {
       sheet_s.getRange(367, 1, LR - 366, LC).clearContent();
-      Logger.log(`SUCESS TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
       Logger.log(`Cleared data below row 366 in ${SheetName}.`);
     }
   } 
