@@ -880,34 +880,37 @@ function doSaveShares()
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = ss.getSheetByName('DATA');
 
-  var SheetName = sheet_sr.getName();
-
-  var M1 = sheet_sr.getRange('M1').getValue();
-  var M2 = sheet_sr.getRange('M2').getValue();
-
-  Logger.log('SAVE: Shares and FF');
-
-  // Validate if M1 and M2 are numeric or can be converted to numbers
-  if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) 
+  // Add null check for DATA sheet
+  if (!sheet_sr) 
   {
-    M1 = Number(M1); // Convert to number if not already
-    M2 = Number(M2);
+    Logger.log('ERROR: DATA sheet not found. Skipping shares save.');
+    return; // Exit early
+  }
 
-    if (M1 !== 0 && M2 !== 0) 
+  try 
+  {
+    var M1 = sheet_sr.getRange('M1').getValue();
+    var M2 = sheet_sr.getRange('M2').getValue();
+
+    Logger.log('SAVE: Shares and FF');
+
+    if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) 
     {
+      M1 = Number(M1); // Convert to number if not already
+      M2 = Number(M2);
+
       var Data = sheet_sr.getRange("M1:M2").getValues();
       sheet_sr.getRange("L1:L2").setValues(Data);
-
       Logger.log(`SUCCESS SAVE: Shares and FF`);
-    }
-    else
+    } 
+    else 
     {
-       Logger.log('ERROR SAVE:', SheetName, 'M1 or M2 is 0');
+      Logger.log('ERROR SAVE: Invalid values in M1/M2');
     }
-  }
-  else
+  } 
+  catch (error) 
   {
-    Logger.log('ERROR SAVE:', SheetName, 'Invalid values in M1 or M2');
+    Logger.log('ERROR in doSaveShares:', error.message);
   }
 }
 
