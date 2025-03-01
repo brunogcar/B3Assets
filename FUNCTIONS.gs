@@ -17,19 +17,23 @@ function getConfigValue(Acronym)
 
   const sheet_se = ss.getSheetByName('Settings');
   const sheet_co = ss.getSheetByName('Config');
-  if (!sheet_se || !sheet_co) 
-  {
+  
+  if (!sheet_se || !sheet_co) {
     Logger.log('Settings or Config sheet not found');
     return null;
   }
 
-  // Get the value from Settings
-  const Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
+  // Get value from Settings
+  let Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
 
-  // Use ternary operator to handle fallback logic
-  return (Value === "DEFAULT") 
-    ? sheet_co.getRange(Acronym).getDisplayValue().trim()                    // Use Config value if Settings has "DEFAULT"
-    : Value; // Otherwise, use the value from Settings
+  // Fallback to Config if value is DEFAULT or in ErrorValues
+  if (Value === "DEFAULT" || ErrorValues.includes(Value)) 
+  {
+    Value = sheet_co.getRange(Acronym).getDisplayValue().trim();
+    // Verify Config value isn't also invalid
+    return ErrorValues.includes(Value) ? null : Value;
+  }
+  return Value;
 }
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
