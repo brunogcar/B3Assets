@@ -118,15 +118,18 @@ function copypasteSheets()
   });
 }
 
-function doDeleteSheets() 
-{
+function doDeleteSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = new Set(['Balanço Ativo', 'Balanço Passivo', 'Demonstração', 'Fluxo de Caixa', 'Demonstração do Valor Adicionado']);
-  
+
   ss.getSheets().forEach(sheet => {
-    if (SheetNames.has(sheet.getName())) 
-    {
-      ss.deleteSheet(sheet);
+    if (SheetNames.has(sheet.getName())) {
+      try {
+        ss.deleteSheet(sheet);
+        Logger.log(`Sheet deleted: ${sheet.getName()}`); // Log the name of the deleted sheet
+      } catch (error) {
+        Logger.log(`Error deleting sheet "${sheet.getName()}": ${error}`); // Log errors if deletion fails
+      }
     }
   });
 }
@@ -195,47 +198,26 @@ function doDeleteSpreadsheet()
 
 /////////////////////////////////////////////////////////////////////Name/////////////////////////////////////////////////////////////////////
 
-function SNAME(option) 
-{
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getActiveSheet()
-  var thisSheet = sheet.getName(); 
+function SNAME(option) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getActiveSheet();
+  const thisSheet = sheet.getName();
 
-  if(option === 0)                               // ACTIVE SHEET NAME =SNAME(0)
-  {
-    return thisSheet;
+  switch (option) {
+    case 0:                                                   // Active sheet name
+      return thisSheet;
+    case 1:                                                   // All sheet names
+      return ss.getSheets().map(sheet => sheet.getName());
+    case 2:                                                   // Spreadsheet name
+      return ss.getName();
+    case 3:                                                   // Spreadsheet version
+      const regex = /-(.*)/;
+      const matches = regex.exec(ss.getName());
+      return matches ? matches[1].trim() : "No match found";
+    default:
+      return "#N/A";
   }
-  else if(option === 1)                          // ALL SHEET NAMES =SNAME(1)
-  {
-    var sheetList = [];
-    ss.getSheets().forEach(function(val){
-       sheetList.push(val.getName())
-    });
-    return sheetList;
-  }
-  else if(option === 2)                         // SPREADSHEET NAME =SNAME(2)
-  {
-    return ss.getName(); 
-  }
-  else if(option === 3)                         // SPREADSHEET VERSION  =SNAME(3)
-  {
-    var SheetName = ss.getName();
-    var regex = /-(.*)/;
-    var matches = regex.exec(SheetName);
-      if (matches) 
-      {
-        return matches[1].trim();
-      }
-      else 
-      {
-        return "No match found";
-      }
-  }
-  else
-  {
-    return "#N/A";
-  }
-};
+}
 
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
