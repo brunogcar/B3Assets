@@ -9,58 +9,73 @@ function doExportAll()
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-function doExportSheets() 
-{
+function doExportSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
-  
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
+  const totalSheets = SheetNames.length;
+  let exportedCount = 0;
+
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    exportedCount++;
+    const progress = Math.round((exportedCount / totalSheets) * 100);
+    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+
+    try {
       doExportSheet(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+    } catch (error) {
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
+
+  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
 }
 
-function doExportDatas() 
-{
+function doExportDatas() {
   const SheetNames = [BLC, DRE, FLC, DVA];
+  const totalSheets = SheetNames.length;
+  let exportedCount = 0;
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    exportedCount++;
+    const progress = Math.round((exportedCount / totalSheets) * 100);
+    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+
+    try {
       doExportData(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+    } catch (error) {
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
+
+  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
 }
 
-function doExportExtras() 
-{
+function doExportExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const totalSheets = SheetNames.length;
+  let exportedCount = 0;
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    exportedCount++;
+    const progress = Math.round((exportedCount / totalSheets) * 100);
+    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+
+    try {
       doExportExtra(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error exporting sheet ${SheetName}:`, error);
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+    } catch (error) {
+      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
+
+  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
@@ -80,7 +95,7 @@ function doExportSheet(SheetName)
   if (!sheet_co || !sheet_se) return;
 
   const sheet_sr = fetchSheetByName(SheetName);                                       // Source sheet
-  if (!sheet_sr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log('ERROR EXPORT: Source sheet', SheetName, 'Source sheet does not exist on doExportSheet from sheet_sr'); return; }
     var A2 = sheet_sr.getRange('A2').getValue();
     var A5 = sheet_sr.getRange('A5').getValue();
     var LR_S = sheet_sr.getLastRow();
@@ -88,7 +103,7 @@ function doExportSheet(SheetName)
 
   const trg = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = trg.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) { Logger.log('ERROR EXPORT:', SheetName, 'Does not exist on doExportSheet from sheet_tr'); return; }
+  if (!sheet_tr) { Logger.log('ERROR EXPORT: Target sheet', SheetName, 'Target sheet does not exist on doExportSheet from sheet_tr'); return; }
     var LR_T = sheet_tr.getLastRow();
     var LC_T = sheet_tr.getLastColumn();
 
