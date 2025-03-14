@@ -3,66 +3,76 @@
 function doEditAll()
 {
   doEditDatas();
-
   doEditSheets();
-
   doIsFormula();
 };
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-function doEditSheets() 
-{
+function doEditSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
-  
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doEditSheet(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error editing sheet ${SheetName}:`, error);
+  const totalSheets = SheetNames.length;
+  let Count = 0;
+
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+
+    try {
+      doEditSheet(SheetName);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+    } catch (error) {
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets edited successfully`);
 }
 
-function doEditExtras() 
-{
+function doEditExtras() {
   const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
-  
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doEditSheet(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error editing sheet ${SheetName}:`, error);
+  const totalSheets = SheetNames.length;
+  let Count = 0;
+
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+
+    try {
+      doEditSheet(SheetName);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+    } catch (error) {
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
-function doEditDatas() 
-{
+function doEditDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
-  
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doEditData(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error editing sheet ${SheetName}:`, error);
+  const totalSheets = SheetNames.length;
+  let Count = 0;
+
+  Logger.log(`Starting export of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+
+    try {
+      doEditData(SheetName);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+    } catch (error) {
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////

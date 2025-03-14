@@ -62,11 +62,9 @@ function import_Current()
   import_config();
 
   doImportProventos();
-
   doImportShares();
 
   doImportSheets();
-
   doImportDatas();
 
   doCheckTriggers();
@@ -106,47 +104,45 @@ function doImportSheets() {
   ];
 
   const totalSheets = SheetNames.length;
-  let importedCount = 0;
+  let Count = 0;
 
   Logger.log(`Starting import of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
-    importedCount++;
-    const progress = Math.round((importedCount / totalSheets) * 100); // Calculate percentage
-    Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100); // Calculate percentage
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
       doImportSheet(SheetName);
-      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
-      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   });
-
-  Logger.log(`Import completed: ${importedCount} of ${totalSheets} sheets imported successfully`);
+  Logger.log(`Import completed: ${Count} of ${totalSheets} sheets imported successfully`);
 }
 
 function doImportDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
   const totalSheets = SheetNames.length;
-  let importedCount = 0;
+  let Count = 0;
 
   Logger.log(`Starting import of ${totalSheets} data sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
-    importedCount++;
-    const progress = Math.round((importedCount / totalSheets) * 100); // Calculate percentage
-    Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100); // Calculate percentage
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
       doImportData(SheetName);
-      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
-      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   });
-
-  Logger.log(`Import completed: ${importedCount} of ${totalSheets} data sheets imported successfully`);
+  Logger.log(`Import completed: ${Count} of ${totalSheets} data sheets imported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
@@ -248,16 +244,15 @@ function doImportSheet(SheetName)
 {
   Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = fetchSheetByName('Config');                                    // Config sheet
-  if (!sheet_co) {Logger.log(`ERROR: Config sheet not found`); return;}
-    var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
+  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
+    var Source_Id = sheet_co.getRange(SIR).getValues();                               // SIR = Source ID
     if (!Source_Id) { Logger.log(`ERROR: Source ID not found in Config sheet`); return;}
-  const sheet_se = fetchSheetByName('Settings');                                  // Settings sheet
+  const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
   if (!sheet_co || !sheet_se) return;
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
-  if (!sheet_sr) { Logger.log('ERROR IMPORT:', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
-  const sheet_tr = fetchSheetByName(SheetName);                                   // Target Sheet
-  if (!sheet_tr) { Logger.log('WARNING: Target sheet', SheetName, 'does not exist on doImportSheet. Skipping.'); return; }
+  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);      // Source Sheet
+  if (!sheet_sr) { Logger.log('ERROR IMPORT: Source sheet', SheetName, 'Does not exist on doImportSheet from', Source_Id); return; }
+  const sheet_tr = fetchSheetByName(SheetName);                                       // Target Sheet
+  if (!sheet_tr) { Logger.log('ERROR IMPORT: Target sheet', SheetName, 'does not exist on doImportSheet.'); return; }
 
   let Import;
 

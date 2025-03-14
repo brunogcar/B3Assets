@@ -12,70 +12,67 @@ function doExportAll()
 function doExportSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
   const totalSheets = SheetNames.length;
-  let exportedCount = 0;
+  let Count = 0;
 
   Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
-    exportedCount++;
-    const progress = Math.round((exportedCount / totalSheets) * 100);
-    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportSheet(SheetName);
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-
-  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
 function doExportDatas() {
   const SheetNames = [BLC, DRE, FLC, DVA];
   const totalSheets = SheetNames.length;
-  let exportedCount = 0;
+  let Count = 0;
 
   Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
-    exportedCount++;
-    const progress = Math.round((exportedCount / totalSheets) * 100);
-    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportData(SheetName);
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-
-  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
 function doExportExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
   const totalSheets = SheetNames.length;
-  let exportedCount = 0;
+  let Count = 0;
 
   Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
-    exportedCount++;
-    const progress = Math.round((exportedCount / totalSheets) * 100);
-    Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportExtra(SheetName);
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${exportedCount}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-
-  Logger.log(`Export completed: ${exportedCount} of ${totalSheets} sheets exported successfully`);
+  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
