@@ -65,36 +65,9 @@ function import_Current()
 
   doImportShares();
 
-  doImportData(BLC);
-  doImportData(Balanco);
-  doImportData(DRE);
-  doImportData(Resultado);
-  doImportData(FLC);
-  doImportData(Fluxo);
-  doImportData(DVA);
-  doImportData(Valor);
+  doImportSheets();
 
-  doImportSheet(SWING_4);
-  doImportSheet(SWING_12);
-  doImportSheet(SWING_52);
-  doImportSheet(OPCOES);
-  doImportSheet(BTC);
-  doImportSheet(TERMO);
-  doImportSheet(FUND);
-
-  doImportSheet(FUTURE);
-  doImportSheet(FUTURE_1);
-  doImportSheet(FUTURE_2);
-  doImportSheet(FUTURE_3);
-
-  doImportSheet(RIGHT_1);
-  doImportSheet(RIGHT_2);
-  doImportSheet(RECEIPT_9);
-  doImportSheet(RECEIPT_10);
-  doImportSheet(WARRANT_11);
-  doImportSheet(WARRANT_12);
-  doImportSheet(WARRANT_13);
-  doImportSheet(BLOCK);
+  doImportDatas();
 
   doCheckTriggers();
   update_form();
@@ -122,8 +95,7 @@ function doImportProventos()
   });
 }
 
-function doImportSheets() 
-{
+function doImportSheets() {
   const SheetNames = [
     SWING_4, SWING_52, OPCOES, BTC, TERMO, FUND, 
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, 
@@ -133,37 +105,48 @@ function doImportSheets()
     BLOCK
   ];
 
-  SheetNames.forEach(SheetName =>
-  {
-    try
-    {
+  const totalSheets = SheetNames.length;
+  let importedCount = 0;
+
+  Logger.log(`Starting import of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    importedCount++;
+    const progress = Math.round((importedCount / totalSheets) * 100); // Calculate percentage
+    Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+
+    try {
       doImportSheet(SheetName);
-    }
-    catch (error)
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error importing sheet ${SheetName}:`, error);
+      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+    } catch (error) {
+      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   });
+
+  Logger.log(`Import completed: ${importedCount} of ${totalSheets} sheets imported successfully`);
 }
 
-
-function doImportDatas() 
-{
+function doImportDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
+  const totalSheets = SheetNames.length;
+  let importedCount = 0;
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
+  Logger.log(`Starting import of ${totalSheets} data sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    importedCount++;
+    const progress = Math.round((importedCount / totalSheets) * 100); // Calculate percentage
+    Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+
+    try {
       doImportData(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error importing sheet ${SheetName}:`, error);
+      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+    } catch (error) {
+      Logger.log(`[${importedCount}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   });
+
+  Logger.log(`Import completed: ${importedCount} of ${totalSheets} data sheets imported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
@@ -266,7 +249,9 @@ function doImportSheet(SheetName)
   Logger.log('IMPORT:', SheetName);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                    // Config sheet
+  if (!sheet_co) {Logger.log(`ERROR: Config sheet not found`); return;}
     var Source_Id = sheet_co.getRange(SIR).getValues();                             // SIR = Source ID
+    if (!Source_Id) { Logger.log(`ERROR: Source ID not found in Config sheet`); return;}
   const sheet_se = fetchSheetByName('Settings');                                  // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);    // Source Sheet
