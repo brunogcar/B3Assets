@@ -11,14 +11,15 @@ function fetchSheetByName(SheetName)
   return sheet;
 }
 
-function getConfigValue(Acronym) 
+function getConfigValue(Acronym)
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   const sheet_se = ss.getSheetByName('Settings');
   const sheet_co = ss.getSheetByName('Config');
   
-  if (!sheet_se || !sheet_co) {
+  if (!sheet_se || !sheet_co)
+  {
     Logger.log('Settings or Config sheet not found');
     return null;
   }

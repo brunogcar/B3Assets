@@ -406,12 +406,12 @@ function doExportData(SheetName)
     if (Search)
     {
       Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
-      Logger.log(`SUCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+      Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
     }
     else
     {
       var NewRow = sheet_tr.getRange(LR_T+1,1,1,1).setValue([TKT]);
-      Logger.log(`SUCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
+      Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
       NewRow.offset(0, 1, 1 , Data[0].length).setValues(Data);
       Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
@@ -552,7 +552,7 @@ function doExportExtra(SheetName)
         if (Search)
         {
           Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
-          Logger.log(`SUCESS EXPORT. Data for ${M} . Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EXPORT. Data for ${M} . Sheet: ${SheetName}.`);
         }
         else
         {
@@ -625,7 +625,7 @@ function doExportInfo()
 
     setSheetID()
 
-    Logger.log(`SUCESS EXPORT. Sheet: ${SheetName}.`);
+    Logger.log(`SUCCESS EXPORT. Sheet: ${SheetName}.`);
   }
 };
 

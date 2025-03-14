@@ -228,7 +228,7 @@ function doImportShares()
   {
     Logger.log('ERROR IMPORT:', SheetName, 'ErrorValues on L1 or L2 on doImportShares');
   }
-Logger.log(`SUCESS IMPORT: Shares and FF`);
+Logger.log(`SUCCESS IMPORT: Shares and FF`);
 }
 
 /////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
@@ -390,7 +390,7 @@ function doImportSheet(SheetName)
       var Data_1 = sheet_sr.getRange(1,1,1,LC).getValues();
         sheet_tr.getRange(1,1,1,LC).setValues(Data_1);
 
-        Logger.log(`SUCESS IMPORT. Sheet:  ${SheetName}.`);
+        Logger.log(`SUCCESS IMPORT. Sheet:  ${SheetName}.`);
     }
     else
     {
@@ -629,7 +629,7 @@ function doImportData(SheetName)
       Logger.log('ERROR IMPORT:', SheetName, 'IMPORT on config is set to FALSE');
     }
   }
-  Logger.log(`SUCESS IMPORT for sheet ${SheetName}.`);
+  Logger.log(`SUCCESS IMPORT for sheet ${SheetName}.`);
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT TEMPLATE/////////////////////////////////////////////////////////////////////

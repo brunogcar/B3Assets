@@ -113,7 +113,7 @@ function doCreateTriggers()
     }
     else if (Class == 'ADR') 
     {
-      ScriptApp.newTrigger("menuSaveSwing_12")                                   // Change to not stock settings, to not export, etc
+      ScriptApp.newTrigger("doSaveSWING")                                   // Change to not stock settings, to not export, etc
        .timeBased()
        .atHour(20)
        .everyDays(1)

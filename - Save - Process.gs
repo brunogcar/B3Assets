@@ -40,7 +40,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportSheet(SheetName);
         }
@@ -53,7 +53,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportSheet(SheetName);
         }
@@ -133,7 +133,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportExtra(SheetName);
         }
@@ -146,7 +146,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
           sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportExtra(SheetName);
         }
@@ -209,7 +209,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1, 2, LR, 1).getValues();
           sheet_tr.getRange(1, 2, LR, 1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
           doExportData(SheetName);
         }
@@ -221,7 +221,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1, 2, LR, 1).getValues();
           sheet_tr.getRange(1, 2, LR, 1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
         doExportData(SheetName);
         }
@@ -268,7 +268,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,2,LR,1).getValues();
           sheet_sr.getRange(1,3,LR,1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
         }
         else
         {
@@ -278,7 +278,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,2,LR,1).getValues();
           sheet_sr.getRange(1,3,LR,1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
         }
       }
       else
@@ -324,7 +324,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,3,LR,1).getValues();
           sheet_sr.getRange(1,4,LR,1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
         }
         else
         {
@@ -334,7 +334,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
           Data = sheet_sr.getRange(1,3,LR,1).getValues();
           sheet_sr.getRange(1,4,LR,1).setValues(Data);
 
-          Logger.log(`SUCESS SAVE. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
         }
       }
       else
