@@ -93,6 +93,8 @@ function doImportProventos()
   });
 }
 
+/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+
 function doImportSheets() {
   const SheetNames = [
     SWING_4, SWING_52, OPCOES, BTC, TERMO, FUND, 
@@ -122,6 +124,8 @@ function doImportSheets() {
   });
   Logger.log(`Import completed: ${Count} of ${totalSheets} sheets imported successfully`);
 }
+
+/////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
 
 function doImportDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];

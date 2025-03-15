@@ -310,40 +310,50 @@ function doSaveAllDatas()
 
 /////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
 
-function doSaveSheets()
-{
+function doSaveSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
+  const totalSheets = SheetNames.length;
+  let Count = 0;
 
-  SheetNames.forEach(SheetName =>
-  {
-    try
-    {
+  Logger.log(`Starting save of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+
+    try {
       doSaveSheet(SheetName);
-    }
-    catch (error)
-    {
-      Logger.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+    } catch (error) {
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
     }
   });
+  Logger.log(`Save completed: ${Count} of ${totalSheets} sheets saved successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
-function doSaveExtras()                                           // doSaveExtra Not Implemented Yet
-{
+function doSaveExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const totalSheets = SheetNames.length;
+  let Count = 0;
 
-  SheetNames.forEach(SheetName =>
-  {
-    try
-    {
+  Logger.log(`Starting save of ${totalSheets} sheets...`);
+
+  SheetNames.forEach((SheetName, index) => {
+    Count++;
+    const progress = Math.round((Count / totalSheets) * 100);
+    Logger.log(`[${Count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+
+    try {
       doSaveSheet(SheetName);
-    }
-    catch (error)
-    {
-      Logger.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+    } catch (error) {
+      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
     }
   });
+  Logger.log(`Save completed: ${Count} of ${totalSheets} sheets saved successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////

@@ -9,6 +9,8 @@ function doExportAll()
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+
 function doExportSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
   const totalSheets = SheetNames.length;
@@ -31,6 +33,8 @@ function doExportSheets() {
   Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
+/////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
+
 function doExportDatas() {
   const SheetNames = [BLC, DRE, FLC, DVA];
   const totalSheets = SheetNames.length;
@@ -50,8 +54,10 @@ function doExportDatas() {
       Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
+  Logger.log(`Export completed: ${Count} of ${totalSheets} data sheets exported successfully`);
 }
+
+/////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
 function doExportExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
@@ -72,7 +78,7 @@ function doExportExtras() {
       Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
+  Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
