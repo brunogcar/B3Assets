@@ -6,6 +6,7 @@ function Import()
   const ss = SpreadsheetApp.getActiveSpreadsheet();                              // Active spreadsheet
   const sheet_co = ss.getSheetByName('Config');                                  // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
+  if (!Source_Id) {Logger.log("Warning: Source ID is empty."); return;}
   const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
   const sheet_sr = SpreadsheetApp.openById(Source_Id);                           // Open source spreadsheet by ID
 
@@ -93,7 +94,7 @@ function doImportProventos()
   });
 }
 
-/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
 
 function doImportSheets() {
   const SheetNames = [
@@ -125,7 +126,7 @@ function doImportSheets() {
   Logger.log(`Import completed: ${Count} of ${totalSheets} sheets imported successfully`);
 }
 
-/////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
 function doImportDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
@@ -264,92 +265,63 @@ function doImportSheet(SheetName)
   {
 
 //-------------------------------------------------------------------Swing-------------------------------------------------------------------//
-
     case SWING_4:
     case SWING_12:
     case SWING_52:
 
     Import = getConfigValue(ITR)                                                     // ITR = Import to Swing
-
     break;
-
 //-------------------------------------------------------------------Opções-------------------------------------------------------------------//
-
     case OPCOES:
 
     Import = getConfigValue(IOP)                                                     // IOP = Import to Option
-
     break;
-
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-
     case BTC:
 
     Import = getConfigValue(IBT)                                                     // IBT = Import to BTC
-
     break;
-
 //-------------------------------------------------------------------Termo-------------------------------------------------------------------//
-
     case TERMO:
 
     Import = getConfigValue(ITE)                                                     // ITE = Import to Termo
-
     break;
-
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
-
     case FUTURE:
     case FUTURE_1:
     case FUTURE_2:
     case FUTURE_3:
 
     Import = getConfigValue(IFT)                                                     // IFT = Import to Future
-
     break;
-
 //-------------------------------------------------------------------Fund-------------------------------------------------------------------//
-
     case FUND:
 
     Import = getConfigValue(IFU)                                                     // IFU = Import to Fund
-
     break;
-
 //-------------------------------------------------------------------Right-------------------------------------------------------------------//
-
     case RIGHT_1:
     case RIGHT_2:
 
     Import = getConfigValue(IRT)                                                     // IRT = Import to Right
-
     break;
-
 //-------------------------------------------------------------------Receipt-------------------------------------------------------------------//
-
     case RECEIPT_9:
     case RECEIPT_10:
 
     Import = getConfigValue(IRC)                                                     // IRC = Import to Receipt
-
     break;
-
 //-------------------------------------------------------------------Warrant-------------------------------------------------------------------//
-
     case WARRANT_11:
     case WARRANT_12:
     case WARRANT_13:
 
     Import = getConfigValue(IWT)                                                     // IWT = Import to Warrant
-
     break;
-
 //-------------------------------------------------------------------Block-------------------------------------------------------------------//
-
     case BLOCK:
 
     Import = getConfigValue(IBK)                                                     // IBK = Import to Block
-
     break;
       
     default:

@@ -9,7 +9,7 @@ function doExportAll()
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
 
 function doExportSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
@@ -33,7 +33,7 @@ function doExportSheets() {
   Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
-/////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
 function doExportDatas() {
   const SheetNames = [BLC, DRE, FLC, DVA];
@@ -57,7 +57,7 @@ function doExportDatas() {
   Logger.log(`Export completed: ${Count} of ${totalSheets} data sheets exported successfully`);
 }
 
-/////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doExportExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
@@ -91,6 +91,7 @@ function doExportSheet(SheetName)
     var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
     var Target_Id = sheet_co.getRange(TDR).getValues();                               // Target sheet ID
+    if (!Target_Id) {Logger.log("Warning: Target ID is empty."); }
 
   const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
     var Minimum = sheet_se.getRange(MIN).getValue();                                  // -1000 - Default
