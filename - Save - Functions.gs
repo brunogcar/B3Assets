@@ -28,266 +28,173 @@ function doCheckDATAS()
 
 /////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doCheckDATA(SheetName) 
-{
+function doCheckDATA(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_s = ss.getSheetByName(SheetName);                    // Source sheet
-
-  var sheet_p = ss.getSheetByName(PROV);
-  var sheet_o = ss.getSheetByName('OPT');
-  var sheet_d = ss.getSheetByName('DATA');
-  var sheet_b = ss.getSheetByName(Balanco);
-  var sheet_r = ss.getSheetByName(Resultado);
-  var sheet_f = ss.getSheetByName(Fluxo);
-  var sheet_v = ss.getSheetByName(Valor);
+  const sheet_s = ss.getSheetByName(SheetName); // Source sheet
+  const sheet_d = ss.getSheetByName('DATA');    // DATA sheet
+  const sheet_p = ss.getSheetByName(PROV);      // PROV sheet
+  const sheet_o = ss.getSheetByName('OPT');     // OPT sheet
+  const sheet_b = ss.getSheetByName(Balanco);   // Balanco sheet
+  const sheet_r = ss.getSheetByName(Resultado); // Resultado sheet
+  const sheet_f = ss.getSheetByName(Fluxo);     // Fluxo sheet
+  const sheet_v = ss.getSheetByName(Valor);     // Valor sheet
 
   let Check;
 
   Logger.log('CHECK Sheet:', SheetName);
 
+  switch (SheetName) {
+    //-------------------------------------------------------------------PROV-------------------------------------------------------------------//
+    case PROV:
+      Check = sheet_p.getRange('B3').getValue();
+      break;
 
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-
-  if (SheetName === PROV)
-  {
-    Check = sheet_p.getRange('B3').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-//-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
-
-  if (SheetName === OPCOES)
-  {
-    Check = sheet_o.getRange('B2').getValue();
-
-    if (Check === '') 
-    {
-      sheet_o.hideSheet();
-      Logger.log('HIDDEN:', 'OPT');
-    }
-    if (Check !== '') 
-    {
-      if (sheet_o.isSheetHidden()) 
-      {
+    //-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
+    case OPCOES:
+      Check = sheet_o.getRange('B2').getValue();
+      if (Check === '') {
+        sheet_o.hideSheet();
+        Logger.log('HIDDEN:', 'OPT');
+      } else if (sheet_o.isSheetHidden()) {
         sheet_o.showSheet();
         Logger.log('DISPLAYED:', SheetName);
       }
-    }
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+      break;
 
-//-------------------------------------------------------------------SWING-------------------------------------------------------------------//
+    //-------------------------------------------------------------------SWING-------------------------------------------------------------------//
+    case SWING_4:
+    case SWING_12:
+    case SWING_52:
+      const sheet_c = ss.getSheetByName('Config');
+      const Class = sheet_c.getRange(IST).getDisplayValue(); // IST = Is Stock?
+      Check = Class === 'STOCK' ? sheet_d.getRange('B16').getValue() : 'TRUE';
+      break;
 
-  if (SheetName === SWING_4 || SheetName === SWING_12 || SheetName === SWING_52)
-  {
-    const sheet_c = ss.getSheetByName('Config');
-    var Class = sheet_c.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+    //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
+    case BTC:
+      Check = sheet_d.getRange('B3').getValue();
+      break;
 
-    if (Class == 'STOCK') 
-    {
-      Check = sheet_d.getRange('B16').getValue();
-    }
-    else
-    {
-      Check = 'TRUE'
-    }
+    //-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
+    case TERMO:
+      Check = sheet_d.getRange('B24').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-
-  if (SheetName === BTC)
-  {
-    Check = sheet_d.getRange('B3').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
-
-  if (SheetName === TERMO)
-  {
-    Check = sheet_d.getRange('B24').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
-
-  if (SheetName === FUTURE) 
-  {
-    let Checks = ['B32', 'B33', 'B34'];
-
-    for (let i = 0; i < Checks.length; i++) 
-    {
-      Check = sheet_d.getRange(Checks[i]).getValue();
-      if (!ErrorValues.includes(Check)) 
-      {
-        return processCheckDATA(sheet_s, SheetName, Check);
+    //-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
+    case FUTURE:
+      const futureChecks = ['B32', 'B33', 'B34'];
+      for (let i = 0; i < futureChecks.length; i++) {
+        Check = sheet_d.getRange(futureChecks[i]).getValue();
+        if (!ErrorValues.includes(Check)) break;
       }
-    }
-  }
+      break;
 
-  if (SheetName === FUTURE_1)
-  {
-    Check = sheet_d.getRange('B32').getValue();
+    case FUTURE_1:
+      Check = sheet_d.getRange('B32').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+    case FUTURE_2:
+      Check = sheet_d.getRange('B33').getValue();
+      break;
 
-  if (SheetName === FUTURE_2)
-  {
-    Check = sheet_d.getRange('B33').getValue();
+    case FUTURE_3:
+      Check = sheet_d.getRange('B34').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+    //-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
+    case RIGHT_1:
+      Check = sheet_d.getRange('C38').getValue();
+      break;
 
-  if (SheetName === FUTURE_3)
-  {
-    Check = sheet_d.getRange('B34').getValue();
+    case RIGHT_2:
+      Check = sheet_d.getRange('C39').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+    //-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
+    case RECEIPT_9:
+      Check = sheet_d.getRange('C44').getValue();
+      break;
 
-//-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
+    case RECEIPT_10:
+      Check = sheet_d.getRange('C45').getValue();
+      break;
 
-  if (SheetName === RIGHT_1)
-  {
-    Check = sheet_d.getRange('C38').getValue();
+    //-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
+    case WARRANT_11:
+      Check = sheet_d.getRange('C50').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+    case WARRANT_12:
+      Check = sheet_d.getRange('C51').getValue();
+      break;
 
-  if (SheetName === RIGHT_2)
-  {
-    Check = sheet_d.getRange('C39').getValue();
+    case WARRANT_13:
+      Check = sheet_d.getRange('C52').getValue();
+      break;
 
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
-
-  if (SheetName === RECEIPT_9)
-  {
-    Check = sheet_d.getRange('C44').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === RECEIPT_10)
-  {
-    Check = sheet_d.getRange('C45').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
-
-  if (SheetName === WARRANT_11)
-  {
-    Check = sheet_d.getRange('C50').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === WARRANT_12)
-  {
-    Check = sheet_d.getRange('C51').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === WARRANT_13)
-  {
-    Check = sheet_d.getRange('C52').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-//-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
-
-  if (SheetName === BLOCK) 
-  {
-    let Checks = ['C56', 'C57', 'C58'];
-
-    for (let i = 0; i < Checks.length; i++) 
-    {
-      Check = sheet_d.getRange(Checks[i]).getValue();
-      if (!ErrorValues.includes(Check)) 
-//      if (ErrorValues.includes(Check)) 
-      {
-        return processCheckDATA(sheet_s, SheetName, Check);
+    //-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
+    case BLOCK:
+      const blockChecks = ['C56', 'C57', 'C58'];
+      for (let i = 0; i < blockChecks.length; i++) {
+        Check = sheet_d.getRange(blockChecks[i]).getValue();
+        if (!ErrorValues.includes(Check)) break;
       }
-    }
+      break;
+
+    //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
+    case BLC:
+      Check = sheet_b.getRange('B1').getValue();
+      break;
+
+    case DRE:
+      Check = sheet_r.getRange('C1').getValue();
+      break;
+
+    case FLC:
+      Check = sheet_f.getRange('C1').getValue();
+      break;
+
+    case DVA:
+      Check = sheet_v.getRange('C1').getValue();
+      break;
+
+    //-------------------------------------------------------------------DEFAULT-------------------------------------------------------------------//
+    default:
+      Check = 'FALSE';
+      Logger.log(`Sheet Name ${SheetName} not recognized.`);
+      break;
   }
 
-//-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-
-  if (SheetName === BLC)
-  {
-    Check = sheet_b.getRange('B1').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === DRE)
-  {
-    Check = sheet_r.getRange('C1').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === FLC)
-  {
-    Check = sheet_f.getRange('C1').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
-
-  if (SheetName === DVA)
-  {
-    Check = sheet_v.getRange('C1').getValue();
-
-    return processCheckDATA(sheet_s, SheetName, Check);
-  }
+  return processCheckDATA(sheet_s, SheetName, Check);
 }
 
 /////////////////////////////////////////////////////////////////////DO CHECK Process/////////////////////////////////////////////////////////////////////
 
-function processCheckDATA(sheet_s, SheetName, Check) 
-{
-  if (!ErrorValues.includes(Check)) 
-  {
-    if (sheet_s.isSheetHidden()) 
-    {
-      sheet_s.showSheet();
-      Logger.log('DISPLAYED:', SheetName);
+function processCheckDATA(sheet_s, SheetName, Check) {
+  const SheetNames = [BLC, DRE, FLC, DVA];
+
+  if (ErrorValues.includes(Check)) {
+    if (SheetNames.includes(SheetName)) {
+      Logger.log(`DATA Check: FALSE for '${SheetName}'`);
+      return "FALSE";
     }
-    Logger.log("DATA Check: TRUE");
-    return "TRUE";
+    if (!sheet_s.isSheetHidden()) {
+      sheet_s.hideSheet();
+      Logger.log(`Sheet '${SheetName}' HIDDEN`);
+    }
+    Logger.log(`DATA Check: FALSE for '${SheetName}'`);
+    return "FALSE";
   }
-  else
-  {
-    if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) 
-    {
-      Logger.log("DATA Check: FALSE");
-      return "FALSE"; // Add a default return value if the conditions are not met
-    }
-    else
-    {
-      if (!sheet_s.isSheetHidden()) 
-      {
-        sheet_s.hideSheet();
-        Logger.log('HIDDEN:', SheetName);
-      }
-      Logger.log("DATA Check: FALSE");
-      return "FALSE"; // Add a default return value if the conditions are not met
-    }
+
+  if (sheet_s.isSheetHidden()) {
+    sheet_s.showSheet();
+    Logger.log(`Sheet '${SheetName}' DISPLAYED`);
   }
-  // Add a default return value in case none of the conditions are met
-  return "FALSE";
+
+  Logger.log(`DATA Check: TRUE for '${SheetName}'`);
+  return "TRUE";
 }
+
 
 /////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
 
