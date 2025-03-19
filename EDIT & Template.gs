@@ -7,7 +7,9 @@ function doEditAll()
   doIsFormula();
 };
 
-/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
+
+//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
 
 function doEditSheets() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
@@ -31,7 +33,7 @@ function doEditSheets() {
   Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
 }
 
-/////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doEditExtras() {
   const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
@@ -55,7 +57,7 @@ function doEditExtras() {
   Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
 }
 
-/////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
 function doEditDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
@@ -311,7 +313,7 @@ function doEditSheet(SheetName)
 
 /////////////////////////////////////////////////////////////////////DATA TEMPLATE/////////////////////////////////////////////////////////////////////
 
-// sheet_sr is checked  inside the blocks
+// sheet_sr and sheet_tr are checked  inside the blocks
 
 function doEditData(SheetName) 
 {
@@ -330,7 +332,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_tr = fetchSheetByName(BLC);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -339,7 +341,7 @@ function doEditData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
 
@@ -370,7 +372,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
 
@@ -399,7 +401,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_tr = fetchSheetByName(DRE);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -408,7 +410,7 @@ function doEditData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -440,7 +442,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -470,7 +472,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_tr = fetchSheetByName(FLC);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -479,7 +481,7 @@ function doEditData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -510,7 +512,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -539,7 +541,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_tr = fetchSheetByName(DVA);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
 
       var LR = sheet_tr.getLastRow();
       var LC = sheet_tr.getLastColumn();
@@ -553,7 +555,7 @@ function doEditData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -584,7 +586,7 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 

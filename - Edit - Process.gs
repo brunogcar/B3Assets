@@ -9,58 +9,51 @@ function processEditSheet(sheet_sr, SheetName, Edit)
     var A2 = sheet_sr.getRange('A2').getValue();
     var A5 = sheet_sr.getRange('A5').getValue();
 
-  if (sheet_sr)
+  if( !ErrorValues.includes(A2) )
   {
-    if( !ErrorValues.includes(A2) )
-    {
-      if ( Edit == "TRUE" )
-      { 
-        if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
+    if ( Edit == "TRUE" )
+    { 
+      if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
+      {
+        doSaveSheet(SheetName);
+      }
+      else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
+               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+      {
+        if (SheetName === FUND )
         {
-          doSaveSheet(SheetName);
+          var Data = sheet_sr.getRange(2,1,1,LC).getValues();
+          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
+
+          doExportSheet(SheetName);
         }
-        else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
-                 ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
         {
-          if (SheetName === FUND )
-          {
-            var Data = sheet_sr.getRange(2,1,1,LC).getValues();
-            sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-            sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
+          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
-            doExportSheet(SheetName);
-          }
-          else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
-          {
-            var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-            sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-            sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-            Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-            doExportSheet(SheetName);
-          }
-        }
-        else
-        {
-          Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
+          doExportSheet(SheetName);
         }
       }
-       if ( Edit != "TRUE" )
+      else
       {
-        Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+        Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditSheet');
       }
     }
-    else
+     if ( Edit != "TRUE" )
     {
-      Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditSheet');
+      Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
     }
   }
   else
   {
-    Logger.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditSheet');
   }
 }
 
@@ -75,58 +68,51 @@ function processEditExtra(sheet_sr, SheetName, Edit)
     var A2 = sheet_sr.getRange('A2').getValue();
     var A5 = sheet_sr.getRange('A5').getValue();
 
-  if (sheet_sr)
+  if( !ErrorValues.includes(A2) )
   {
-    if( !ErrorValues.includes(A2) )
-    {
-      if ( Edit == "TRUE" )
-      { 
-        if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
+    if ( Edit == "TRUE" )
+    { 
+      if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
+      {
+        doSaveSheet(SheetName);
+      }
+      else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
+               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+      {
+        if (SheetName === FUND )
         {
-          doSaveSheet(SheetName);
+          var Data = sheet_sr.getRange(2,1,1,LC).getValues();
+          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
+
+          doExportExtra(SheetName);
         }
-        else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
-                 ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
         {
-          if (SheetName === FUND )
-          {
-            var Data = sheet_sr.getRange(2,1,1,LC).getValues();
-            sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-            sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
+          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
 
-            Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
+          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
-            doExportExtra(SheetName);
-          }
-          else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
-          {
-            var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-            sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-            sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-            Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-            doExportExtra(SheetName);
-          }
-        }
-        else
-        {
-          Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditExtra');
+          doExportExtra(SheetName);
         }
       }
-       if ( Edit != "TRUE" )
+      else
       {
-        Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
+        Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on processEditExtra');
       }
     }
-    else
+     if ( Edit != "TRUE" )
     {
-      Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditExtra');
+      Logger.log('ERROR EDIT:', SheetName, 'EDIT on config is set to FALSE');
     }
   }
   else
   {
-    Logger.log('ERROR EDIT:', SheetName, 'Sheet does not exist');
+    Logger.log('ERROR EDIT:', SheetName, 'ErrorValues in A2 on processEditExtra');
   }
 }
 

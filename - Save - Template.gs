@@ -273,7 +273,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_tr = fetchSheetByName(BLC);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -282,7 +282,8 @@ function doSaveData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
 
@@ -325,7 +326,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
 
@@ -355,7 +356,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_tr = fetchSheetByName(DRE);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -364,7 +365,7 @@ function doSaveData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -406,7 +407,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -444,7 +445,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_tr = fetchSheetByName(FLC);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -453,7 +454,7 @@ function doSaveData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -494,7 +495,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -524,7 +525,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_tr = fetchSheetByName(DVA);
-    if (!sheet_tr) return;
+    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
 
       var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
 
@@ -533,7 +534,7 @@ function doSaveData(SheetName)
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
@@ -574,7 +575,7 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) return;
+    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
 
       var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
 
