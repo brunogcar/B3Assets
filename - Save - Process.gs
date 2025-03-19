@@ -28,59 +28,55 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
   let Data;
   let Data_Backup;
 
-  if( !ErrorValues.includes(A2) )
+  if (ErrorValues.includes(A2)) {
+    Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveSheet');
+    return;
+  }
+
+  if (Save !== "TRUE") {
+    Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+    return;
+  }
+
+  if( A5 == "" )
   {
-    if ( Save == "TRUE" )
+    Data = sheet_sr.getRange(2,1,1,LC).getValues();
+    sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+    sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+    Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
+
+    doExportSheet(SheetName);
+  }
+  else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
+  {
+    Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
+    Data = sheet_sr.getRange(2,1,1,LC).getValues();
+
+    sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
+    sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+    sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+    Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
+
+    doExportSheet(SheetName);
+  }
+  else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
+             ( IsEqual ) ) ||
+           ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+  {
+    if( Edit == "TRUE" )
     {
-      if( A5 == "" )
-      {
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-        Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
-
-        doExportSheet(SheetName);
-      }
-      else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
-      {
-        Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-
-        sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-        Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
-
-        doExportSheet(SheetName);
-      }
-      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
-                 ( IsEqual ) ) ||
-               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
-      {
-        if( Edit == "TRUE" )
-        {
-          doEditSheet(SheetName);
-        }
-        if ( Edit != "TRUE" )
-        {
-          Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
-        }
-      }
-      else
-      {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveSheet');
-      }
+      doEditSheet(SheetName);
     }
-    if ( Save != "TRUE" )
+    if ( Edit != "TRUE" )
     {
-      Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+      Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
     }
   }
   else
   {
-    Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveSheet');
+    Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveSheet');
   }
 }
 
@@ -114,59 +110,56 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
   let Data;
   let Data_Backup;
 
-  if( !ErrorValues.includes(A2) )
+  if (ErrorValues.includes(A2)) {
+    Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveSheet');
+    return;
+  }
+
+  if (Save !== "TRUE") {
+    Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+    return;
+  }
+
+
+  if( A5 == "" )
   {
-    if ( Save == "TRUE" )
+    Data = sheet_sr.getRange(2,1,1,LC).getValues();
+    sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+    sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+    Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
+
+    doExportExtra(SheetName);
+  }
+  else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
+  {
+    Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
+    Data = sheet_sr.getRange(2,1,1,LC).getValues();
+
+    sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
+    sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
+    sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+
+    Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
+
+    doExportExtra(SheetName);
+  }
+  else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
+             ( IsEqual ) ) ||
+           ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
+  {
+    if( Edit == "TRUE" )
     {
-      if( A5 == "" )
-      {
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-        Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
-
-        doExportExtra(SheetName);
-      }
-      else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
-      {
-        Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-
-        sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
-
-        Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
-
-        doExportExtra(SheetName);
-      }
-      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
-                 ( IsEqual ) ) ||
-               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
-      {
-        if( Edit == "TRUE" )
-        {
-          doEditSheet(SheetName);
-        }
-        if ( Edit != "TRUE" )
-        {
-          Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
-        }
-      }
-      else
-      {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveExtra');
-      }
+      doEditSheet(SheetName);
     }
-    if ( Save != "TRUE" )
+    if ( Edit != "TRUE" )
     {
-      Logger.log('ERROR SAVE:', SheetName, 'SAVE on config is set to FALSE');
+      Logger.log('ERROR SAVE:', SheetName, 'EDIT on config is set to FALSE');
     }
   }
   else
   {
-    Logger.log('ERROR SAVE:', SheetName, 'ErrorValues in A2 on processSaveExtra');
+    Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on processSaveExtra');
   }
 }
 
