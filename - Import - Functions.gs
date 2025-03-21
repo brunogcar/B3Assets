@@ -7,7 +7,7 @@ function doCheckTriggers()
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
   var Triggers = ScriptApp.getProjectTriggers().length;
 
-  Logger.log("Number of existing triggers:", Triggers);
+  Logger.log(`Number of existing triggers: ${Triggers}`);
 
   if (Class == 'STOCK') 
   {
@@ -141,17 +141,49 @@ function getSheetTriggersHandle()
   return handlerFunctions;
 }
 
-function doDeleteTriggers()
-{
+function writeTriggersToSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet = ss.getSheetByName("Config"); // Target sheet
 
-  var triggers = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < triggers.length; i++)
-  {
-    ScriptApp.deleteTrigger(triggers[i]);
-    Logger.log("Deleting triggers...");
+  if (!sheet) {
+    Logger.log("Sheet 'Config' not found.");
+    return;
   }
-};
+
+  const triggers = getSheetTriggersHandle();
+  const startRow = 24; // L24
+  const startColumn = 12; // Column "L" = 12th column
+
+  // Clear old values from L24 downward
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= startRow) {
+    sheet.getRange(startRow, startColumn, lastRow - startRow + 1, 1).clearContent();
+  }
+
+  // Write triggers if available
+  if (triggers.length > 0) {
+    sheet.getRange(startRow, startColumn, triggers.length, 1).setValues(triggers.map(t => [t]));
+  } else {
+    sheet.getRange(startRow, startColumn).setValue("No active triggers");
+  }
+
+  Logger.log(`Wrote ${triggers.length} triggers to Config`);
+}
+
+function doDeleteTriggers() {
+  const triggers = ScriptApp.getProjectTriggers();
+  
+  if (triggers.length === 0) {
+    Logger.log("No triggers found to delete.");
+  }
+
+  for (const trigger of triggers) {
+    Logger.log(`Deleting trigger: ${trigger.getHandlerFunction()} (ID: ${trigger.getUniqueId()})`);
+    ScriptApp.deleteTrigger(trigger);
+  }
+
+  Logger.log("All triggers deleted.");
+}
+
 
 /////////////////////////////////////////////////////////////////////IMPORT FUNCTIONS/////////////////////////////////////////////////////////////////////

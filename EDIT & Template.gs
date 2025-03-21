@@ -85,10 +85,10 @@ function doEditDatas() {
 
 function doEditSheet(SheetName) 
 {
-  Logger.log('EDIT:', SheetName);
+  Logger.log(`EDIT: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName);                        // Source sheet
-  if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
 
   const sheet_co = fetchSheetByName('Config');                         // Config sheet
   const sheet_se = fetchSheetByName('Settings');
@@ -106,7 +106,7 @@ function doEditSheet(SheetName)
 
     var Class = sheet_co.getRange(IST).getDisplayValue();                       // IST = Is Stock? 
 
-    var C2 = sheet_sr.getRange('C2').getValue();  
+    var C2 = sheet_sr.getRange("C2").getValue();  
 
     if (Class == 'STOCK') 
     {
@@ -123,7 +123,7 @@ function doEditSheet(SheetName)
       }
       else
       {
-        Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
     }
   }
@@ -134,8 +134,8 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DOP)                                                     // DOP = Edit to Option
 
-    var Call = sheet_sr.getRange('C2').getValue();
-    var Put = sheet_sr.getRange('E2').getValue();  
+    var Call = sheet_sr.getRange("C2").getValue();
+    var Put = sheet_sr.getRange("E2").getValue();  
 
     if( ( Call != 0 && Put != 0 ) &&
         ( Call != "" && Put != "" ) )
@@ -144,7 +144,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -154,7 +154,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DBT)                                                     // DBT = Edit to BTC
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -162,7 +162,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -172,7 +172,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DTE)                                                     // DTE = Edit to Termo
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -180,7 +180,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -190,7 +190,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DFU)                                                     // DFU = Edit to Fund
 
-    var B2 = sheet_sr.getRange('B2').getValue();
+    var B2 = sheet_sr.getRange("B2").getValue();
 
     if( !ErrorValues.includes(B2) )
     {
@@ -198,7 +198,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -208,9 +208,9 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
 
-    var C2 = sheet_sr.getRange('C2').getValue();
-    var E2 = sheet_sr.getRange('E2').getValue();
-    var G2 = sheet_sr.getRange('G2').getValue();
+    var C2 = sheet_sr.getRange("C2").getValue();
+    var E2 = sheet_sr.getRange("E2").getValue();
+    var G2 = sheet_sr.getRange("G2").getValue();
 
     if( ( !ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2) ) )
     {
@@ -218,7 +218,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -226,7 +226,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
 
-    var C2 = sheet_sr.getRange('C2').getValue();
+    var C2 = sheet_sr.getRange("C2").getValue();
 
     if( !ErrorValues.includes(C2) )
     {
@@ -234,7 +234,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -244,7 +244,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DRT)                                                     // DRT = Edit to Right
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -252,7 +252,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -262,7 +262,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DRC)                                                     // DRC = Edit to Receipt
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -270,7 +270,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -280,7 +280,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DWT)                                                     // DWT = Edit to Warrant
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -288,7 +288,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 
@@ -298,7 +298,7 @@ function doEditSheet(SheetName)
   {
     Edit = getConfigValue(DBK)                                                     // DBK = Edit to Block
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -306,7 +306,7 @@ function doEditSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditSheet');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
     }
   }
 }
@@ -317,7 +317,7 @@ function doEditSheet(SheetName)
 
 function doEditData(SheetName) 
 {
-  Logger.log('EDIT:', SheetName);
+  Logger.log(`EDIT: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                         // Config sheet
   const sheet_se = fetchSheetByName('Settings');
@@ -332,18 +332,18 @@ function doEditData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_tr = fetchSheetByName(BLC);
-    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -361,7 +361,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -372,9 +372,9 @@ function doEditData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -390,7 +390,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -401,18 +401,18 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_tr = fetchSheetByName(DRE);
-    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -431,7 +431,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -442,9 +442,9 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -461,7 +461,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -472,18 +472,18 @@ function doEditData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_tr = fetchSheetByName(FLC);
-    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -501,7 +501,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -512,9 +512,9 @@ function doEditData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -530,7 +530,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -541,23 +541,23 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_tr = fetchSheetByName(DVA);
-    if (!sheet_tr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
       var LR = sheet_tr.getLastRow();
       var LC = sheet_tr.getLastColumn();
 
       var B = sheet_tr.getRange("B1:B" + LR).getValues().flat();
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -575,7 +575,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 
@@ -586,9 +586,9 @@ function doEditData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) { Logger.log('ERROR EDIT:', SheetName, 'Does not exist on doEditData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -604,7 +604,7 @@ function doEditData(SheetName)
     }
     else
     {
-      Logger.log('ERROR EDIT:', SheetName, 'Conditions arent met on doEditData');
+      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
     }
   }
 }

@@ -22,7 +22,7 @@ function doSaveAll()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -37,7 +37,7 @@ function doSaveAll()
   }
   else
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
   doSaveShares();
@@ -61,7 +61,7 @@ function doSaveAll()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -76,7 +76,7 @@ function doSaveAll()
   }
   else
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
   doSaveSheet(FUND);
@@ -111,7 +111,7 @@ function doSaveAll()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -126,7 +126,7 @@ function doSaveAll()
   }
   else 
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
 //  doExportAll();             // sheets are exported individually
@@ -163,7 +163,7 @@ function doSaveAllSheets()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -178,7 +178,7 @@ function doSaveAllSheets()
   }
   else 
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
   doSaveSheet(FUND);
@@ -223,7 +223,7 @@ function doSaveAllExtras()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -238,7 +238,7 @@ function doSaveAllExtras()
   } 
   else 
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
   doSaveShares();
@@ -274,7 +274,7 @@ function doSaveAllDatas()
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
     }
   });
 
@@ -289,7 +289,7 @@ function doSaveAllDatas()
   }
   else
   {
-    Logger.log('No valid data found. Skipping save operation.');
+    Logger.log(`No valid data found. Skipping save operation.`);
   }
 
   doSaveShares();
@@ -363,10 +363,10 @@ function doSaveDatas()
   const SheetNames = [BLC, DRE, FLC, DVA];                  //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_u = ss.getSheetByName('UPDATE');                         // UPDATE sheet
+  const sheet_u = ss.getSheetByName(`UPDATE`);                         // UPDATE sheet
 
-    var ACTV = sheet_u.getRange('B3').getValue();
-    var SOMA = sheet_u.getRange('K8').getValue();
+    var ACTV = sheet_u.getRange(`B3`).getValue();
+    var SOMA = sheet_u.getRange(`K8`).getValue();
 
   if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA == 0 || SOMA > 125000)))) // 200.000 if all new
   {

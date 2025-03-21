@@ -3,9 +3,7 @@
 function doClearAll()
 {
   doClearProventos();
-
   doClearSheets();
-
   doClearDatas();
 };
 
@@ -25,7 +23,7 @@ function doTrimSheets()
     } 
     catch (error) 
     {
-      Logger.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}: ${error}`);
     }
   });
 }
@@ -87,7 +85,7 @@ function doClearSheets()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}:`, error);
+      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
     }
   });
 }
@@ -105,7 +103,7 @@ function doClearDatas()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}:`, error);
+      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
     }
   });
 }
@@ -122,7 +120,7 @@ function doCleanSheets()
     } 
     catch (error) 
     {
-      Logger.error(`Error cleaning sheet ${SheetName}:`, error);
+      Logger.error(`Error cleaning sheet ${SheetName}: ${error}`);
     }
   });
 }
@@ -145,7 +143,7 @@ function doCopyData(SheetName)
 
   if (!ss) 
   {
-    Logger.log('ERROR CLEAN:', SheetName, 'Does not exist');
+    Logger.log(`ERROR COPY: ${SheetName} Does not exist`);
     return;
   }
 
@@ -189,7 +187,7 @@ function doClearSheet(SheetName)
   var LR = ss.getLastRow();
   var LC = ss.getLastColumn();
 
-  Logger.log('Clear:', SheetName);
+  Logger.log(`Clear: ${SheetName}`);
 
   ss.getRange(5, 1, LR, LC).clear({ contentsOnly: true, skipFilteredRows: false });
   ss.getRange(1, 1, 1, LC).clear({ contentsOnly: true, skipFilteredRows: false });
@@ -202,7 +200,7 @@ function doClearData(SheetName)
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  Logger.log('Clear:', SheetName);
+  Logger.log(`Clear: ${SheetName}`);
 
   var LR = ss.getLastRow();
   var LC = ss.getLastColumn();
@@ -256,11 +254,11 @@ function doCleanSheet(SheetName)
 {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  Logger.log('CLEAN:', SheetName);
+  Logger.log(`CLEAN: ${SheetName}`);
 
   if (!sheet) 
   {
-    Logger.log('ERROR CLEAN:', SheetName, 'Does not exist');
+    Logger.log(`ERROR CLEAN: ${SheetName} Does not exist`);
     return;
   }
 
@@ -327,7 +325,7 @@ function fixSWING_4Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -352,7 +350,7 @@ function fixSWING_12Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -377,7 +375,7 @@ function fixSWING_52Split()
   var Range = sheet.getRange("B" + SR + ":Y" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -403,7 +401,7 @@ function fixOptionsSplit()
   var Range = sheet.getRange("B" + SR + ":B" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -493,7 +491,7 @@ function fixBTCSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -553,7 +551,7 @@ function fixTermoSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -629,7 +627,7 @@ function fixFutureSplit()
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -722,7 +720,7 @@ function fixFUTPlusSplit(SheetName)
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -795,7 +793,7 @@ function fixEXTRASplit(SheetName)
   var Range = sheet.getRange("B" + SR + ":C" + LR);
   var Values = Range.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) {
     for (var j = 0; j < Values[i].length; j++) {
@@ -903,7 +901,7 @@ function multiplyColumn(columnLetter) {
   var Column = sheet.getRange(columnLetter + SR +":" +columnLetter + LR);
   var Values = Column.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {
@@ -932,7 +930,7 @@ function divideColumn(columnLetter) {
   var Column = sheet.getRange(columnLetter + SR +":" +columnLetter + LR);
   var Values = Column.getValues();
 
-  Logger.log('FIX:', sheet.getName());
+  Logger.log(`FIX:  ${sheet.getName()}.`);
 
   for (var i = 0; i < Values.length; i++) 
   {

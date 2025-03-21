@@ -192,7 +192,7 @@ function doDeleteSpreadsheet()
     DriveApp.getFileById(fileId).setTrashed(true);
     Logger.log('Spreadsheet deleted successfully.');
   } catch (error) {
-    Logger.log('Error deleting spreadsheet: ' + error);
+    Logger.log(`Error deleting spreadsheet: ${error}`);
   }
 }
 

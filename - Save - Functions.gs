@@ -21,7 +21,7 @@ function doCheckDATAS()
     catch (error) 
     {
       // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error checking DATA for sheet ${SheetName}:`, error);
+      Logger.error(`Error checking DATA for sheet ${SheetName}: ${error}`);
     }
   });
 }
@@ -41,23 +41,23 @@ function doCheckDATA(SheetName) {
 
   let Check;
 
-  Logger.log('CHECK Sheet:', SheetName);
+  Logger.log(`CHECK Sheet: ${SheetName}`);
 
   switch (SheetName) {
     //-------------------------------------------------------------------PROV-------------------------------------------------------------------//
     case PROV:
-      Check = sheet_p.getRange('B3').getValue();
+      Check = sheet_p.getRange("B3").getValue();
       break;
 
     //-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
     case OPCOES:
-      Check = sheet_o.getRange('B2').getValue();
+      Check = sheet_o.getRange("B2").getValue();
       if (Check === '') {
         sheet_o.hideSheet();
-        Logger.log('HIDDEN:', 'OPT');
+        Logger.log(`HIDDEN:`, `OPT`);
       } else if (sheet_o.isSheetHidden()) {
         sheet_o.showSheet();
-        Logger.log('DISPLAYED:', SheetName);
+        Logger.log(`DISPLAYED:  ${SheetName}`);
       }
       break;
 
@@ -72,17 +72,17 @@ function doCheckDATA(SheetName) {
 
     //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
     case BTC:
-      Check = sheet_d.getRange('B3').getValue();
+      Check = sheet_d.getRange("B3").getValue();
       break;
 
     //-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
     case TERMO:
-      Check = sheet_d.getRange('B24').getValue();
+      Check = sheet_d.getRange("B24").getValue();
       break;
 
     //-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
     case FUTURE:
-      const futureChecks = ['B32', 'B33', 'B34'];
+      const futureChecks = ["B32", "B33", "B34"];
       for (let i = 0; i < futureChecks.length; i++) {
         Check = sheet_d.getRange(futureChecks[i]).getValue();
         if (!ErrorValues.includes(Check)) break;
@@ -90,51 +90,51 @@ function doCheckDATA(SheetName) {
       break;
 
     case FUTURE_1:
-      Check = sheet_d.getRange('B32').getValue();
+      Check = sheet_d.getRange("B32").getValue();
       break;
 
     case FUTURE_2:
-      Check = sheet_d.getRange('B33').getValue();
+      Check = sheet_d.getRange("B33").getValue();
       break;
 
     case FUTURE_3:
-      Check = sheet_d.getRange('B34').getValue();
+      Check = sheet_d.getRange("B34").getValue();
       break;
 
     //-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
     case RIGHT_1:
-      Check = sheet_d.getRange('C38').getValue();
+      Check = sheet_d.getRange("C38").getValue();
       break;
 
     case RIGHT_2:
-      Check = sheet_d.getRange('C39').getValue();
+      Check = sheet_d.getRange("C39").getValue();
       break;
 
     //-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
     case RECEIPT_9:
-      Check = sheet_d.getRange('C44').getValue();
+      Check = sheet_d.getRange("C44").getValue();
       break;
 
     case RECEIPT_10:
-      Check = sheet_d.getRange('C45').getValue();
+      Check = sheet_d.getRange("C45").getValue();
       break;
 
     //-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
     case WARRANT_11:
-      Check = sheet_d.getRange('C50').getValue();
+      Check = sheet_d.getRange("C50").getValue();
       break;
 
     case WARRANT_12:
-      Check = sheet_d.getRange('C51').getValue();
+      Check = sheet_d.getRange("C51").getValue();
       break;
 
     case WARRANT_13:
-      Check = sheet_d.getRange('C52').getValue();
+      Check = sheet_d.getRange("C52").getValue();
       break;
 
     //-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
     case BLOCK:
-      const blockChecks = ['C56', 'C57', 'C58'];
+      const blockChecks = ["C56", "C57", "C58"];
       for (let i = 0; i < blockChecks.length; i++) {
         Check = sheet_d.getRange(blockChecks[i]).getValue();
         if (!ErrorValues.includes(Check)) break;
@@ -143,19 +143,19 @@ function doCheckDATA(SheetName) {
 
     //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
     case BLC:
-      Check = sheet_b.getRange('B1').getValue();
+      Check = sheet_b.getRange("B1").getValue();
       break;
 
     case DRE:
-      Check = sheet_r.getRange('C1').getValue();
+      Check = sheet_r.getRange("C1").getValue();
       break;
 
     case FLC:
-      Check = sheet_f.getRange('C1').getValue();
+      Check = sheet_f.getRange("C1").getValue();
       break;
 
     case DVA:
-      Check = sheet_v.getRange('C1').getValue();
+      Check = sheet_v.getRange("C1").getValue();
       break;
 
     //-------------------------------------------------------------------DEFAULT-------------------------------------------------------------------//
@@ -171,27 +171,27 @@ function doCheckDATA(SheetName) {
 /////////////////////////////////////////////////////////////////////DO CHECK Process/////////////////////////////////////////////////////////////////////
 
 function processCheckDATA(sheet_s, SheetName, Check) {
-  const SheetNames = [BLC, DRE, FLC, DVA];
+  const fixedSheets = [BLC, DRE, FLC, DVA];
 
   if (ErrorValues.includes(Check)) {
-    if (SheetNames.includes(SheetName)) {
-      Logger.log(`DATA Check: FALSE for '${SheetName}'`);
+    if (fixedSheets.includes(SheetName)) {
+      Logger.log(`DATA Check: FALSE for ${SheetName}`);
       return "FALSE";
     }
     if (!sheet_s.isSheetHidden()) {
       sheet_s.hideSheet();
-      Logger.log(`Sheet '${SheetName}' HIDDEN`);
+      Logger.log(`Sheet ${SheetName} HIDDEN`);
     }
-    Logger.log(`DATA Check: FALSE for '${SheetName}'`);
+    Logger.log(`DATA Check: FALSE for ${SheetName}`);
     return "FALSE";
   }
 
   if (sheet_s.isSheetHidden()) {
     sheet_s.showSheet();
-    Logger.log(`Sheet '${SheetName}' DISPLAYED`);
+    Logger.log(`Sheet ${SheetName} DISPLAYED`);
   }
 
-  Logger.log(`DATA Check: TRUE for '${SheetName}'`);
+  Logger.log(`DATA Check: TRUE for ${SheetName}`);
   return "TRUE";
 }
 
@@ -212,7 +212,7 @@ function doTrim()
     } 
     catch (error) 
     {
-      Logger.error(`Error saving sheet ${SheetName}:`, error);
+      Logger.error(`Error saving sheet ${SheetName}: ${error}`);
     }
   });
 }
@@ -222,7 +222,7 @@ function doTrimSheet(SheetName)
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_s = ss.getSheetByName(SheetName); // Target
 
-  Logger.log('TRIM:', SheetName);
+  Logger.log(`TRIM: ${SheetName}`);
 
   if (!sheet_s) 
   {
@@ -282,7 +282,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) !== -1 && !sheet.isSheetHidden()) {
         sheet.hideSheet();
-        Logger.log('Sheet:', sheet.getName(), 'HIDDEN');
+        Logger.log(`Sheet: ${sheet.getName()} HIDDEN`);
       }
     }
   } 
@@ -295,7 +295,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
       {                                                                                                               // Delete all but SheetNames
-        Logger.log('Deleting sheet:', sheet.getName());
+        Logger.log(`Deleting sheet: ${sheet.getName()}`);
         ss.deleteSheet(sheet);
       }
     }
@@ -309,7 +309,7 @@ function doDisableSheets()
       const sheet = sheets[i];
       if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
       { // Delete all but SheetNames
-        Logger.log('Deleting sheet:', sheet.getName());
+        Logger.log(`Deleting sheet:`, sheet.getName());
         ss.deleteSheet(sheet);
       }
     }
@@ -322,22 +322,19 @@ function doDisableSheets()
 function hideConfig()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_s = ss.getSheetByName('Settings');                        // Source sheet
-  const sheet_c = ss.getSheetByName('Config');                          // Config sheet
+  const sheet_s = ss.getSheetByName(`Settings`);                        // Source sheet
+  const sheet_c = ss.getSheetByName(`Config`);                          // Config sheet
 
   var Hide_Config = sheet_c.getRange(HCR).getDisplayValue();                       // HCR = Hide Config Range
 
-  if ( Hide_Config == "TRUE")
-  {
-    if (sheet_s && !sheet_s.isSheetHidden())
-    {
+  if (Hide_Config == "TRUE") {
+    if (sheet_s && !sheet_s.isSheetHidden()) {
       sheet_s.hideSheet();
-      Logger.log('HIDDEN:', sheet_s.getName()); 
+      Logger.log(`HIDDEN: ${sheet_s.getName()}`);
     }
-    if (sheet_c && !sheet_c.isSheetHidden())
-    {
+    if (sheet_c && !sheet_c.isSheetHidden()) {
       sheet_c.hideSheet();
-      Logger.log('HIDDEN:', sheet_c.getName()); 
+      Logger.log(`HIDDEN: ${sheet_c.getName()}`);
     }
   }
 };

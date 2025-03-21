@@ -26,8 +26,8 @@ function setSheetID()
 //  const [sheet_co, sheet_tr] = ["Config", "Relação"].map(s => ss.getSheetByName(s));
 //  const [b3, d10] = ["B3", "D10"].map(r => sheet_co.getRange(r).getValue());
 
-  var trg = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
-  var sheet_tr = trg.getSheetByName('Relação');                                    // Target sheet
+  var ss_t = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  var sheet_tr = ss_t.getSheetByName('Relação');                                    // Target sheet
 
   var bgcolor = sheet_co.getRange(IDR).getBackground();
   var colour = '#d9ead3';
@@ -41,7 +41,7 @@ function setSheetID()
       search.offset(0, 11).setValue(Sheet_Id);
       search.offset(0, 12).setValue(SNAME(3));
 
-      Logger.log('Sheet ID Set:', Sheet_Id);
+      Logger.log(`Sheet ID Set: ${Sheet_Id}`);
     }
   }
 };

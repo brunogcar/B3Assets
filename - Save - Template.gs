@@ -2,10 +2,10 @@
 
 function doSaveSheet(SheetName)
 {
-  Logger.log('SAVE:', SheetName);
+  Logger.log(`SAVE: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName);                        // Source sheet
-  if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveSheet from sheet_sr'); return; }
+  if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveSheet from sheet_sr`); return; }
 
   const sheet_co = fetchSheetByName('Config');                         // Config sheet
   const sheet_se = fetchSheetByName('Settings');                       // Settings sheet
@@ -25,8 +25,8 @@ function doSaveSheet(SheetName)
 
     var Class = sheet_co.getRange(IST).getDisplayValue();                          // IST = Is Stock? 
 
-    var B2 = sheet_sr.getRange('B2').getValue();
-    var C2 = sheet_sr.getRange('C2').getValue();
+    var B2 = sheet_sr.getRange("B2").getValue();
+    var C2 = sheet_sr.getRange("C2").getValue();
 
     if (Class == 'STOCK') 
     {
@@ -37,7 +37,7 @@ function doSaveSheet(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
       }
     }
     if (Class == 'BDR' || Class == 'ETF' || Class == 'ADR') 
@@ -49,7 +49,7 @@ function doSaveSheet(SheetName)
       }
       else
       {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
       }
     }
   }
@@ -61,19 +61,19 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SOP)                                                     // SOP = Save to Option
     Edit = getConfigValue(DOP)                                                     // DOP = Edit to Option
 
-    var [Call, Call_, Call_PM, Call_PM_,Put, Put_, Put_PM, Put_PM_,Diff,Diff_2] = ["C2", "C3", "D2", "D3","E2", "E3", "F2", "F3",'K3','N3'].map(r => sheet_sr.getRange(r).getValue());
+    var [Call, Call_, Call_PM, Call_PM_,Put, Put_, Put_PM, Put_PM_,Diff,Diff_2] = ["C2", "C3", "D2", "D3","E2", "E3", "F2", "F3","K3","N3"].map(r => sheet_sr.getRange(r).getValue());
 
     if( ( Call != 0 && Put != 0 ) &&
-        ( Call != "" && Put != "" ) &&
+        ( Call != '' && Put != '' ) &&
         ( Call_PM != 0 || Put_PM != 0 ) &&
-        ( Call_PM != "" || Put_PM != "" ) &&
+        ( Call_PM != '' || Put_PM != '' ) &&
         ( Diff != 0 || Diff_2 != 0 ) )
     {
       processSaveSheet(sheet_sr, SheetName, Save, Edit);
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -84,7 +84,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SBT)                                                     // SBT = Save to BTC
     Edit = getConfigValue(DBT)                                                     // DBT = Edit to BTC
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -92,7 +92,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -103,7 +103,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(STE)                                                     // STE = Save to Termo
     Edit = getConfigValue(DTE)                                                     // DTE = Edit to Termo
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -111,7 +111,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -122,7 +122,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SFU)                                                     // SFU = Save to Fund
     Edit = getConfigValue(DFU)                                                     // DFU = Edit to Fund
 
-    var B2 = sheet_sr.getRange('B2').getValue();
+    var B2 = sheet_sr.getRange("B2").getValue();
 
     if( ( !ErrorValues.includes(B2) ) )
     {
@@ -130,7 +130,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -141,9 +141,9 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SFT)                                                     // SFT = Save to Future
     Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
 
-    var C2 = sheet_sr.getRange('C2').getValue();
-    var E2 = sheet_sr.getRange('E2').getValue();
-    var G2 = sheet_sr.getRange('G2').getValue();
+    var C2 = sheet_sr.getRange("C2").getValue();
+    var E2 = sheet_sr.getRange("E2").getValue();
+    var G2 = sheet_sr.getRange("G2").getValue();
 
     if( ( !ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2) ) )  // possibly && instead of ||
     {
@@ -151,7 +151,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -160,7 +160,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SFT)                                                     // SFT = Save to Future
     Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
 
-    var C2 = sheet_sr.getRange('C2').getValue();
+    var C2 = sheet_sr.getRange("C2").getValue();
 
     if( !ErrorValues.includes(C2) )
     {
@@ -168,7 +168,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -179,7 +179,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SRT)                                                     // SRT = Save to Right
     Edit = getConfigValue(DRT)                                                     // DRT = Edit to Right
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -187,7 +187,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -198,7 +198,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SRC)                                                     // SRC = Save to Receipt
     Edit = getConfigValue(DRC)                                                     // DRC = Edit to Receipt
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -206,7 +206,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -217,7 +217,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SWT)                                                     // SWT = Save to Warrant
     Edit = getConfigValue(DWT)                                                     // DWT = Edit to Warrant
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -225,7 +225,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 
@@ -236,7 +236,7 @@ function doSaveSheet(SheetName)
     Save = getConfigValue(SBK)                                                     // SBK = Save to Block
     Edit = getConfigValue(DBK)                                                     // DBK = Edit to Block
 
-    var D2 = sheet_sr.getRange('D2').getValue();
+    var D2 = sheet_sr.getRange("D2").getValue();
 
     if( !ErrorValues.includes(D2) )
     {
@@ -244,7 +244,7 @@ function doSaveSheet(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveSheet');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveSheet`);
     }
   }
 }
@@ -255,7 +255,7 @@ function doSaveSheet(SheetName)
 
 function doSaveData(SheetName)
 {
-  Logger.log('SAVE:', SheetName);
+  Logger.log(`SAVE: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                         // Config sheet
   const sheet_se = fetchSheetByName('Settings');
@@ -273,19 +273,19 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_tr = fetchSheetByName(BLC);
-    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
 
-      var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -293,8 +293,8 @@ function doSaveData(SheetName)
 
       var [B2_S, B27_S] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-    var CHECK1 = sheet_up.getRange('K3').getValue();
-    var CHECK2 = sheet_up.getRange('K4').getValue();
+    var CHECK1 = sheet_up.getRange("K3").getValue();
+    var CHECK2 = sheet_up.getRange("K4").getValue();
 
     if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) && 
         ((CHECK2 >= 90 && CHECK2 <= 92) || (CHECK2 == 0 || CHECK1 > 40000)))
@@ -309,12 +309,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData`);
     }
   }
 
@@ -326,9 +326,9 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
     const sheet_sr = fetchSheetByName(Balanco);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:C1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -344,7 +344,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
     }
   }
 
@@ -356,18 +356,18 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_tr = fetchSheetByName(DRE);
-    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -376,7 +376,7 @@ function doSaveData(SheetName)
 
     var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-    var CHECK = sheet_up.getRange('K5').getValue();
+    var CHECK = sheet_up.getRange("K5").getValue();
 
     if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000))
     {
@@ -390,12 +390,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData`);
     }
   }
 
@@ -407,9 +407,9 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
     const sheet_sr = fetchSheetByName(Resultado);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -428,12 +428,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData`);
     }
   }
 
@@ -445,18 +445,18 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_tr = fetchSheetByName(FLC);
-    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -465,7 +465,7 @@ function doSaveData(SheetName)
 
       var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-    var CHECK = sheet_up.getRange('K6').getValue();
+    var CHECK = sheet_up.getRange("K6").getValue();
 
     if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000))
     {
@@ -478,12 +478,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData`);
     }
   }
 
@@ -495,9 +495,9 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
     const sheet_sr = fetchSheetByName(Fluxo);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -513,7 +513,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
     }
   }
 
@@ -525,18 +525,18 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_tr = fetchSheetByName(DVA);
-    if (!sheet_tr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_tr'); return; }
+    if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
-      var Values_tr = sheet_tr.getRange('B1:C1').getValues()[0];
+      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
 
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
       var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -545,7 +545,7 @@ function doSaveData(SheetName)
 
       var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-    var CHECK = sheet_up.getRange('K7').getValue();
+    var CHECK = sheet_up.getRange("K7").getValue();
 
     if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000))
     {
@@ -558,12 +558,12 @@ function doSaveData(SheetName)
       }
       else
       {
-        Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData`);
     }
   }
 
@@ -575,9 +575,9 @@ function doSaveData(SheetName)
     Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
     const sheet_sr = fetchSheetByName(Valor);
-    if (!sheet_sr) { Logger.log('ERROR SAVE:', SheetName, 'Does not exist on doSaveData from sheet_sr'); return; }
+    if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
-      var Values_sr = sheet_sr.getRange('B1:D1').getValues()[0];
+      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
 
       var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
       var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
@@ -593,7 +593,7 @@ function doSaveData(SheetName)
     }
     else
     {
-      Logger.log('ERROR SAVE:', SheetName, 'Conditions arent met on doSaveData');
+      Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
     }
   }
 }
@@ -612,10 +612,10 @@ function doProventos()
 function doSaveProventos() 
 {
   const ProvNames = [
-    { name: 'Proventos', checkCell: 'B3', expectedValue: 'Proventos', sourceRange: 'B3:H60', targetRange: 'B3:H60' },
-    { name: 'Subscrição', checkCell: 'L3', expectedValue: 'Tipo', sourceRange: 'L3:T60', targetRange: 'L3:T60' },
-    { name: 'Ativos', checkCell: 'B64', expectedValue: 'Proventos', sourceRange: 'B64:H200', targetRange: 'B64:H200' },
-    { name: 'Historico', checkCell: 'L64', expectedValue: 'Tipo de Ativo', dynamicRange: true }
+    { name: 'Proventos', checkCell: "B3", expectedValue: 'Proventos', sourceRange: "B3:H60", targetRange: "B3:H60" },
+    { name: 'Subscrição', checkCell: "L3", expectedValue: 'Tipo', sourceRange: "L3:T60", targetRange: "L3:T60" },
+    { name: 'Ativos', checkCell: "B64", expectedValue: 'Proventos', sourceRange: "B64:H200", targetRange: "B64:H200" },
+    { name: 'Historico', checkCell: "L64", expectedValue: 'Tipo de Ativo', dynamicRange: true }
   ];
 
   ProvNames.forEach(config => {
@@ -634,7 +634,7 @@ function doSaveProv(config)
 
   if (!sheet_sr) 
   {
-    Logger.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
+    Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`);
     return; // Exit the function
   }
 
@@ -642,7 +642,7 @@ function doSaveProv(config)
 
   if (!sheet_tr) 
   {
-    Logger.log('ERROR: Target sheet "Prov" does not exist. Skipping operation.');
+    Logger.log(`ERROR: Target sheet "Prov" does not exist. Skipping operation.`);
     return; // Exit the function
   }
   const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
@@ -688,7 +688,7 @@ function doGetProventos()
 
   if (!sheet_tr) 
   {
-    Logger.log('ERROR: Target sheet "Prov_" does not exist. Skipping operation.');
+    Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`);
     return; // Exit the function
   }
 
@@ -704,16 +704,16 @@ function doGetProventos()
   const base64Params = Utilities.base64Encode(data);
 
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  Logger.log("URL:", url);
+  Logger.log(`URL: ${url}`);
 
   let responseText;
   try 
   {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    Logger.log("API Response:", responseText);
+    Logger.log(`API Response: ${responseText}`);
   } catch (error) {
-    Logger.log("ERROR: Failed to fetch API response.", error);
+    Logger.log(`ERROR: Failed to fetch API response. ${error}`);
     return; // Exit if the API request fails
   }
 
@@ -730,7 +730,7 @@ function doGetProventos()
   } 
   catch (error) 
   {
-    Logger.log("ERROR: Failed to parse JSON response.", error);
+    Logger.log(`ERROR: Failed to parse JSON response. ${error}`);
     return; // Exit if parsing fails
   }
 
@@ -752,10 +752,10 @@ function fillCashDividends(sheet_tr, dividends)
   const startRow = 4;
   const maxRows = 57;
 
-  sheet_tr.getRange("B2").setValue("Proventos em Dinheiro");
+  sheet_tr.getRange("B2").setValue('Proventos em Dinheiro');
   sheet_tr.getRange("B3:H60").clearContent();
 
-  const headers = ["Proventos", "Código ISIN", "Data de Aprovação", "Última Data Com", "Valor (R$)", "Relacionado a", "Data de Pagamento"];
+  const headers = ['Proventos', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Valor (R$)', 'Relacionado a', 'Data de Pagamento'];
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   dividends.slice(0, maxRows).forEach((div, i) => {
@@ -774,7 +774,7 @@ function fillStockDividends(sheet_tr, stockDividends)
   sheet_tr.getRange(`B${startRow}:G${startRow + stockDividends.length + 1}`).clearContent();
   sheet_tr.getRange(`B${startRow}`).setValue("Dividendos em Ações");
 
-  const headers = ["Proventos", "Código ISIN", "Data de Aprovação", "Última Data Com", "Fator", "Ativo Emitido"];
+  const headers = ['Proventos', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Fator', 'Ativo Emitido'];
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   stockDividends.forEach((stockDiv, i) => {
@@ -790,10 +790,10 @@ function fillSubscriptions(sheet_tr, subscriptions)
   const headerRange = "L3:T3";
   const startRow = 4;
 
-  sheet_tr.getRange("L2").setValue("Subscrições");
+  sheet_tr.getRange("L2").setValue('Subscrições');
   sheet_tr.getRange("L3:T60").clearContent();
 
-  const headers = ["Tipo", "Código ISIN", "Data de Aprovação", "Última Data Com", "Percentual (%)", "Ativo Emitido", "Preço Emissão (R$)", "Período de Negociação", "Data de Subscrição"];
+  const headers = ['Tipo', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Percentual (%)', 'Ativo Emitido', 'Preço Emissão (R$)', 'Período de Negociação', 'Data de Subscrição'];
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   subscriptions.forEach((sub, i) => {
@@ -812,7 +812,7 @@ function doGetCodeCVM()
 
   if (!sheet_tr) 
   {
-    Logger.log('ERROR: Target sheet "Info" does not exist. Skipping operation.');
+    Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`);
     return; // Exit the function if the target sheet does not exist
   }
 
@@ -840,7 +840,8 @@ function doGetCodeCVM()
   } 
   catch (error) 
   {
-    Logger.log("ERROR: Failed to fetch API response.", error);
+    Logger.log(`ERROR: Failed to fetch API response. ${error}`);
+
     return; // Exit if the API request fails
   }
 
@@ -857,21 +858,21 @@ function doGetCodeCVM()
   } 
   catch (error) 
   {
-    Logger.log("ERROR: Failed to parse JSON response.", error);
+    Logger.log(`ERROR: Failed to parse JSON response. ${error}`);
     return; // Exit if parsing fails
   }
 
   if (!content || !content[0]) 
   {
-    Logger.log("ERROR: No data returned from API.");
+    Logger.log(`ERROR: No data returned from API.`);
     return; // Exit if no data is available
   }
 
   const codeCVM = content[0]?.codeCVM || 'N/A'; // Default to 'N/A' if codeCVM is missing
-  Logger.log("Extracted codeCVM:", codeCVM);
+  Logger.log(`Extracted codeCVM: ${codeCVM}`);
 
   // Write to the Info sheet
-  sheet_tr.getRange('C3').setValue(codeCVM); // Set data
+  sheet_tr.getRange("C3").setValue(codeCVM); // Set data
 }
 
 /////////////////////////////////////////////////////////////////////SAVE AND SHARES TEMPLATE/////////////////////////////////////////////////////////////////////
@@ -884,16 +885,16 @@ function doSaveShares()
   // Add null check for DATA sheet
   if (!sheet_sr) 
   {
-    Logger.log('ERROR: DATA sheet not found. Skipping shares save.');
+    Logger.log(`ERROR: DATA sheet not found. Skipping shares save.`);
     return; // Exit early
   }
 
   try 
   {
-    var M1 = sheet_sr.getRange('M1').getValue();
-    var M2 = sheet_sr.getRange('M2').getValue();
+    var M1 = sheet_sr.getRange("M1").getValue();
+    var M2 = sheet_sr.getRange("M2").getValue();
 
-    Logger.log('SAVE: Shares and FF');
+    Logger.log(`SAVE: Shares and FF`);
 
     if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) 
     {
@@ -906,12 +907,12 @@ function doSaveShares()
     } 
     else 
     {
-      Logger.log('ERROR SAVE: Invalid values in M1/M2');
+      Logger.log(`ERROR SAVE: Invalid values in M1/M2`);
     }
   } 
   catch (error) 
   {
-    Logger.log('ERROR in doSaveShares:', error.message);
+    Logger.log(`ERROR in doSaveShares:`, error.message);
   }
 }
 
