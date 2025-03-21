@@ -120,7 +120,7 @@ function doExportSheet(SheetName)
   }
 
   if (Class !== 'STOCK') {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK`, Class);
+    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class}`);
     return;
   }
 

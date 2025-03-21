@@ -186,7 +186,8 @@ function clearExport(SheetName)
   } 
   else 
   {
-    Logger.log('Clear EXPORT:', SheetName, "Didn't find Ticket:", TKT);
+    Logger.log(`Clear EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`);
+
   }
 }
 

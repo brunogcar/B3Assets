@@ -172,6 +172,8 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
 
 /////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
+
 function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit) {
   var LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
   var LC = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
@@ -181,130 +183,118 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
   let save_range_sr, save_range_tr, mappingFunc;
   // Backup update variables:
   let backup_range_sr, backup_range_tr, backupMappingFunc;
+  // EDIT update variables:
+  let edit_range_sr, edit_range_tr, editMappingFunc;
 
+  if ( Save == "TRUE" ) {
 
-    if ( Save == "TRUE" )
-    {
-//-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-      if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) {
-        if (New_S.valueOf() > Old_S.valueOf()) {
-          if (Old_S.valueOf() == "") {
-            save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-            save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
-            mappingFunc = (source, target) => source;
-          } else {
-            backup_range_sr = sheet_tr.getRange(1, 2, LR, LC - 1);
-            backup_range_tr = sheet_tr.getRange(1, 3, LR, LC - 1);
-            backupMappingFunc = (source, target) => source;
-
-            save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-            save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
-            mappingFunc = (source, target) => source;
-          }
+    //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
+    if ([BLC, DRE, FLC, DVA].includes(SheetName)) {
+      if (New_S.valueOf() > Old_S.valueOf()) {
+        if (Old_S.valueOf() == "") {
+          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
+          save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
+          mappingFunc = (source, target) => source;
         } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
-        }
+          backup_range_sr = sheet_tr.getRange(1, 2, LR, LC - 1);
+          backup_range_tr = sheet_tr.getRange(1, 3, LR, LC - 1);
+          backupMappingFunc = (source, target) => source;
 
-        if ( Edit == "TRUE" )
-        {
-          if (New_S.valueOf() == New_T.valueOf()) {
-            let edit_range_sr = sheet_sr.getRange("B1:B" + LR).getValues();
-            let edit_range_tr = sheet_tr.getRange("B1:B" + LR).getValues();
-            let areValuesEqual = edit_range_tr.map((row, index) => row[0] === edit_range_sr[index][0]);
-            if (!areValuesEqual.every(Boolean)) {
-              doEditData(SheetName);
-            }
-          }
+          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
+          save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
+          mappingFunc = (source, target) => source;
         }
-        if ( Edit != "TRUE" )
-        {
-          Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
+      } else {
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+      }
+
+      if ( Edit == "TRUE" ) {
+        if (New_S.valueOf() == New_T.valueOf()) {
+          edit_range_sr = sheet_sr.getRange("B1:B" + LR);
+          edit_range_tr = sheet_tr.getRange("B1:B" + LR);
+          editMappingFunc = (source, target) => source; // Identity mapping for comparison
         }
       }
-//-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
-      else if (SheetName === Balanco) {
-        if (New_S.valueOf() > Old_S.valueOf()) {
-          if (Old_S.valueOf() == "") {
-            save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-            save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
-            mappingFunc = (source, target) => source;
-          } else {
-            backup_range_sr = sheet_sr.getRange(1, 3, LR, LC - 2);
-            backup_range_tr = sheet_sr.getRange(1, 4, LR, LC - 2);
-            backupMappingFunc = (source, target) => source;
-
-            save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-            save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
-            mappingFunc = (source, target) => source;
-          }
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
-        }
-
-        if ( Edit == "TRUE" )
-        {
-          if (New_S.valueOf() == New_T.valueOf()) {
-            let edit_range_sr = sheet_sr.getRange("B1:B" + LR).getValues();
-            let edit_range_tr = sheet_sr.getRange("C1:C" + LR).getValues();
-            let areValuesEqual = edit_range_tr.map((row, index) => row[0] === edit_range_sr[index][0]);
-            if (!areValuesEqual.every(Boolean)) {
-              doEditData(SheetName);
-            }
-          }
-        }
-        if ( Edit != "TRUE" )
-        {
-          Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
-        }
-      }
-//-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
-      else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) {
-        if (New_S.valueOf() > Old_S.valueOf()) {
-          if (Old_S.valueOf() == "") {
-            save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
-            save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
-            mappingFunc = (source, target) => source;
-          } else {
-            backup_range_sr = sheet_sr.getRange(1, 4, LR, LC - 3);
-            backup_range_tr = sheet_sr.getRange(1, 5, LR, LC - 3);
-            backupMappingFunc = (source, target) => source;
-
-            save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
-            save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
-            mappingFunc = (source, target) => source;
-          }
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
-        }
-
-        if ( Edit == "TRUE" )
-        {
-          if (New_S.valueOf() == New_T.valueOf()) {
-            let edit_range_tr = sheet_sr.getRange("C1:C" + LR).getValues();
-            let edit_range_sr = sheet_sr.getRange("D1:D" + LR).getValues();
-            let areValuesEqual = edit_range_tr.map((row, index) => row[0] === edit_range_sr[index][0]);
-            if (!areValuesEqual.every(Boolean)) {
-              doEditData(SheetName);
-            }
-          }
-        }
-        if ( Edit != "TRUE" )
-        {
-          Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
-        }
+      if ( Edit != "TRUE" ) {
+        Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
       }
     }
-    if ( Save != "TRUE" )
-    {
-      Logger.log(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`);
+    //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
+    else if (SheetName === Balanco) {
+      if (New_S.valueOf() > Old_S.valueOf()) {
+        if (Old_S.valueOf() == "") {
+          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
+          save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
+          mappingFunc = (source, target) => source;
+        } else {
+          backup_range_sr = sheet_sr.getRange(1, 3, LR, LC - 2);
+          backup_range_tr = sheet_sr.getRange(1, 4, LR, LC - 2);
+          backupMappingFunc = (source, target) => source;
+
+          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
+          save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
+          mappingFunc = (source, target) => source;
+        }
+      } else {
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+      }
+
+      if ( Edit == "TRUE" ) {
+        if (New_S.valueOf() == New_T.valueOf()) {
+          edit_range_sr = sheet_sr.getRange("B1:B" + LR);
+          edit_range_tr = sheet_sr.getRange("C1:C" + LR);
+          editMappingFunc = (source, target) => source;
+        }
+      }
+      if ( Edit != "TRUE" ) {
+        Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
+      }
     }
+    //-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
+    else if ([Resultado, Valor, Fluxo].includes(SheetName)) {
+      if (New_S.valueOf() > Old_S.valueOf()) {
+        if (Old_S.valueOf() == "") {
+          save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
+          save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
+          mappingFunc = (source, target) => source;
+        } else {
+          backup_range_sr = sheet_sr.getRange(1, 4, LR, LC - 3);
+          backup_range_tr = sheet_sr.getRange(1, 5, LR, LC - 3);
+          backupMappingFunc = (source, target) => source;
+
+          save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
+          save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
+          mappingFunc = (source, target) => source;
+        }
+      } else {
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+      }
+
+      if ( Edit == "TRUE" ) {
+        if (New_S.valueOf() == New_T.valueOf()) {
+          edit_range_sr = sheet_sr.getRange("C1:C" + LR);
+          edit_range_tr = sheet_sr.getRange("D1:D" + LR);
+          editMappingFunc = (source, target) => source;
+        }
+      }
+      if ( Edit != "TRUE" ) {
+        Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
+      }
+    }
+//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
+  }
+  if ( Save != "TRUE" ) {
+    Logger.log(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`);
+  }
 
   /////////////////////////////////////////////////////////////////////COMMON UPDATE BLOCK/////////////////////////////////////////////////////////////////////
+  // Perform backup update first, if defined.
   if (backup_range_sr && backup_range_tr && backupMappingFunc) {
     const backupValues = backup_range_sr.getValues();
     backup_range_tr.setValues(backupMappingFunc(backupValues, backup_range_tr.getValues()));
   }
 
+  // Then perform the main SAVE update.
   if (save_range_sr && save_range_tr && mappingFunc) {
     const values_sr = save_range_sr.getValues();
     const values_tr = save_range_tr.getValues();
@@ -312,6 +302,16 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     save_range_tr.setValues(updatedValues);
     Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
     doExportData(SheetName);
+  }
+
+  // Finally, perform the common EDIT check.
+  if (edit_range_sr && edit_range_tr && editMappingFunc) {
+    const editValues_sr = edit_range_sr.getValues();
+    const editValues_tr = edit_range_tr.getValues();
+    const areEqual = editValues_tr.every((row, index) => row[0] === editValues_sr[index][0]);
+    if (!areEqual) {
+      doEditData(SheetName);
+    }
   }
 }
 
