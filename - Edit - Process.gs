@@ -127,64 +127,65 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
 
   let range_sr, range_tr, mappingFunc;
 
-  if ( Edit == "TRUE" )
-  {
+  if ( Edit == "TRUE" ) {
+    switch (SheetName) {
 //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-
-    if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) {
-      if (New_S.valueOf() > New_T.valueOf()) {
-        doSaveData(SheetName);
-        return;
-      }
-      if (New_S.valueOf() == New_T.valueOf()) {
-        // For these sheets, the mapping is applied on the target values.
-        range_sr = sheet_sr.getRange("B1:B" + LR);
-        range_tr = sheet_tr.getRange("B1:B" + LR);
-        mappingFunc = (source, target) =>
-          target.map((row, index) => [row[0] !== source[index][0] ? source[index][0] : row[0]]);
-      }
-    }
-
+      case BLC:
+      case DRE:
+      case FLC:
+      case DVA:
+        if (New_S.valueOf() > New_T.valueOf()) {
+          doSaveData(SheetName);
+          return;
+        }
+        if (New_S.valueOf() == New_T.valueOf()) {
+          // For these sheets, the mapping is applied on the target values.
+          range_sr = sheet_sr.getRange("B1:B" + LR);
+          range_tr = sheet_tr.getRange("B1:B" + LR);
+          mappingFunc = (source, target) =>
+            target.map((row, index) => [row[0] !== source[index][0] ? source[index][0] : row[0]]);
+        }
+        break;
 //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
-
-    else if (SheetName === Balanco) {
-      if (New_S.valueOf() > Old_S.valueOf()) {
-        doSaveData(SheetName);
-        return;
-      }
-      if (New_S.valueOf() == Old_S.valueOf()) {
-        range_sr = sheet_sr.getRange("B1:B" + LR);
-        range_tr = sheet_sr.getRange("C1:C" + LR);
-        mappingFunc = (source, target) =>
-          source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-      }
-    }
-
+      case Balanco:
+        if (New_S.valueOf() > Old_S.valueOf()) {
+          doSaveData(SheetName);
+          return;
+        }
+        if (New_S.valueOf() == Old_S.valueOf()) {
+          range_sr = sheet_sr.getRange("B1:B" + LR);
+          range_tr = sheet_sr.getRange("C1:C" + LR);
+          mappingFunc = (source, target) =>
+            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
+        }
+        break;
 //-------------------------------------------------------------------Resultado / Valor  / Fluxo-------------------------------------------------------------------//
+      case Resultado:
+      case Valor:
+      case Fluxo:
+        if (New_S.valueOf() > Old_S.valueOf()) {
+          doSaveData(SheetName);
+          return;
+        }
+        if (New_S.valueOf() == Old_S.valueOf()) {
+          range_sr = sheet_sr.getRange("C1:C" + LR);
+          range_tr = sheet_sr.getRange("D1:D" + LR);
+          mappingFunc = (source, target) =>
+            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
+        }
+        break;
 
-    else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) {
-      if (New_S.valueOf() > Old_S.valueOf()) {
-        doSaveData(SheetName);
+      default:
+        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditSheet`);
         return;
-      }
-      if (New_S.valueOf() == Old_S.valueOf()) {
-        range_sr = sheet_sr.getRange("C1:C" + LR);
-        range_tr = sheet_sr.getRange("D1:D" + LR);
-        mappingFunc = (source, target) =>
-          source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-      }
-    } else {
-      Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditSheet`);
-      return;
     }
-//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
+
   }
-  if ( Edit != "TRUE" )
-  {
+  if ( Edit != "TRUE" ) {
     Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
   }
 
-/////////////////////////////////////////////////////////////////////PROCESS -  END/////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////PROCESS -  END/////////////////////////////////////////////////////////////////////
   // Common code block: update the values based on the mapping function
   if (range_sr && range_tr && mappingFunc) {
     const values_sr = range_sr.getValues();

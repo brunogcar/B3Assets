@@ -102,14 +102,14 @@ function doExportSheet(SheetName)
   if (!sheet_sr) { Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportSheet from sheet_sr`); return; }
     var A2 = sheet_sr.getRange("A2").getValue();
     var A5 = sheet_sr.getRange("A5").getValue();
-    var LR_S = sheet_sr.getLastRow();
-    var LC_S = sheet_sr.getLastColumn();
+    var LR_sr = sheet_sr.getLastRow();
+    var LC_sr = sheet_sr.getLastColumn();
 
   const ss_t = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = ss_t.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet ${SheetName} - Target sheet does not exist on doExportSheet from sheet_tr`); return; }
-    var LR_T = sheet_tr.getLastRow();
-    var LC_T = sheet_tr.getLastColumn();
+    var LR_tr = sheet_tr.getLastRow();
+    var LC_tr = sheet_tr.getLastColumn();
 
   let ShouldExport = false;
   let Export;                                                                          // Declare Export without an initial value
@@ -237,7 +237,7 @@ function doExportSheet(SheetName)
 
         if (SheetName === FUND) 
         {
-          var Data = sheet_sr.getRange(2, 1, 1, LC_S).getValues();                    // 2D array
+          var Data = sheet_sr.getRange(2, 1, 1, LC_sr).getValues();                    // 2D array
           FilteredData = Data[0].map((Value, ColIndex) => 
           {
             if (ColIndex + 1 < 3) 
@@ -256,10 +256,10 @@ function doExportSheet(SheetName)
         } 
         else 
         {
-          FilteredData = sheet_sr.getRange(2, 1, 1, LC_S).getValues()[0];             // Use unfiltered data
+          FilteredData = sheet_sr.getRange(2, 1, 1, LC_sr).getValues()[0];             // Use unfiltered data
         }
 
-        var Search = sheet_tr.getRange("A2:A" + LR_T).createTextFinder(TKT).findNext();
+        var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(TKT).findNext();
 
         if (Search) 
         {
@@ -268,7 +268,7 @@ function doExportSheet(SheetName)
         } 
         else 
         {
-          var NewRow = sheet_tr.getRange(LR_T + 1, 1, 1, 1).setValue([TKT]);
+          var NewRow = sheet_tr.getRange(LR_tr + 1, 1, 1, 1).setValue([TKT]);
           Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
           NewRow.offset(0, 1, 1, FilteredData.length).setValues([FilteredData]);      // Ensure it`s a 2D array
@@ -282,7 +282,7 @@ function doExportSheet(SheetName)
     }
     else 
     {
-      Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK`, Class);
+      Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK ${Class}`);
     }
   }
   else 
@@ -310,8 +310,8 @@ function doExportData(SheetName)
 
   const sheet_tr = ss_t.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportData from sheet_tr`); return; }
-    var LR_T = sheet_tr.getLastRow();
-    var LC_T = sheet_tr.getLastColumn();
+    var LR_tr = sheet_tr.getLastRow();
+    var LC_tr = sheet_tr.getLastColumn();
 
   let Data = [];
   let Export;
@@ -404,7 +404,7 @@ function doExportData(SheetName)
 
   if( Export == "TRUE" )
   {
-    var Search = sheet_tr.getRange("A2:A" + LR_T).createTextFinder(TKT).findNext();
+    var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(TKT).findNext();
 
     if (Search)
     {
@@ -413,7 +413,7 @@ function doExportData(SheetName)
     }
     else
     {
-      var NewRow = sheet_tr.getRange(LR_T+1,1,1,1).setValue([TKT]);
+      var NewRow = sheet_tr.getRange(LR_tr+1,1,1,1).setValue([TKT]);
       Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
 
       NewRow.offset(0, 1, 1 , Data[0].length).setValues(Data);
@@ -442,9 +442,7 @@ function doExportExtra(SheetName)
   let Data = [];
   let Export;                 // Declare Export without an initial value
 
-  switch (SheetName) 
-  {
-
+  switch (SheetName) {
 //-------------------------------------------------------------------Right-------------------------------------------------------------------//
     case RIGHT_1:
     case RIGHT_2:
@@ -474,9 +472,7 @@ function doExportExtra(SheetName)
       Export = null;
     break;
   }
-
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
-
   var M = sheet_sr.getRange("M2").getValue();                                        // Ticker
 
   var A = sheet_sr.getRange("A2").getValue();                                        // Data
@@ -505,9 +501,7 @@ function doExportExtra(SheetName)
     Data.push([A, B, C, D, E, F, G, H, I, N, O, J, K, L]);
     ShouldExport = true;                                                             // Set ShouldExport to true if conditions are met
   }
-
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
-
   if( !ErrorValues.includes(A) )
   {
     if (ShouldExport) 
@@ -538,10 +532,10 @@ function doExportExtra(SheetName)
           sheet_tr = ss_t.getSheetByName(SheetName);
         }
 
-        var LR_T = sheet_tr.getLastRow();
-        var LC_T = sheet_tr.getLastColumn();
+        var LR_tr = sheet_tr.getLastRow();
+        var LC_tr = sheet_tr.getLastColumn();
 
-        var Search = sheet_tr.getRange("A2:A" + LR_T).createTextFinder(M).findNext();
+        var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(M).findNext();
 
         if (Search)
         {
@@ -551,7 +545,7 @@ function doExportExtra(SheetName)
         else
         {
           // Value not found, add a new row with the ticker (M)
-          var NewRow = sheet_tr.getRange(LR_T + 1, 1, 1, 1).setValue([M]);
+          var NewRow = sheet_tr.getRange(LR_tr + 1, 1, 1, 1).setValue([M]);
           Logger.log(`SUCCESS EXPORT. Ticker: ${M}. Sheet: ${SheetName}.`);
 
           // Now set the adjacent values (Data) in the new row

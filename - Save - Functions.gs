@@ -44,12 +44,12 @@ function doCheckDATA(SheetName) {
   Logger.log(`CHECK Sheet: ${SheetName}`);
 
   switch (SheetName) {
-    //-------------------------------------------------------------------PROV-------------------------------------------------------------------//
+//-------------------------------------------------------------------PROV-------------------------------------------------------------------//
     case PROV:
       Check = sheet_p.getRange("B3").getValue();
       break;
 
-    //-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
+//-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
     case OPCOES:
       Check = sheet_o.getRange("B2").getValue();
       if (Check === '') {
@@ -60,8 +60,7 @@ function doCheckDATA(SheetName) {
         Logger.log(`DISPLAYED:  ${SheetName}`);
       }
       break;
-
-    //-------------------------------------------------------------------SWING-------------------------------------------------------------------//
+//-------------------------------------------------------------------SWING-------------------------------------------------------------------//
     case SWING_4:
     case SWING_12:
     case SWING_52:
@@ -69,18 +68,15 @@ function doCheckDATA(SheetName) {
       const Class = sheet_c.getRange(IST).getDisplayValue(); // IST = Is Stock?
       Check = Class === 'STOCK' ? sheet_d.getRange('B16').getValue() : 'TRUE';
       break;
-
-    //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
+//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
     case BTC:
       Check = sheet_d.getRange("B3").getValue();
       break;
-
-    //-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
+//-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
     case TERMO:
       Check = sheet_d.getRange("B24").getValue();
       break;
-
-    //-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
+//-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
     case FUTURE:
       const futureChecks = ["B32", "B33", "B34"];
       for (let i = 0; i < futureChecks.length; i++) {
@@ -100,8 +96,7 @@ function doCheckDATA(SheetName) {
     case FUTURE_3:
       Check = sheet_d.getRange("B34").getValue();
       break;
-
-    //-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
+//-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
     case RIGHT_1:
       Check = sheet_d.getRange("C38").getValue();
       break;
@@ -109,8 +104,7 @@ function doCheckDATA(SheetName) {
     case RIGHT_2:
       Check = sheet_d.getRange("C39").getValue();
       break;
-
-    //-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
+//-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
     case RECEIPT_9:
       Check = sheet_d.getRange("C44").getValue();
       break;
@@ -118,8 +112,7 @@ function doCheckDATA(SheetName) {
     case RECEIPT_10:
       Check = sheet_d.getRange("C45").getValue();
       break;
-
-    //-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
+//-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
     case WARRANT_11:
       Check = sheet_d.getRange("C50").getValue();
       break;
@@ -131,8 +124,7 @@ function doCheckDATA(SheetName) {
     case WARRANT_13:
       Check = sheet_d.getRange("C52").getValue();
       break;
-
-    //-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
+//-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
     case BLOCK:
       const blockChecks = ["C56", "C57", "C58"];
       for (let i = 0; i < blockChecks.length; i++) {
@@ -140,8 +132,7 @@ function doCheckDATA(SheetName) {
         if (!ErrorValues.includes(Check)) break;
       }
       break;
-
-    //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
+//-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
     case BLC:
       Check = sheet_b.getRange("B1").getValue();
       break;
@@ -157,8 +148,7 @@ function doCheckDATA(SheetName) {
     case DVA:
       Check = sheet_v.getRange("C1").getValue();
       break;
-
-    //-------------------------------------------------------------------DEFAULT-------------------------------------------------------------------//
+//-------------------------------------------------------------------DEFAULT-------------------------------------------------------------------//
     default:
       Check = 'FALSE';
       Logger.log(`Sheet Name ${SheetName} not recognized.`);
@@ -195,137 +185,121 @@ function processCheckDATA(sheet_s, SheetName, Check) {
   return "TRUE";
 }
 
-
 /////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doTrim() 
-{
+function doTrim() {
   const SheetNames = [
     SWING_4, SWING_12, SWING_52
   ];
 
   SheetNames.forEach(SheetName => 
   {
-    try 
-    {
-      doTrimSheet(SheetName);
-    } 
-    catch (error) 
-    {
-      Logger.error(`Error saving sheet ${SheetName}: ${error}`);
-    }
+    try { doTrimSheet(SheetName); } 
+    catch (error) { Logger.error(`Error saving sheet ${SheetName}: ${error}`); }
   });
 }
 
-function doTrimSheet(SheetName) 
-{
+function doTrimSheet(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_s = ss.getSheetByName(SheetName); // Target
 
   Logger.log(`TRIM: ${SheetName}`);
 
-  if (!sheet_s) 
-  {
-    Logger.error(`Sheet ${SheetName} not found.`);
-    return;
+  if (!sheet_s) { 
+    Logger.error(`Sheet ${SheetName} not found.`); 
+    return; 
   }
 
   var LR = sheet_s.getLastRow();
   var LC = sheet_s.getLastColumn();
 
-  if (SheetName === SWING_4) 
-  {
-    if (LR > 126) 
-    {
-      sheet_s.getRange(127, 1, LR - 126, LC).clearContent();
-      Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
-      Logger.log(`Cleared data below row 126 in ${SheetName}.`);
-    }
-  } 
-  else if (SheetName === SWING_12) 
-  {
-    if (LR > 366) 
-    {
-      sheet_s.getRange(367, 1, LR - 366, LC).clearContent();
-      Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
-      Logger.log(`Cleared data below row 366 in ${SheetName}.`);
-    }
-  } 
-  else if (SheetName === SWING_52) 
-  {
-      Logger.log(`NOTHING TO TRIM. Sheet: ${SheetName}.`);
-  } 
-  else 
-  {
-    // Default logic for other sheets
-    Logger.log(`No specific logic defined for ${SheetName}.`);
-  }
+  switch (SheetName) {
+    case SWING_4:
+      if (LR > 126) {
+        sheet_s.getRange(127, 1, LR - 126, LC).clearContent();
+        Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
+        Logger.log(`Cleared data below row 126 in ${SheetName}.`);
+      }
+      break;
 
+    case SWING_12:
+      if (LR > 366) {
+        sheet_s.getRange(367, 1, LR - 366, LC).clearContent();
+        Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
+        Logger.log(`Cleared data below row 366 in ${SheetName}.`);
+      }
+      break;
+
+    case SWING_52:
+      Logger.log(`NOTHING TO TRIM. Sheet: ${SheetName}.`);
+      break;
+
+    default:
+      Logger.log(`No specific logic defined  to Trim for ${SheetName}.`);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////Hide and Show Sheets/////////////////////////////////////////////////////////////////////
 
-function doDisableSheets() 
-{
+function doDisableSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_c = ss.getSheetByName('Config');
   const sheets = ss.getSheets();
 
   var Class = sheet_c.getRange(IST).getDisplayValue();                                                                 // IST = Is Stock?
+  let SheetNames = [];
 
-  if (Class === 'STOCK') 
-  {
-    var SheetNames = ['DATA', 'Prov_', 'FIBO', 'Cotações', 'UPDATE', 'Balanço', 'Balanço Ativo', 'Balanço Passivo', 'Resultado', 'Demonstração', 'Fluxo', 'Fluxo de Caixa', 'Valor', 'Demonstração do Valor Adicionado'];
+  switch (Class) {
+    case 'STOCK':
+      SheetNames = ['DATA', 'Prov_', 'FIBO', 'Cotações', 'UPDATE', 'Balanço', 'Balanço Ativo', 'Balanço Passivo', 'Resultado', 'Demonstração', 'Fluxo', 'Fluxo de Caixa', 'Valor', 'Demonstração do Valor Adicionado'];
 
-    for (var i = 0; i < sheets.length; i++) 
-    {
-      const sheet = sheets[i];
-      if (sheet && SheetNames.indexOf(sheet.getName()) !== -1 && !sheet.isSheetHidden()) {
-        sheet.hideSheet();
-        Logger.log(`Sheet: ${sheet.getName()} HIDDEN`);
+      sheets.forEach(sheet => {
+        if (!sheet.isSheetHidden() && SheetNames.includes(sheet.getName())) {
+          sheet.hideSheet();
+          Logger.log(`Sheet: ${sheet.getName()} HIDDEN`);
+        }
+      });
+      break;
+
+    case 'ADR':
+      SheetNames = new Set(['Config', 'Settings', 'Index', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações']);
+
+      for (let i = sheets.length - 1; i >= 0; i--) {                                                                    // Reverse iteration to avoid index shifting
+        const sheet = sheets[i];
+        if (!SheetNames.has(sheet.getName())) {                                                                         // Delete all but SheetNames
+          Logger.log(`Deleting sheet: ${sheet.getName()}`);
+          ss.deleteSheet(sheet);
+        }
       }
-    }
-  } 
-  else if (Class === 'ADR') 
-  {
-    var SheetNames = ['Config', 'Settings', 'Index', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações'];
+      break;
 
-    for (var i = sheets.length - 1; i >= 0; i--) 
-    {                                                                                                                 // Reverse iteration to avoid index shifting
-      const sheet = sheets[i];
-      if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
-      {                                                                                                               // Delete all but SheetNames
-        Logger.log(`Deleting sheet: ${sheet.getName()}`);
-        ss.deleteSheet(sheet);
-      }
-    }
-  } 
-  else if (Class === 'BDR' || Class === 'ETF') 
-  {
-    var SheetNames = ['Config', 'Settings', 'Index', 'Prov', 'Prov_', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações', 'DATA', 'OPT', 'Opções', 'BTC', 'Termo'];
+    case 'BDR':
+    case 'ETF':
+      SheetNames = new Set(['Config', 'Settings', 'Index', 'Prov', 'Prov_', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações', 'DATA', 'OPT', 'Opções', 'BTC', 'Termo']);
 
-    for (var i = sheets.length - 1; i >= 0; i--) 
-    {                                                                                                                 // Reverse iteration to avoid index shifting
-      const sheet = sheets[i];
-      if (sheet && SheetNames.indexOf(sheet.getName()) === -1) 
-      { // Delete all but SheetNames
-        Logger.log(`Deleting sheet:`, sheet.getName());
-        ss.deleteSheet(sheet);
+      for (let i = sheets.length - 1; i >= 0; i--) {                                                                    // Reverse iteration to avoid index shifting
+        const sheet = sheets[i];
+        if (!SheetNames.has(sheet.getName())) {                                                                         // Delete all but SheetNames
+          Logger.log(`Deleting sheet: ${sheet.getName()}`);
+          ss.deleteSheet(sheet);
+        }
       }
-    }
+      break;
+      
+    default:
+      Logger.log(`Class ${Class} not recognized. No sheets modified.`);
   }
   hideConfig();
 }
 
 /////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
 
-function hideConfig()
-{
+function hideConfig() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_s = ss.getSheetByName(`Settings`);                        // Source sheet
   const sheet_c = ss.getSheetByName(`Config`);                          // Config sheet
 
-  var Hide_Config = sheet_c.getRange(HCR).getDisplayValue();                       // HCR = Hide Config Range
+  var Hide_Config = sheet_c.getRange(HCR).getDisplayValue();            // HCR = Hide Config Range
 
   if (Hide_Config == "TRUE") {
     if (sheet_s && !sheet_s.isSheetHidden()) {
