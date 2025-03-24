@@ -31,6 +31,7 @@ function doCheckDATAS()
 function doCheckDATA(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_s = ss.getSheetByName(SheetName); // Source sheet
+  const sheet_i = ss.getSheetByName('Index');   // DATA sheet
   const sheet_d = ss.getSheetByName('DATA');    // DATA sheet
   const sheet_p = ss.getSheetByName(PROV);      // PROV sheet
   const sheet_o = ss.getSheetByName('OPT');     // OPT sheet
@@ -75,6 +76,10 @@ function doCheckDATA(SheetName) {
 //-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
     case TERMO:
       Check = sheet_d.getRange("B24").getValue();
+      break;
+//-------------------------------------------------------------------FUND-------------------------------------------------------------------//
+    case FUND:
+      Check = sheet_i.getRange("D2").getValue();
       break;
 //-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
     case FUTURE:

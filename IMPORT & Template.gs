@@ -98,7 +98,7 @@ function doImportProventos()
 
 function doImportSheets() {
   const SheetNames = [
-    SWING_4, SWING_52, OPCOES, BTC, TERMO, FUND, 
+    SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, 
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, 
     RIGHT_1, RIGHT_2, 
     RECEIPT_9, RECEIPT_10, 
