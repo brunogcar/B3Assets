@@ -470,6 +470,7 @@ function doProventos()
   doCheckDATA(PROV);
   doGetProventos();
   doSaveProventos();
+  doExportProventos();
 }
 
 function doSaveProventos() {

@@ -617,4 +617,79 @@ function doExportInfo()
   }
 };
 
+/////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
+
+function doExportProventos()
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = fetchSheetByName('Config'); 
+  const sheet_pv = fetchSheetByName('Prov');  
+
+  if (!sheet_co || !sheet_pv) return;
+
+  var Class = sheet_co.getRange(IST).getDisplayValue();           // IST = Is Stock? 
+  var Target_Id = sheet_co.getRange(TDR).getDisplayValue();         // TDR = Target sheet ID
+  if (!Target_Id) { Logger.log("Warning: Target ID is empty."); }
+
+  var SheetName = sheet_pv.getName();
+  var ISIN = sheet_pv.getRange("B3").getValue();                    // Código ISIN
+  var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
+
+  var B = sheet_pv.getRange("J2").getValue();                       // Date
+  var C = sheet_pv.getRange("M66").getValue();                      // DY
+  var D = sheet_pv.getRange("M67").getValue();                      // Payout
+  var E = sheet_pv.getRange("M68").getValue();                      // EY
+  var F = sheet_pv.getRange("P67").getValue();                      // EVP - DPA
+  var G = sheet_pv.getRange("Q67").getValue();                      // EQP
+  var H = sheet_pv.getRange("P68").getValue();                      // EVA
+  var I = sheet_pv.getRange("Q68").getValue();                      // EQA
+  var J = sheet_pv.getRange("R67").getValue();                      // GVP
+  var K = sheet_pv.getRange("S67").getValue();                      // GQP
+  var L = sheet_pv.getRange("R68").getValue();                      // GQP
+  var M = sheet_pv.getRange("S68").getValue();                      // GQA
+
+  // Remove TKT from data because TKT will be placed in column A.
+  var Data = [[B, C, D, E, F, G, H, I, J, K, L, M]];  // Now Data has 12 columns
+
+  var ss_t = SpreadsheetApp.openById(Target_Id);  
+  var sheet_tr = ss_t.getSheetByName('Poventos');  
+
+  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Poventos' not found in spreadsheet ID ${Target_Id}`); }
+
+  var LR = sheet_tr.getLastRow();
+
+  if( !ErrorValues.includes(B) && !ErrorValues.includes(ISIN) )
+  {
+    if (Class == 'STOCK') {
+      var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
+
+      if (Search)
+      {
+        // Found an existing row; update adjacent columns.
+        Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
+        Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+      }
+      else
+      {
+        // Value not found, add a new row.
+        sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
+        Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to Prov.`);
+
+        // Set the Data to the columns to the right.
+        sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
+        Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+      }
+    }
+    else
+    {
+      Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Class != STOCK (${Class})`);
+    }
+  }
+  else
+  {
+    Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date or ISIN error or missing`);
+  }
+
+};
+
 /////////////////////////////////////////////////////////////////////EXPORT TEMPLATE/////////////////////////////////////////////////////////////////////
