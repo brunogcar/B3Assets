@@ -90,7 +90,7 @@ function doExportSheet(SheetName)
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
     var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
-    var Target_Id = sheet_co.getRange(TDR).getValues();                               // Target sheet ID
+    var Target_Id = sheet_co.getRange(TDR).getValue();                                // Target sheet ID
     if (!Target_Id) {Logger.log("Warning: Target ID is empty."); }
 
   const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
@@ -100,8 +100,8 @@ function doExportSheet(SheetName)
 
   const sheet_sr = fetchSheetByName(SheetName);                                       // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportSheet from sheet_sr`); return; }
-    var A2 = sheet_sr.getRange("A2").getValue();
-    var A5 = sheet_sr.getRange("A5").getValue();
+
+    var [A2, A5] = sheet_sr.getRange("A2:A5").getValues().flat();
     var LR_sr = sheet_sr.getLastRow();
     var LC_sr = sheet_sr.getLastColumn();
 
@@ -193,7 +193,7 @@ function doExportSheet(SheetName)
       var E2 = sheet_sr.getRange("E2").getValue();
       var G2 = sheet_sr.getRange("G2").getValue();
 
-      if( ( !ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2) ) )
+      if( !ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2) )
       {
         ShouldExport = true;
       }
@@ -299,7 +299,7 @@ function doExportData(SheetName)
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
     var TKT = sheet_co.getRange(TKR).getValue();                                      // TKR = Ticket Range
-    var Target_Id = sheet_co.getRange(TDR).getValues();                               // Target sheet ID
+    var Target_Id = sheet_co.getRange(TDR).getValue();                                // Target sheet ID
 
   const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -396,11 +396,15 @@ function doExportData(SheetName)
     break;
 
     default:
-      Export = null;
-    break;
+      Logger.log(`ERROR EXPORT: ${SheetName} - Invalid sheet name`);
+      return;
   }
 
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
+  if (Data.length === 0) {
+    Logger.log(`EXPORT: Skipped ${SheetName} - No valid data`);
+    return;
+  }
 
   if( Export == "TRUE" )
   {
@@ -433,7 +437,7 @@ function doExportExtra(SheetName)
   Logger.log(`EXPORT: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
-    var Target_Id = sheet_co.getRange(TDR).getValues();                              // TDR = Target ID Range
+    var Target_Id = sheet_co.getRange(TDR).getValue();                               // TDR = Target ID Range
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportExtra from sheet_sr`); return; }
@@ -469,11 +473,11 @@ function doExportExtra(SheetName)
     break;
 
     default:
-      Export = null;
+      Export = FALSE;
     break;
   }
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
-  var M = sheet_sr.getRange("M2").getValue();                                        // Ticker
+  var TKT = sheet_co.getRange(TKR).getValue();                                       // TKR = Ticket Range
 
   var A = sheet_sr.getRange("A2").getValue();                                        // Data
   var B = sheet_sr.getRange("B2").getValue();                                        // Cotação
@@ -502,69 +506,53 @@ function doExportExtra(SheetName)
     ShouldExport = true;                                                             // Set ShouldExport to true if conditions are met
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
-  if( !ErrorValues.includes(A) )
-  {
-    if (ShouldExport) 
-    {
-      if (Export == "TRUE") 
-      {
-        const ss_t = SpreadsheetApp.openById(Target_Id);                             // Target spreadsheet
-        let sheet_tr;                                                               // Declare sheet_tr outside the conditional scope
+  if (!ErrorValues.includes(A)) {
+    if (ShouldExport) {
+      if (Export == "TRUE") {
+        const ss_t = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
+        let sheet_tr;                                                                 // Declare sheet_tr outside the conditional scope
 
-        if (SheetName === RIGHT_1 || SheetName === RIGHT_2 ) 
-        {
+        if (SheetName === RIGHT_1 || SheetName === RIGHT_2) {
           sheet_tr = ss_t.getSheetByName('Right');
-        }
-        else if (SheetName === RECEIPT_9 || SheetName === RECEIPT_10 ) 
-        {
+        } else if (SheetName === RECEIPT_9 || SheetName === RECEIPT_10) {
           sheet_tr = ss_t.getSheetByName('Receipt');
-        }
-        else if (SheetName === WARRANT_11 || SheetName === WARRANT_12 || SheetName === WARRANT_13) 
-        {
+        } else if (SheetName === WARRANT_11 || SheetName === WARRANT_12 || SheetName === WARRANT_13) {
           sheet_tr = ss_t.getSheetByName('Warrant');
-        }
-        else if (SheetName === BLOCK) 
-        {
+        } else if (SheetName === BLOCK) {
           sheet_tr = ss_t.getSheetByName('Block');
-        }
-        else
-        {
+        } else {
           sheet_tr = ss_t.getSheetByName(SheetName);
         }
 
         var LR_tr = sheet_tr.getLastRow();
         var LC_tr = sheet_tr.getLastColumn();
+        var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(TKT).findNext();
 
-        var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(M).findNext();
+        if (Data.length > 0) {
+          var Search = sheet_tr.getRange("A2:A" + LR_tr).createTextFinder(TKT).findNext();
 
-        if (Search)
-        {
-          Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
-          Logger.log(`SUCCESS EXPORT. Data for ${M} . Sheet: ${SheetName}.`);
+          if (Search) {
+            Search.offset(0, 1, 1, Data[0].length).setValues(Data);
+           Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+          } else {
+            // Value not found, add a new row with the ticker (TKT)
+            var NewRow = sheet_tr.getRange(LR_tr + 1, 1, 1, 1).setValue([TKT]);
+            Logger.log(`SUCCESS EXPORT. Ticker: ${TKT}. Sheet: ${SheetName}.`);
+
+            // Now set the adjacent values (Data) in the new row
+            NewRow.offset(0, 1, 1, Data[0].length).setValues(Data);
+            Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
+          }
+        } else {
+          Logger.log(`EXPORT: Skipped ${SheetName} - No valid data to export.`);
         }
-        else
-        {
-          // Value not found, add a new row with the ticker (M)
-          var NewRow = sheet_tr.getRange(LR_tr + 1, 1, 1, 1).setValue([M]);
-          Logger.log(`SUCCESS EXPORT. Ticker: ${M}. Sheet: ${SheetName}.`);
-
-          // Now set the adjacent values (Data) in the new row
-          NewRow.offset(0, 1, 1, Data[0].length).setValues(Data);
-          Logger.log(`SUCCESS EXPORT. Data for ${M}. Sheet: ${SheetName}.`);
-        }
-      }
-      else
-      {
+      } else {
         Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE`);
       }
+    } else {
+      Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met.`);
     }
-    else
-    {
-      Logger.log(`EXPORT: ${SheetName} - ShouldExport is FALSE`);
-    }
-  }
-  else
-  {
+  } else {
     Logger.log(`EXPORT: ${SheetName} - Data (A) failed ErrorValues`);
   }
 }
@@ -574,52 +562,53 @@ function doExportExtra(SheetName)
 function doExportInfo()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = fetchSheetByName('Config');                                      // Config sheet
+  const sheet_co = fetchSheetByName('Config');                      // Config sheet
+  const sheet_in = fetchSheetByName('Info');                        // Info sheet
 
-  var Exported = sheet_co.getRange(EXR).getDisplayValue();                          // EXR = Exported?
-  var Target_Id = sheet_co.getRange(DIR).getValues();                               // DIR = DATA Source ID
-
-  const sheet_in = fetchSheetByName('Info');                                        // Info sheet
-  var SheetName =  sheet_in.getName()
-  Logger.log(`Export: ${SheetName}`);
   if (!sheet_co || !sheet_in) return;
 
-  var A = sheet_co.getRange("B3").getValue();                                       // Ticket
-  var B = sheet_in.getRange("C3").getValue();                                       // Codigo CVM
-  var C = sheet_in.getRange("C4").getValue();                                       // CNPJ
-  var D = sheet_in.getRange("C5").getValue();                                       // Empresa
-  var E = sheet_in.getRange("C6").getValue();                                       // Razão Social
-  var F = sheet_in.getRange("C13").getValue();                                      // Tipo de Ação
-  var G = sheet_in.getRange("C9").getValue();                                       // Listagem
-  var H = sheet_in.getRange("C18").getValue();                                      // Setor
-  var I = sheet_in.getRange("C19").getValue();                                      // Subsetor
-  var J = sheet_in.getRange("C20").getValue();                                      // Segmento
-  var K = sheet_in.getRange("C7").getValue();                                       // Situação Registro
+  var SheetName = sheet_in.getName();
+  Logger.log(`Exporting: ${SheetName}`);
 
-  var Data = [];
-  Data.push(A,B,C,D,E,F,G,H,I,J,K);
+  var Target_Id = sheet_co.getRange(DIR).getDisplayValue();         // DIR = DATA Source ID
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
-  var ss_t = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
-  var sheet_tr = ss_t.getSheetByName('Relação');                                    // Target sheet
+  var Exported = sheet_co.getRange(EXR).getDisplayValue();          // EXR = Exported?
+  if (Exported === "TRUE") { Logger.log("ERROR EXPORT: already exported."); return;  }
+
+  var A = sheet_co.getRange("B3").getValue();                       // Ticket
+  var B = sheet_in.getRange("C3").getValue();                       // Código CVM
+  var C = sheet_in.getRange("C4").getValue();                       // CNPJ
+  var D = sheet_in.getRange("C5").getValue();                       // Empresa
+  var E = sheet_in.getRange("C6").getValue();                       // Razão Social
+  var F = sheet_in.getRange("C13").getValue();                      // Tipo de Ação
+  var G = sheet_in.getRange("C9").getValue();                       // Listagem
+  var H = sheet_in.getRange("C18").getValue();                      // Setor
+  var I = sheet_in.getRange("C19").getValue();                      // Subsetor
+  var J = sheet_in.getRange("C20").getValue();                      // Segmento
+  var K = sheet_in.getRange("C7").getValue();                       // Situação Registro
+
+  // Convert 0 values to blank ("")
+  var Data = [[A, B, C, D, E, F, G, H, I, J, K]].map(row => row.map(value => value === 0 ? "" : value));
+
+  var ss_t = SpreadsheetApp.openById(Target_Id);                    // Target spreadsheet
+  var sheet_tr = ss_t.getSheetByName('Relação');                    // Target sheet
+
+  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Target_Id}`); return; }
 
   var LR = sheet_tr.getLastRow();
-  var LC = sheet_tr.getLastColumn();
 
-  var columnNumber = Data.length;
+  // Export data to the next available row
+  sheet_tr.getRange(LR + 1, 1, 1, Data[0].length).setValues(Data);
 
-  if( Exported !== "TRUE")
-  {
-    var export_r = sheet_tr.getRange(LR+1,1,1,columnNumber).setValues([Data]);
+  setSheetID(); // Mark as exported
 
-    setSheetID()
-
-    Logger.log(`SUCCESS EXPORT. Sheet: ${SheetName}.`);
-  }
-};
+  Logger.log(`SUCCESS EXPORT. Sheet: ${SheetName}.`);
+}
 
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
-function doExportProventos()
+function doExportProventos() 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config'); 
@@ -627,29 +616,30 @@ function doExportProventos()
 
   if (!sheet_co || !sheet_pv) return;
 
-  var Class = sheet_co.getRange(IST).getDisplayValue();           // IST = Is Stock? 
+  var Class = sheet_co.getRange(IST).getDisplayValue();             // IST = Is Stock? 
   var Target_Id = sheet_co.getRange(TDR).getDisplayValue();         // TDR = Target sheet ID
   if (!Target_Id) { Logger.log("Warning: Target ID is empty."); }
 
   var SheetName = sheet_pv.getName();
+  Logger.log(`Export Proventos: ${SheetName}`);
+
   var ISIN = sheet_pv.getRange("B3").getValue();                    // Código ISIN
   var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date
-  var C = sheet_pv.getRange("M66").getValue();                      // DY
-  var D = sheet_pv.getRange("M67").getValue();                      // Payout
-  var E = sheet_pv.getRange("M68").getValue();                      // EY
-  var F = sheet_pv.getRange("P67").getValue();                      // EVP - DPA
-  var G = sheet_pv.getRange("Q67").getValue();                      // EQP
-  var H = sheet_pv.getRange("P68").getValue();                      // EVA
-  var I = sheet_pv.getRange("Q68").getValue();                      // EQA
-  var J = sheet_pv.getRange("R67").getValue();                      // GVP
-  var K = sheet_pv.getRange("S67").getValue();                      // GQP
-  var L = sheet_pv.getRange("R68").getValue();                      // GQP
-  var M = sheet_pv.getRange("S68").getValue();                      // GQA
+  var C = sheet_pv.getRange("M67").getValue();                      // DY
+  var D = sheet_pv.getRange("M68").getValue();                      // Payout
+  var E = sheet_pv.getRange("P67").getValue();                      // EVP - DPA
+  var F = sheet_pv.getRange("Q67").getValue();                      // EQP
+  var G = sheet_pv.getRange("P68").getValue();                      // EVA
+  var H = sheet_pv.getRange("Q68").getValue();                      // EQA
+  var I = sheet_pv.getRange("R67").getValue();                      // GVP
+  var J = sheet_pv.getRange("S67").getValue();                      // GQP
+  var K = sheet_pv.getRange("R68").getValue();                      // GQA
+  var L = sheet_pv.getRange("S68").getValue();                      // GQA
 
-  // Remove TKT from data because TKT will be placed in column A.
-  var Data = [[B, C, D, E, F, G, H, I, J, K, L, M]];  // Now Data has 12 columns
+  // Ensure 0 values are converted to blank ("")
+  var Data = [[B, C, D, E, F, G, H, I, J, K, L]].map(row => row.map(value => value === 0 ? "" : value));
 
   var ss_t = SpreadsheetApp.openById(Target_Id);  
   var sheet_tr = ss_t.getSheetByName('Poventos');  
@@ -658,38 +648,47 @@ function doExportProventos()
 
   var LR = sheet_tr.getLastRow();
 
-  if( !ErrorValues.includes(B) && !ErrorValues.includes(ISIN) )
+  if (!ErrorValues.includes(B) && !ErrorValues.includes(ISIN)) 
   {
     if (Class == 'STOCK') {
       var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
 
-      if (Search)
+      // Extract only the values (excluding the Date)
+      var nonDateValues = Data[0].slice(1); // Exclude "B" (date)
+      var isAllBlankOrZero = nonDateValues.every(value => value === "" || value === 0);
+
+      if (isAllBlankOrZero) {
+        if (Search) {
+          // Clear the entire row (including TKT)
+          var rowToClear = Search.getRow();
+          sheet_tr.getRange(rowToClear, 1, 1, Data[0].length + 1).clearContent();
+          Logger.log(`CLEARED EXPORT: Entire row for ${TKT} cleared due to all values being blank/zero.`);
+        } else {
+          Logger.log(`NO ACTION: No existing row found for ${TKT}, and all values are blank/zero.`);
+        }
+        return; // Stop processing further for this ticker
+      }
+
+      if (Search) 
       {
         // Found an existing row; update adjacent columns.
         Search.offset(0, 1, 1 , Data[0].length).setValues(Data);
         Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
-      }
-      else
+      } 
+      else 
       {
         // Value not found, add a new row.
         sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
-        Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to Prov.`);
+        Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to Poventos.`);
 
         // Set the Data to the columns to the right.
         sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
         Logger.log(`SUCCESS EXPORT. Data for ${TKT}. Sheet: ${SheetName}.`);
       }
-    }
-    else
-    {
-      Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Class != STOCK (${Class})`);
-    }
-  }
-  else
-  {
-    Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date or ISIN error or missing`);
-  }
-
+    } 
+    else { Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Class != STOCK (${Class})`); }
+  } 
+  else { Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date or ISIN error or missing`); }
 };
 
 /////////////////////////////////////////////////////////////////////EXPORT TEMPLATE/////////////////////////////////////////////////////////////////////
