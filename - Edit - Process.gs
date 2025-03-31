@@ -179,7 +179,7 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditSheet`);
         return;
     }
-
+//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
   }
   if ( Edit != "TRUE" ) {
     Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);

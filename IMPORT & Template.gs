@@ -4,7 +4,7 @@
 function Import() 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();                              // Active spreadsheet
-  const sheet_co = ss.getSheetByName('Config');                                  // Config sheet
+  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   if (!Source_Id) {Logger.log("Warning: Source ID is empty."); return;}
   const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
@@ -154,8 +154,9 @@ function doImportDatas() {
 
 function update_form() 
 {
-  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(`Config`);
-  var Update_Form = ss.getRange(UFR).getDisplayValue();                       // UFR = Update Form
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
+  var Update_Form = ss.getRange(UFR).getDisplayValue();                               // UFR = Update Form
 
   switch (Update_Form) 
   {
@@ -179,8 +180,8 @@ function update_form()
 function import_config()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet_co = ss.getSheetByName('Config');
-    var Source_Id = sheet_co.getRange(SIR).getValues();                           // SIR = Source ID
+  const sheet_co = fetchSheetByName('Config');
+  const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');   // Source Sheet
   {
     var Data = sheet_sr.getRange(COR).getValues();
@@ -193,13 +194,13 @@ function import_config()
 function doImportShares() 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
-    var Source_Id = sheet_co.getRange(SIR).getValues();                          // SIR = Source ID
+  const sheet_co = fetchSheetByName('Config');
+  const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');    // Source Sheet
     var L1 = sheet_sr.getRange("L1").getValue();
     var L2 = sheet_sr.getRange("L2").getValue();
-  const sheet_tr = ss.getSheetByName('DATA');                                    // Target Sheet
-    var SheetName =  sheet_tr.getName()
+  const sheet_tr = fetchSheetByName('DATA');                                    // Target Sheet
+    var SheetName = sheet_tr.getName()
 
   Logger.log(`IMPORT: Shares and FF`);
 
@@ -220,10 +221,10 @@ Logger.log(`SUCCESS IMPORT: Shares and FF`);
 function doImportProv(ProvName)
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
-    var Source_Id = sheet_co.getRange(SIR).getValues();                           // SIR = Source ID
+  const sheet_co = fetchSheetByName('Config');
+  const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');     // Source Sheet
-  const sheet_tr = ss.getSheetByName('Prov');  
+  const sheet_tr = fetchSheetByName('Prov');  
 
   Logger.log(`IMPORT: ${ProvName}`);
 
@@ -250,7 +251,7 @@ function doImportSheet(SheetName)
   Logger.log(`IMPORT: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
-    var Source_Id = sheet_co.getRange(SIR).getValues();                               // SIR = Source ID
+  const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
     if (!Source_Id) { Logger.log(`ERROR: Source ID not found in Config sheet`); return;}
   const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -325,7 +326,6 @@ function doImportSheet(SheetName)
     break;
       
     default:
-      var Source_Id = null;
       Import = null;
     break;
   }
@@ -366,7 +366,7 @@ function doImportData(SheetName)
   Logger.log(`IMPORT: ${SheetName}`);
   const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet_co = fetchSheetByName('Config');                                         // Config sheet
-    var Source_Id = sheet_co.getRange(SIR).getValues();                                  // SIR = Source ID Range
+  const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_se = fetchSheetByName('Settings');                                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);         // Source Sheet

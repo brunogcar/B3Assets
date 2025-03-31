@@ -1,8 +1,12 @@
 function doSaveSheet(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
+
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName); // Source sheet
-  if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveSheet from sheet_sr`); return; }
+  if (!sheet_sr) {
+    Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveSheet from sheet_sr`);
+    return;
+  }
   
   const sheet_co = fetchSheetByName('Config');     // Config sheet
   const sheet_se = fetchSheetByName('Settings');   // Settings sheet
@@ -185,7 +189,6 @@ function doSaveSheet(SheetName) {
 }
 
 /////////////////////////////////////////////////////////////////////DATA TEMPLATE/////////////////////////////////////////////////////////////////////
-
 // sheet_sr and sheet_tr are checked  inside the blocks
 
 function doSaveData(SheetName) {
@@ -269,7 +272,7 @@ function doSaveData(SheetName) {
       Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
       sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
+      if (!sheet_tr) {Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
@@ -489,11 +492,11 @@ function doSaveProventos() {
 
 function doSaveProv(config) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_sr = ss.getSheetByName('Prov_');  // Source Sheet
+  const sheet_sr = fetchSheetByName('Prov_');                                    // Source Sheet
 
   if (!sheet_sr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
-  const sheet_tr = ss.getSheetByName('Prov');   // Target Sheet
+  const sheet_tr = fetchSheetByName('Prov');                                     // Target Sheet
 
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov" does not exist. Skipping operation.`); return; }
   const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
@@ -527,12 +530,12 @@ function doSaveProv(config) {
 
 function doGetProventos() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config'); // Config sheet
-  const sheet_tr = ss.getSheetByName('Prov_');
+  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
+  const sheet_tr = fetchSheetByName('Prov_');
 
   if (!sheet_tr)  { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
-  const TKT = sheet_co.getRange(TKR).getValue(); // TKR = Ticket Range
+  const TKT = sheet_co.getRange(TKR).getValue();                                 // TKR = Ticket Range
   const ticker = TKT.substring(0, 4);
   const language = 'pt-br';
 
@@ -628,12 +631,12 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 
 function doGetCodeCVM() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_tr = ss.getSheetByName('Info'); // Target sheet
-
+  const sheet_tr = fetchSheetByName('Info');                                    // Target sheet
+ 
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
 
-  const sheet_co = ss.getSheetByName('Config'); // Config sheet
-  const TKT = sheet_co.getRange(TKR).getValue(); // TKR = Ticket Range
+  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
+  const TKT = sheet_co.getRange(TKR).getValue();                                 // TKR = Ticket Range
   const ticker = TKT.substring(0, 4);
   const language = 'pt-br';
 
@@ -678,7 +681,7 @@ function doGetCodeCVM() {
 
 function doSaveShares() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_sr = ss.getSheetByName('DATA');
+  const sheet_sr = fetchSheetByName('DATA');
 
   if (!sheet_sr) { Logger.log(`ERROR: DATA sheet not found. Skipping shares save.`); return; }
 

@@ -1,5 +1,4 @@
-// function to add custom menu to your spreadsheet
-// Need to run this from the script editor menu first time (select this function and hit play button above)
+// function to add custom menu to spreadsheet
 
 function onOpen()
 {

@@ -30,15 +30,15 @@ function doCheckDATAS()
 
 function doCheckDATA(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_s = ss.getSheetByName(SheetName); // Source sheet
-  const sheet_i = ss.getSheetByName('Index');   // DATA sheet
-  const sheet_d = ss.getSheetByName('DATA');    // DATA sheet
-  const sheet_p = ss.getSheetByName(PROV);      // PROV sheet
-  const sheet_o = ss.getSheetByName('OPT');     // OPT sheet
-  const sheet_b = ss.getSheetByName(Balanco);   // Balanco sheet
-  const sheet_r = ss.getSheetByName(Resultado); // Resultado sheet
-  const sheet_f = ss.getSheetByName(Fluxo);     // Fluxo sheet
-  const sheet_v = ss.getSheetByName(Valor);     // Valor sheet
+  const sheet_sr = fetchSheetByName(SheetName);     // Source sheet
+  const sheet_i = fetchSheetByName('Index');       // Index sheet
+  const sheet_d = fetchSheetByName('DATA');        // DATA sheet
+  const sheet_p = fetchSheetByName(PROV);          // PROV sheet
+  const sheet_o = fetchSheetByName('OPT');         // OPT sheet
+  const sheet_b = fetchSheetByName(Balanco);       // Balanco sheet
+  const sheet_r = fetchSheetByName(Resultado);     // Resultado sheet
+  const sheet_f = fetchSheetByName(Fluxo);         // Fluxo sheet
+  const sheet_v = fetchSheetByName(Valor);         // Valor sheet
 
   let Check;
 
@@ -65,8 +65,8 @@ function doCheckDATA(SheetName) {
     case SWING_4:
     case SWING_12:
     case SWING_52:
-      const sheet_c = ss.getSheetByName('Config');
-      const Class = sheet_c.getRange(IST).getDisplayValue(); // IST = Is Stock?
+      const sheet_co = fetchSheetByName('Config');
+      var Class = sheet_co.getRange(IST).getDisplayValue();                            // IST = Is Stock? 
       Check = Class === 'STOCK' ? sheet_d.getRange('B16').getValue() : 'TRUE';
       break;
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
@@ -160,12 +160,12 @@ function doCheckDATA(SheetName) {
       break;
   }
 
-  return processCheckDATA(sheet_s, SheetName, Check);
+  return processCheckDATA(sheet_sr, SheetName, Check);
 }
 
 /////////////////////////////////////////////////////////////////////DO CHECK Process/////////////////////////////////////////////////////////////////////
 
-function processCheckDATA(sheet_s, SheetName, Check) {
+function processCheckDATA(sheet_sr, SheetName, Check) {
   const fixedSheets = [BLC, DRE, FLC, DVA];
 
   if (ErrorValues.includes(Check)) {
@@ -173,16 +173,16 @@ function processCheckDATA(sheet_s, SheetName, Check) {
       Logger.log(`DATA Check: FALSE for ${SheetName}`);
       return "FALSE";
     }
-    if (!sheet_s.isSheetHidden()) {
-      sheet_s.hideSheet();
+    if (!sheet_sr.isSheetHidden()) {
+      sheet_sr.hideSheet();
       Logger.log(`Sheet ${SheetName} HIDDEN`);
     }
     Logger.log(`DATA Check: FALSE for ${SheetName}`);
     return "FALSE";
   }
 
-  if (sheet_s.isSheetHidden()) {
-    sheet_s.showSheet();
+  if (sheet_sr.isSheetHidden()) {
+    sheet_sr.showSheet();
     Logger.log(`Sheet ${SheetName} DISPLAYED`);
   }
 
@@ -206,22 +206,22 @@ function doTrim() {
 
 function doTrimSheet(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_s = ss.getSheetByName(SheetName); // Target
+  const sheet_sr = fetchSheetByName(SheetName);
 
   Logger.log(`TRIM: ${SheetName}`);
 
-  if (!sheet_s) { 
+  if (!sheet_sr) { 
     Logger.error(`Sheet ${SheetName} not found.`); 
     return; 
   }
 
-  var LR = sheet_s.getLastRow();
-  var LC = sheet_s.getLastColumn();
+  var LR = sheet_sr.getLastRow();
+  var LC = sheet_sr.getLastColumn();
 
   switch (SheetName) {
     case SWING_4:
       if (LR > 126) {
-        sheet_s.getRange(127, 1, LR - 126, LC).clearContent();
+        sheet_sr.getRange(127, 1, LR - 126, LC).clearContent();
         Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
         Logger.log(`Cleared data below row 126 in ${SheetName}.`);
       }
@@ -229,7 +229,7 @@ function doTrimSheet(SheetName) {
 
     case SWING_12:
       if (LR > 366) {
-        sheet_s.getRange(367, 1, LR - 366, LC).clearContent();
+        sheet_sr.getRange(367, 1, LR - 366, LC).clearContent();
         Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
         Logger.log(`Cleared data below row 366 in ${SheetName}.`);
       }
@@ -248,10 +248,10 @@ function doTrimSheet(SheetName) {
 
 function doDisableSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_c = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');
   const sheets = ss.getSheets();
 
-  var Class = sheet_c.getRange(IST).getDisplayValue();                                                                 // IST = Is Stock?
+  var Class = sheet_co.getRange(IST).getDisplayValue();                                                                 // IST = Is Stock?
   let SheetNames = [];
 
   switch (Class) {
@@ -301,19 +301,19 @@ function doDisableSheets() {
 
 function hideConfig() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_s = ss.getSheetByName(`Settings`);                        // Source sheet
-  const sheet_c = ss.getSheetByName(`Config`);                          // Config sheet
+  const sheet_sr = fetchSheetByName(`Settings`);                        // Source sheet
+  const sheet_co = fetchSheetByName(`Config`);                          // Config sheet
 
-  var Hide_Config = sheet_c.getRange(HCR).getDisplayValue();            // HCR = Hide Config Range
+  var Hide_Config = sheet_co.getRange(HCR).getDisplayValue();            // HCR = Hide Config Range
 
   if (Hide_Config == "TRUE") {
-    if (sheet_s && !sheet_s.isSheetHidden()) {
-      sheet_s.hideSheet();
-      Logger.log(`HIDDEN: ${sheet_s.getName()}`);
+    if (sheet_sr && !sheet_sr.isSheetHidden()) {
+      sheet_sr.hideSheet();
+      Logger.log(`HIDDEN: ${sheet_sr.getName()}`);
     }
-    if (sheet_c && !sheet_c.isSheetHidden()) {
-      sheet_c.hideSheet();
-      Logger.log(`HIDDEN: ${sheet_c.getName()}`);
+    if (sheet_co && !sheet_co.isSheetHidden()) {
+      sheet_co.hideSheet();
+      Logger.log(`HIDDEN: ${sheet_co.getName()}`);
     }
   }
 };

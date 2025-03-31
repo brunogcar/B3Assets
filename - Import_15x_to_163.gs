@@ -58,11 +58,11 @@ function import_15x_to_163()
 function doImport_SWING_12_to_SWING_4()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');
 
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();                     // Get Source ID from Config
-  const sourceSpreadsheet = SpreadsheetApp.openById(Source_Id);
-  const sheet_sr = sourceSpreadsheet.getSheetByName(SWING_12);                            // Source Sheet (Trade)
+  const ss_sr = SpreadsheetApp.openById(Source_Id);
+  const sheet_sr = ss_sr.getSheetByName(SWING_12);                            // Source Sheet (Trade)
 
   Logger.log('Import: Trade to Swing Sheets');
 

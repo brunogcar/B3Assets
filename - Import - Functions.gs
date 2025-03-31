@@ -3,8 +3,9 @@
 function doCheckTriggers() 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+
   var Triggers = ScriptApp.getProjectTriggers().length;
 
   Logger.log(`Number of existing triggers: ${Triggers}`);
@@ -48,7 +49,7 @@ function doCheckTriggers()
 function doCreateTriggers()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_co = fetchSheetByName('Config');
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
 
   var triggers = ScriptApp.getProjectTriggers();
@@ -143,7 +144,7 @@ function getSheetTriggersHandle()
 
 function writeTriggersToSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Config"); // Target sheet
+  const sheet = fetchSheetByName("Config");
 
   if (!sheet) {
     Logger.log("Sheet 'Config' not found.");

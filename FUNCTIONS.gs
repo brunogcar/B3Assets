@@ -11,12 +11,12 @@ function fetchSheetByName(SheetName)
   return sheet;
 }
 
-function getConfigValue(Acronym)
+function getConfigValue(Acronym)                                                    // Only for export, import, save and edit settings
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  const sheet_se = ss.getSheetByName('Settings');
-  const sheet_co = ss.getSheetByName('Config');
+  const sheet_se = fetchSheetByName('Settings');
+  const sheet_co = fetchSheetByName('Config');
   
   if (!sheet_se || !sheet_co)
   {
@@ -37,14 +37,27 @@ function getConfigValue(Acronym)
   return Value;
 }
 
+/////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
+
+function arraysAreEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i].length !== arr2[i].length) return false;
+    for (let j = 0; j < arr1[i].length; j++) {
+      if (arr1[i][j] !== arr2[i][j]) return false;
+    }
+  }
+  return true;
+}
+
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
 function doSettings()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet_co = ss.getSheetByName('Config');
-  var Class     = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
-  const sheet_sr = ss.getSheetByName('Settings');
+  const sheet_co = fetchSheetByName('Config');
+  var Class = sheet_co.getRange(IST).getDisplayValue();                                 // IST = Is Stock? 
+  const sheet_sr = fetchSheetByName('Settings');
   var Activate  = sheet_sr.getRange(ACT).getDisplayValue();                             // ACT = Activate
 
   if (Class == 'STOCK') 
@@ -84,7 +97,6 @@ function doSettings()
         if ( Other == 'PROV')     { doSaveProventos(); }
         if ( Other == 'SHARES')   { doSaveShares(); }
         if ( Other == 'RIGHTS')   { doRestoreRight(); }
-        
       }
     }
   }

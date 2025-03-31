@@ -26,8 +26,8 @@ function setSheetID()
 //  const [sheet_co, sheet_tr] = ["Config", "Relação"].map(s => ss.getSheetByName(s));
 //  const [b3, d10] = ["B3", "D10"].map(r => sheet_co.getRange(r).getValue());
 
-  var ss_t = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
-  var sheet_tr = ss_t.getSheetByName('Relação');                                    // Target sheet
+  var ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  var sheet_tr = ss_tr.getSheetByName('Relação');                                    // Target sheet
 
   var bgcolor = sheet_co.getRange(IDR).getBackground();
   var colour = '#d9ead3';
@@ -67,11 +67,10 @@ function doClearSheetID()
   if (!sheet_co) return;
 
   var Target_Id = sheet_co.getRange(DIR).getValues();                              // DIR = DATA ID Range
-
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                              // TKR = Ticket Range
 
-  var dst = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
-  var sheet_tr = dst.getSheetByName('Relação');                                    // Target sheet
+  var ss_tr = SpreadsheetApp.openById(Target_Id);                                  // Target spreadsheet
+  var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
 
   const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
   if (!search) return;
@@ -110,7 +109,6 @@ function doIsExportable()
   if (!sheet_co) return;
 
   var EPD = sheet_co.getRange(EPR).getDisplayValue();                             // EPR = Exportable? Check Range
-  var EXP = sheet_co.getRange(EXR).getDisplayValue();                             // EXR = Export Range
 
   if( EPD === "TRUE" )
   {
@@ -128,7 +126,7 @@ function doIsInfoExported()
 
   if( EXP === "TRUE" )
   {
-    const sheet_in = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Info');
+    const sheet_in = fetchSheetByName('Info');
 
     const Data = sheet_in.getRange(TIR).getValues();                             // TIR = Tab Info Range
     sheet_in.getRange(TIR).setValues(Data);                                      // Copy Paste Info   
@@ -165,8 +163,9 @@ function clearExport(SheetName)
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                            // TKR = Ticket Range
   var Target_Id = sheet_co.getRange(TDR).getValues();                            // TDR = Target ID Range
 
-  const trg = SpreadsheetApp.openById(Target_Id);                                // Target spreadsheet
-  const sheet_tr = trg.getSheetByName(SheetName);                                // Target sheet
+
+  const ss_tr = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(SheetName);                              // Target sheet
 
   let success = false; // Initialize success flag to false
 
@@ -187,7 +186,6 @@ function clearExport(SheetName)
   else 
   {
     Logger.log(`Clear EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`);
-
   }
 }
 

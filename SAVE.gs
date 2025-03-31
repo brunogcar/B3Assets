@@ -33,7 +33,7 @@ function processSheets(sheetNames, checkCallback, saveCallback) {
   
   // Gather sheets that are available and pass the check.
   sheetNames.forEach(function(SheetName) {
-    var sheet = ss.getSheetByName(SheetName);
+    var sheet = fetchSheetByName(SheetName);
     if (sheet) {
       var availableData = checkCallback(SheetName);
       if (availableData === "TRUE") {
@@ -161,10 +161,10 @@ function doSaveDatas()
   const SheetNames = [BLC, DRE, FLC, DVA];                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_u = ss.getSheetByName(`UPDATE`);                         // UPDATE sheet
+  const sheet_up = fetchSheetByName(`UPDATE`);                         // UPDATE sheet
 
-    var ACTV = sheet_u.getRange(`B3`).getValue();
-    var SOMA = sheet_u.getRange(`K8`).getValue();
+    var ACTV = sheet_up.getRange(`B3`).getValue();
+    var SOMA = sheet_up.getRange(`K8`).getValue();
 
   if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA == 0 || SOMA > 125000))))
   {
