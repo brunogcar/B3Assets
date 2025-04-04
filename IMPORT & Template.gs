@@ -5,6 +5,18 @@ function Import()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();                              // Active spreadsheet
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
+
+  if (!sheet_co) {
+    Logger.log("ERROR: 'Config' sheet not found.");
+    return;
+  }
+
+  // Check if L2 has the expected colors
+  if (!checkAutorizeScript()) {
+    Logger.log("Import aborted: L2 does not have the correct background and font colors.");
+    return;
+  }
+
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   if (!Source_Id) {Logger.log("Warning: Source ID is empty."); return;}
   const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
@@ -53,12 +65,11 @@ function Import()
   }
 }
 
-
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
 
 function import_Current()
 {
-  Logger.log(`Import: import_Current`);
+  console.log('Import: import_Current');
 
   import_config();
 
@@ -72,6 +83,8 @@ function import_Current()
   update_form();
 
 // doCleanZeros();
+
+  console.log('Import: Finished');
 };
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////

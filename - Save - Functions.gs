@@ -1,3 +1,42 @@
+/////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
+
+function processSave(SheetNames, checkCallback, saveCallback) {
+  var sheetsToSave = [];
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Gather sheets that are available and pass the check.
+  SheetNames.forEach(function(SheetName) {
+    var sheet = fetchSheetByName(SheetName);
+    if (sheet) {
+      var availableData = checkCallback(SheetName);
+      if (availableData === "TRUE") {
+        sheetsToSave.push(SheetName);
+      }
+    } else {
+      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
+    }
+  });
+  
+  var totalSheets = sheetsToSave.length;
+  if (totalSheets > 0) {
+    SpreadsheetApp.flush();
+    let count = 0;
+    sheetsToSave.forEach(function(SheetName) {
+      count++;
+      const progress = Math.round((count / totalSheets) * 100);
+      Logger.log(`[${count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+      try {
+        saveCallback(SheetName);
+        Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+      } catch (error) {
+        Logger.log(`[${count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
+      }
+    });
+  } else {
+    Logger.log(`No valid data found. Skipping save operation.`);
+  }
+}
+
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
 
 function doCheckDATAS() 

@@ -1,3 +1,44 @@
+
+/////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
+
+function doAutorizeSscript() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = fetchSheetByName('Config');  
+  if (!sheet_co) {
+    Logger.log("Sheet 'Config' not found.");
+    return;
+  }
+    Logger.log(`Autorizing Script`);
+
+  const cell = sheet_co.getRange("L2");
+  cell.setBackground("#006600"); // Dark Green (#006600)
+  cell.setFontColor("#FFFFFF"); // White Font (#FFFFFF)
+
+  Logger.log("L2 cell color updated to dark green with white font.");
+}
+
+function checkAutorizeScript() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_co = fetchSheetByName('Config');  
+  if (!sheet_co) {
+    Logger.log("Sheet 'Config' not found.");
+    return false;
+  }
+
+  const cell = sheet_co.getRange("L2");
+  const bgColor = cell.getBackground();  // Get background color
+  const fontColor = cell.getFontColor(); // Get font color
+
+  const expectedBgColor = "#006600";
+  const expectedFontColor = "#ffffff"; // Note: Google Sheets may return lowercase
+
+  const isMatch = (bgColor.toLowerCase() === expectedBgColor && fontColor.toLowerCase() === expectedFontColor);
+
+  Logger.log(`L2 Background: ${bgColor}, Font: ${fontColor}`);
+  Logger.log(`Match: ${isMatch ? "✅ Colors are correct" : "❌ Colors are incorrect"}`);
+
+  return isMatch;
+}
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
 function doCheckTriggers() 

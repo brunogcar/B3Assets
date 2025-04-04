@@ -457,33 +457,6 @@ function doExportData(SheetName) {
 processExport(TKT, Data, sheet_tr, SheetName);
 }
 
-/////////////////////////////////////////////////////////////////////PROCESS EXPORT/////////////////////////////////////////////////////////////////////
-
-function processExport(TKT, Data, sheet_tr, SheetName) {
-  if (!Data || Data.length <= 0) {
-    Logger.log(`EXPORT: Skipped ${SheetName} - No valid data to export.`);
-    return;
-  }
-  // Get the target sheet's last row
-  var LR = sheet_tr.getLastRow();
-  
-  // Look for the ticker in column A (starting from row 2)
-  var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
-  
-  if (Search) {
-    // Update adjacent columns with Data
-    Search.offset(0, 1, 1, Data[0].length).setValues(Data);
-    Logger.log(`SUCCESS EXPORT. Data for ${TKT} updated on Sheet: ${SheetName}.`);
-  } else {
-    // Ticker not found; add a new row with the ticker in column A...
-    sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
-    Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to ${SheetName}.`);
-    // ...and then write Data to the adjacent columns.
-    sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
-    Logger.log(`SUCCESS EXPORT. Data for ${TKT} exported on Sheet: ${SheetName}.`);
-  }
-}
-
 /////////////////////////////////////////////////////////////////////INFO/////////////////////////////////////////////////////////////////////
 
 function doExportInfo()
@@ -555,7 +528,7 @@ function doExportProventos()                                        // possible 
   var SheetName = sheet_pv.getName();
   Logger.log(`Export Proventos: ${SheetName}`);
 
-  var ISIN = sheet_pv.getRange("B3").getValue();                    // Código ISIN
+  var ISIN = sheet_pv.getRange("C61").getValue();                   // Código ISIN
   var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date
@@ -570,8 +543,11 @@ function doExportProventos()                                        // possible 
   var K = sheet_pv.getRange("R68").getValue();                      // GVA
   var L = sheet_pv.getRange("S68").getValue();                      // GQA
 
+  var N = sheet_pv.getRange("N76").getValue();                      // TOTAL Ações
+  var O = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
+
   // Ensure 0 values are converted to blank ("")
-  var Data = [[B, C, D, E, F, G, H, I, J, K, L]].map(row => row.map(value => value === 0 ? "" : value));
+  var Data = [[B, C, D, E, F, G, H, I, J, K, L, "", N, O]].map(row => row.map(value => value === 0 ? "" : value));
 
   var ss_tr = SpreadsheetApp.openById(Target_Id);  
   var sheet_tr = ss_tr.getSheetByName('Poventos');  
@@ -613,5 +589,32 @@ function doExportProventos()                                        // possible 
     processExport(TKT, Data, sheet_tr, SheetName);
   }
 };
+
+/////////////////////////////////////////////////////////////////////PROCESS EXPORT/////////////////////////////////////////////////////////////////////
+
+function processExport(TKT, Data, sheet_tr, SheetName) {
+  if (!Data || Data.length <= 0) {
+    Logger.log(`EXPORT: Skipped ${SheetName} - No valid data to export.`);
+    return;
+  }
+  // Get the target sheet's last row
+  var LR = sheet_tr.getLastRow();
+  
+  // Look for the ticker in column A (starting from row 2)
+  var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
+  
+  if (Search) {
+    // Update adjacent columns with Data
+    Search.offset(0, 1, 1, Data[0].length).setValues(Data);
+    Logger.log(`SUCCESS EXPORT. Data for ${TKT} updated on Sheet: ${SheetName}.`);
+  } else {
+    // Ticker not found; add a new row with the ticker in column A...
+    sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
+    Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to ${SheetName}.`);
+    // ...and then write Data to the adjacent columns.
+    sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
+    Logger.log(`SUCCESS EXPORT. Data for ${TKT} exported on Sheet: ${SheetName}.`);
+  }
+}
 
 /////////////////////////////////////////////////////////////////////EXPORT TEMPLATE/////////////////////////////////////////////////////////////////////

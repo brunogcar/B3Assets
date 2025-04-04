@@ -3,18 +3,17 @@
 function doSaveAll() {
   Logger.log(SNAME(2));
 
-  processSheets([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
+  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
 
   doSaveShares();
-  doProventos();
 
-  processSheets([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
+  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
   
   SpreadsheetApp.flush();
 
-  processSheets([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
+  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
 
-  processSheets([
+  processSave([
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -22,46 +21,10 @@ function doSaveAll() {
     BLOCK
   ], doCheckDATA, doSaveSheet);
 
+  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
-}
-
-function processSheets(sheetNames, checkCallback, saveCallback) {
-  var sheetsToSave = [];
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  // Gather sheets that are available and pass the check.
-  sheetNames.forEach(function(SheetName) {
-    var sheet = fetchSheetByName(SheetName);
-    if (sheet) {
-      var availableData = checkCallback(SheetName);
-      if (availableData === "TRUE") {
-        sheetsToSave.push(SheetName);
-      }
-    } else {
-      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
-    }
-  });
-  
-  var totalSheets = sheetsToSave.length;
-  if (totalSheets > 0) {
-    SpreadsheetApp.flush();
-    let count = 0;
-    sheetsToSave.forEach(function(SheetName) {
-      count++;
-      const progress = Math.round((count / totalSheets) * 100);
-      Logger.log(`[${count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
-      try {
-        saveCallback(SheetName);
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
-      } catch (error) {
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
-      }
-    });
-  } else {
-    Logger.log(`No valid data found. Skipping save operation.`);
-  }
 }
 
 /////////////////////////////////////////////////////////////////////Individual/////////////////////////////////////////////////////////////////////
@@ -71,19 +34,19 @@ function doSaveAllSheets() {
   Logger.log(SNAME(2));
 
   doSaveShares();
-  doProventos();
 
   // Process first group (OPCOES, BTC, TERMO)
-  processSheets([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
+  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
   
   SpreadsheetApp.flush();
 
   // Process second group (FUND, SWING_4, SWING_12, SWING_52)
-  processSheets([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
+  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
   
   doExportExtras();
   doExportDatas();
-  
+
+  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -92,7 +55,7 @@ function doSaveAllSheets() {
 function doSaveAllExtras() {
   Logger.log(SNAME(2));
 
-  processSheets([
+  processSave([
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -100,12 +63,14 @@ function doSaveAllExtras() {
     BLOCK
   ], doCheckDATA, doSaveSheet);
 
+  SpreadsheetApp.flush();
+
   doSaveShares();
-  doProventos();
 
   doExportSheets();
   doExportDatas();
 
+  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -114,14 +79,16 @@ function doSaveAllExtras() {
 function doSaveAllDatas() {
   Logger.log(SNAME(2));
 
-  processSheets([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
+  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
+
+  SpreadsheetApp.flush();
 
   doSaveShares();
-  doProventos();
 
   doExportSheets();
   doExportExtras();
 
+  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
