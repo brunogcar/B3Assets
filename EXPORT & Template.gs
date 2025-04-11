@@ -515,11 +515,12 @@ function doExportProventos()                                        // possible 
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config'); 
   const sheet_pv = fetchSheetByName(PROV);  
+  const sheet_ix = fetchSheetByName('Index');
 
-  if (!sheet_co || !sheet_pv) return;
+  if (!sheet_co || !sheet_ix || !sheet_pv) return;
 
-  var Class = sheet_co.getRange(IST).getDisplayValue();                              // IST = Is Stock? 
-  var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
+  var Class = sheet_co.getRange(IST).getDisplayValue();             // IST = Is Stock? 
+  var Target_Id = sheet_co.getRange(TDR).getValues();               // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
   return;
@@ -532,22 +533,34 @@ function doExportProventos()                                        // possible 
   var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date
-  var C = sheet_pv.getRange("M67").getValue();                      // DY
-  var D = sheet_pv.getRange("M68").getValue();                      // Payout
-  var E = sheet_pv.getRange("P67").getValue();                      // EVP - DPA
-  var F = sheet_pv.getRange("Q67").getValue();                      // EQP
-  var G = sheet_pv.getRange("P68").getValue();                      // EVA
-  var H = sheet_pv.getRange("Q68").getValue();                      // EQA
-  var I = sheet_pv.getRange("R67").getValue();                      // GVP
-  var J = sheet_pv.getRange("S67").getValue();                      // GQP
-  var K = sheet_pv.getRange("R68").getValue();                      // GVA
-  var L = sheet_pv.getRange("S68").getValue();                      // GQA
+  var C = sheet_ix.getRange("D2").getValue();                       // Price - Index Sheet
+  var D = sheet_ix.getRange("B57").getValue();                      // Lucro - Index Sheet
 
-  var N = sheet_pv.getRange("N76").getValue();                      // TOTAL Ações
-  var O = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
+  var E = sheet_pv.getRange("M67").getValue();                      // DY
+  var F = sheet_pv.getRange("M68").getValue();                      // Payout
+  var G = sheet_pv.getRange("P67").getValue();                      // EVP - DPA
+  var H = sheet_pv.getRange("Q67").getValue();                      // EQP
+  var I = sheet_pv.getRange("P68").getValue();                      // EVA
+  var J = sheet_pv.getRange("Q68").getValue();                      // EQA
+  var K = sheet_pv.getRange("R67").getValue();                      // GVP
+  var L = sheet_pv.getRange("S67").getValue();                      // GQP
+  var M = sheet_pv.getRange("R68").getValue();                      // GVA
+  var N = sheet_pv.getRange("S68").getValue();                      // GQA
 
-  // Ensure 0 values are converted to blank ("")
-  var Data = [[B, C, D, E, F, G, H, I, J, K, L, "", N, O]].map(row => row.map(value => value === 0 ? "" : value));
+  var P = sheet_pv.getRange("N76").getValue();                      // TOTAL Ações
+  var Q = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
+
+  // Build the Data array conditionally
+  let Data;
+  // If P or Q is in ErrorValues, use only C through N; otherwise, append an empty column plus P and Q.
+  if (ErrorValues.includes(P) || ErrorValues.includes(Q)) {
+    Data = [[B, C, D, E, F, G, H, I, J, K, L, M, N]];
+  } else {
+    Data = [[B, C, D, E, F, G, H, I, J, K, L, M, N, "", P, Q]];
+  }
+  
+  // Convert any 0 values to blank ("")
+  Data = Data.map(row => row.map(value => value === 0 ? "" : value));
 
   var ss_tr = SpreadsheetApp.openById(Target_Id);  
   var sheet_tr = ss_tr.getSheetByName('Poventos');  
@@ -569,9 +582,8 @@ function doExportProventos()                                        // possible 
     return;
   }
 
-  // Extract only the values (excluding the Date)
-  var nonDateValues = Data[0].slice(1);                             // Exclude "B" (date)
-  var isAllBlankOrZero = nonDateValues.every(value => value === "" || value === 0);
+  var nonExportValues = Data[0].slice(3, 13);                        // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
+  var isAllBlankOrZero = nonExportValues.every(value => value === "" || value === 0);
 
   if (isAllBlankOrZero) {
     var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
@@ -597,12 +609,13 @@ function processExport(TKT, Data, sheet_tr, SheetName) {
     Logger.log(`EXPORT: Skipped ${SheetName} - No valid data to export.`);
     return;
   }
+
   // Get the target sheet's last row
   var LR = sheet_tr.getLastRow();
-  
+
   // Look for the ticker in column A (starting from row 2)
   var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
-  
+
   if (Search) {
     // Update adjacent columns with Data
     Search.offset(0, 1, 1, Data[0].length).setValues(Data);

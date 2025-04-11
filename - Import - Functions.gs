@@ -1,7 +1,7 @@
 
 /////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
 
-function doAutorizeSscript() {
+function doAutorizeScript() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');  
   if (!sheet_co) {

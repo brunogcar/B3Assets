@@ -79,9 +79,9 @@ function doSaveAllExtras() {
 function doSaveAllDatas() {
   Logger.log(SNAME(2));
 
-  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
-
   SpreadsheetApp.flush();
+
+  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
 
   doSaveShares();
 
