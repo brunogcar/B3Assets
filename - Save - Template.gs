@@ -212,29 +212,26 @@ function doSaveData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       sheet_sr = fetchSheetByName(Balanco);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [B2_S, B27_S] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+
+      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
       var CHECK1 = sheet_up.getRange("K3").getValue();
       var CHECK2 = sheet_up.getRange("K4").getValue();
 
       if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) && 
           ((CHECK2 >= 90 && CHECK2 <= 92) || (CHECK2 == 0 || CHECK1 > 40000))) {
-        if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-            (B2_S != 0 && B2_S != "") &&
-            (B27_S != 0 && B27_S != "")) {
-          processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit);
+        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+            (B2_sr != 0 && B2_sr != "") &&
+            (B27_sr != 0 && B27_sr != "")) {
+          processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
           doSaveData(Balanco);
         } else {
           Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
@@ -252,16 +249,14 @@ function doSaveData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-          (C4_S != 0 && C4_S != "") &&
-          (C27_S != 0 && C27_S != "")) {
-        processSaveData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Save, Edit);
+      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+          (C4_sr != 0 && C4_sr != "") &&
+          (C27_sr != 0 && C27_sr != "")) {
+        processSaveData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
       } else {
         Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
@@ -275,27 +270,22 @@ function doSaveData(SheetName) {
       if (!sheet_tr) {Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       sheet_sr = fetchSheetByName(Resultado);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K5").getValue();
 
       if (((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000))) {
-        if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-            (C4_S != 0 && C4_S != "") &&
-            (C27_S != 0 && C27_S != "")) {
-          processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit);
+        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+            (C4_sr != 0 && C4_sr != "") &&
+            (C27_sr != 0 && C27_sr != "")) {
+          processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
           doSaveData(Resultado);
         } else {
           Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
@@ -313,18 +303,14 @@ function doSaveData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = 
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       if (sheet_sr) {
-        if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-            (C4_S != "") &&
-            (C27_S != 0 && C27_S != "")) {
-          processSaveData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Save, Edit);
+        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+            (C4_sr != "") &&
+            (C27_sr != 0 && C27_sr != "")) {
+          processSaveData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
         } else {
           Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
         }
@@ -341,28 +327,21 @@ function doSaveData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = 
-          Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       sheet_sr = fetchSheetByName(Fluxo);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = 
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K6").getValue();
 
       if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-            (C2_S != 0 && C2_S !== "")) {
-          processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit);
+        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+            (C2_sr != 0 && C2_sr !== "")) {
+          processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
           doSaveData(Fluxo);
         } else {
           Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
@@ -380,17 +359,13 @@ function doSaveData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-          (C2_S != 0 && C2_S !== "")) {
-        processSaveData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Save, Edit);
+      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+          (C2_sr != 0 && C2_sr !== "")) {
+        processSaveData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
       } else {
         Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
@@ -404,28 +379,21 @@ function doSaveData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] =
-          Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       sheet_sr = fetchSheetByName(Valor);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K7").getValue();
 
       if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-            (C2_S != 0 && C2_S !== "")) {
-          processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit);
+        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+            (C2_sr != 0 && C2_sr !== "")) {
+          processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
           doSaveData(Valor);
         } else {
           Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
@@ -443,17 +411,13 @@ function doSaveData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveData from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      if ((New_S.valueOf() != "-" && New_S.valueOf() != "") &&
-          (C2_S != 0 && C2_S !== "")) {
-        processSaveData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Save, Edit);
+      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
+          (C2_sr != 0 && C2_sr !== "")) {
+        processSaveData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
       } else {
         Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveData`);
       }
@@ -463,6 +427,24 @@ function doSaveData(SheetName) {
       break;
   }
 }
+
+/**
+ * @param {string[]} dateStrings  an array of date‐strings like ["12/5/2024", "10/3/2023", "8/1/2022"]
+ * @returns {Array<number|string>} an array of timestamps (ms since epoch) or "" if invalid
+ */
+function do_Data_helper(dateStrings) {
+  return dateStrings.map(v => {
+    if (!v) return "";
+    // split "DD/MM/YYYY" or "D/M/YYYY"
+    const [d, m, y] = v.toString().split("/");
+    if (d && m && y) {
+      return new Date(+y, +m - 1, +d).getTime();
+    } else {
+      return "";
+    }
+  });
+}
+
 
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////
 
@@ -502,7 +484,7 @@ function doSaveProv(config) {
   const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
   
   if (checkValue === config.expectedValue) {
-    let data;
+    let Data;
     
     if (config.dynamicRange) {
       const lr = sheet_sr.getLastRow();
@@ -510,16 +492,16 @@ function doSaveProv(config) {
       const sourceRange = sheet_sr.getRange(64, 12, lr - 63, lc - 11);
       const targetRange = sheet_tr.getRange(64, 12, lr - 63, lc - 11);
       
-      data = sourceRange.getValues();
+      Data = sourceRange.getValues();
       targetRange.clearContent(); // Clear target range before writing data
-      targetRange.setValues(data);
+      targetRange.setValues(Data);
     } else {
       const sourceRange = sheet_sr.getRange(config.sourceRange);
       const targetRange = sheet_tr.getRange(config.targetRange);
       
-      data = sourceRange.getValues();
+      Data = sourceRange.getValues();
       targetRange.clearContent(); // Clear target range before writing data
-      targetRange.setValues(data);
+      targetRange.setValues(Data);
     }
     
     Logger.log(`SUCCESS SAVE: ${config.name}.`);

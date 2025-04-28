@@ -120,7 +120,7 @@ function processEditExtra(sheet_sr, SheetName, Edit)
 
 /////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
 
-function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
+function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
 
   const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
   const LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
@@ -134,11 +134,11 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
       case DRE:
       case FLC:
       case DVA:
-        if (New_S.valueOf() > New_T.valueOf()) {
+        if (New_sr.valueOf() > New_tr.valueOf()) {
           doSaveData(SheetName);
           return;
         }
-        if (New_S.valueOf() == New_T.valueOf()) {
+        if (New_sr.valueOf() == New_tr.valueOf()) {
           // For these sheets, the mapping is applied on the target values.
           range_sr = sheet_sr.getRange("B1:B" + LR);
           range_tr = sheet_tr.getRange("B1:B" + LR);
@@ -148,11 +148,11 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
         break;
 //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
       case Balanco:
-        if (New_S.valueOf() > Old_S.valueOf()) {
+        if (New_sr.valueOf() > Old_sr.valueOf()) {
           doSaveData(SheetName);
           return;
         }
-        if (New_S.valueOf() == Old_S.valueOf()) {
+        if (New_sr.valueOf() == Old_sr.valueOf()) {
           range_sr = sheet_sr.getRange("B1:B" + LR);
           range_tr = sheet_sr.getRange("C1:C" + LR);
           mappingFunc = (source, target) =>
@@ -163,11 +163,11 @@ function processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit) {
       case Resultado:
       case Valor:
       case Fluxo:
-        if (New_S.valueOf() > Old_S.valueOf()) {
+        if (New_sr.valueOf() > Old_sr.valueOf()) {
           doSaveData(SheetName);
           return;
         }
-        if (New_S.valueOf() == Old_S.valueOf()) {
+        if (New_sr.valueOf() == Old_sr.valueOf()) {
           range_sr = sheet_sr.getRange("C1:C" + LR);
           range_tr = sheet_sr.getRange("D1:D" + LR);
           mappingFunc = (source, target) =>

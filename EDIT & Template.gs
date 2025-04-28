@@ -273,27 +273,21 @@ function doEditData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Balanco);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
+      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      var [B2_S, B27_S] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( B2_S != 0 && B2_S != "" ) && 
-          ( B27_S != 0 && B27_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( B2_sr != 0 && B2_sr != "" ) && 
+          ( B27_sr != 0 && B27_sr != "" ) )
       {
-        processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit);
+        processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
 
         doEditData(Balanco);
       }
@@ -311,18 +305,15 @@ function doEditData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
+      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [[new_S_D, new_S_M, new_S_Y], [old_S_D, old_S_M, old_S_Y]] = Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      var [B2_S, B27_S] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( B2_S != 0 && B2_S != "" ) && 
-          ( B27_S != 0 && B27_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( B2_sr != 0 && B2_sr != "" ) && 
+          ( B27_sr != 0 && B27_sr != "" ) )
       {
-        processEditData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Edit);
+        processEditData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
       }
       else
       {
@@ -338,29 +329,21 @@ function doEditData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Resultado);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] = 
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
  
-      var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( C4_S != 0 && C4_S != "" ) && 
-          ( C27_S != 0 && C27_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( C4_sr != 0 && C4_sr != "" ) && 
+          ( C27_sr != 0 && C27_sr != "" ) )
       {
-        processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit);
+        processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
 
         doEditData(Resultado);
       }
@@ -378,20 +361,15 @@ function doEditData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
  
-      var [C4_S, C27_S] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( C4_S != "" ) && 
-          ( C27_S != 0 && C27_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( C4_sr != "" ) && 
+          ( C27_sr != 0 && C27_sr != "" ) )
       {
-        processEditData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Edit);
+        processEditData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
       }
       else
       {
@@ -407,28 +385,20 @@ function doEditData(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] = Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Fluxo);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
 
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
-
-      var [B2_S] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( B2_S != 0 && B2_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( B2_sr != 0 && B2_sr != "" ) )
       {
-        processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit);
+        processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
 
         doEditData(Fluxo);
       }
@@ -446,19 +416,14 @@ function doEditData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
       
-      var [B2_S] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( B2_S != 0 && B2_S != "" ) )
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( B2_sr != 0 && B2_sr != "" ) )
       {
-        processEditData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Edit);
+        processEditData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
       }
       else
       {
@@ -479,27 +444,19 @@ function doEditData(SheetName) {
       var B = sheet_tr.getRange("B1:B" + LR).getValues().flat();
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-
-      var [[new_T_D, new_T_M, new_T_Y], [old_T_D, old_T_M, old_T_Y]] =
-          Values_tr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_T = new_T_D && new_T_M && new_T_Y ? new Date(new_T_Y, new_T_M - 1, new_T_D).getTime() : "";
-      var Old_T = old_T_D && old_T_M && old_T_Y ? new Date(old_T_Y, old_T_M - 1, old_T_D).getTime() : "";
+      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Valor);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
       
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( B2_S != "" ) ) {
-        processEditData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Edit);
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( B2_sr != "" ) ) {
+        processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
         doEditData(Valor);
       } else {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
@@ -514,17 +471,13 @@ function doEditData(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [[new_S_D, new_S_M, new_S_Y], [temp_S_D, temp_S_M, temp_S_Y], [old_S_D, old_S_M, old_S_Y]] =
-          Values_sr.map(v => v ? v.split("/") : Array(3).fill(""));
-      var New_S = new_S_D && new_S_M && new_S_Y ? new Date(new_S_Y, new_S_M - 1, new_S_D).getTime() : "";
-      var temp_S = temp_S_D && temp_S_M && temp_S_Y ? new Date(temp_S_Y, temp_S_M - 1, temp_S_D).getTime() : "";
-      var Old_S = old_S_D && old_S_M && old_S_Y ? new Date(old_S_Y, old_S_M - 1, old_S_D).getTime() : "";
+      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
       
-      var [C2_S] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
+      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
-      if( ( New_S.valueOf() != "-" && New_S.valueOf() != "" ) && 
-          ( C2_S != "" ) ) {
-        processEditData(sheet_sr, sheet_sr, '', '', New_S, Old_S, Edit);
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+          ( C2_sr != "" ) ) {
+        processEditData(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
       } else {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditData`);
       }

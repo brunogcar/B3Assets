@@ -174,7 +174,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
 
 /////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
 
-function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, Edit) {
+function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit) {
   var LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
   var LC = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
   var SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
@@ -190,8 +190,8 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
 
     //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
     if ([BLC, DRE, FLC, DVA].includes(SheetName)) {
-      if (New_S.valueOf() > Old_S.valueOf()) {
-        if (Old_S.valueOf() == "") {
+      if (New_sr.valueOf() > Old_sr.valueOf()) {
+        if (Old_sr.valueOf() == "") {
           save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
           save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
           mappingFunc = (source, target) => source;
@@ -209,7 +209,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
       }
 
       if ( Edit == "TRUE" ) {
-        if (New_S.valueOf() == New_T.valueOf()) {
+        if (New_sr.valueOf() == New_tr.valueOf()) {
           edit_range_sr = sheet_sr.getRange("B1:B" + LR);
           edit_range_tr = sheet_tr.getRange("B1:B" + LR);
           editMappingFunc = (source, target) => source; // Identity mapping for comparison
@@ -221,8 +221,8 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     }
     //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
     else if (SheetName === Balanco) {
-      if (New_S.valueOf() > Old_S.valueOf()) {
-        if (Old_S.valueOf() == "") {
+      if (New_sr.valueOf() > Old_sr.valueOf()) {
+        if (Old_sr.valueOf() == "") {
           save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
           save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
           mappingFunc = (source, target) => source;
@@ -240,7 +240,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
       }
 
       if ( Edit == "TRUE" ) {
-        if (New_S.valueOf() == New_T.valueOf()) {
+        if (New_sr.valueOf() == New_tr.valueOf()) {
           edit_range_sr = sheet_sr.getRange("B1:B" + LR);
           edit_range_tr = sheet_sr.getRange("C1:C" + LR);
           editMappingFunc = (source, target) => source;
@@ -252,8 +252,8 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
     }
     //-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
     else if ([Resultado, Valor, Fluxo].includes(SheetName)) {
-      if (New_S.valueOf() > Old_S.valueOf()) {
-        if (Old_S.valueOf() == "") {
+      if (New_sr.valueOf() > Old_sr.valueOf()) {
+        if (Old_sr.valueOf() == "") {
           save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
           save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
           mappingFunc = (source, target) => source;
@@ -271,7 +271,7 @@ function processSaveData(sheet_tr, sheet_sr, New_T, Old_T, New_S, Old_S, Save, E
       }
 
       if ( Edit == "TRUE" ) {
-        if (New_S.valueOf() == New_T.valueOf()) {
+        if (New_sr.valueOf() == New_tr.valueOf()) {
           edit_range_sr = sheet_sr.getRange("C1:C" + LR);
           edit_range_tr = sheet_sr.getRange("D1:D" + LR);
           editMappingFunc = (source, target) => source;
