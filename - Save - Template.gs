@@ -212,13 +212,13 @@ function doSaveFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Balanco);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
 
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
@@ -249,7 +249,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -270,13 +270,13 @@ function doSaveFinancial(SheetName) {
       if (!sheet_tr) {Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Resultado);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K5").getValue();
@@ -303,7 +303,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       if (sheet_sr) {
@@ -327,13 +327,13 @@ function doSaveFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Fluxo);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K6").getValue();
@@ -359,7 +359,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -379,13 +379,13 @@ function doSaveFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Valor);
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K7").getValue();
@@ -411,7 +411,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -426,30 +426,6 @@ function doSaveFinancial(SheetName) {
       Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveFinancial`);
       break;
   }
-}
-
-/**
- * @param {string[]} dateStrings  an array of date‐strings like ["12/5/2024", "10/3/2023", "8/1/2022"]
- * @returns {Array<number|string>} an array of timestamps (ms since epoch) or "" if invalid
- */
-function do_Data_helper(dateStrings) {
-  return dateStrings.map(v => {
-    if (!v?.toString) return "";
-
-    const str = v.toString();
-    if (str.includes("/")) { // handle "DD/MM/YYYY"
-      const [d, m, y] = str.split("/");
-      if (d && m && y) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    } else if (str.includes("-")) { // handle "YYYY-MM-DD"
-      const [y, m, d] = str.split("-");
-      if (y && m && d) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    }
-    return "";
-  });
 }
 
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////

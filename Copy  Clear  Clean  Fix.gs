@@ -1,7 +1,6 @@
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
 
-function doClearAll()
-{
+function doClearAll() {
   doClearProventos();
   doClearBasics();
   doClearFinancials();
@@ -11,15 +10,14 @@ function doClearAll()
 
 /////////////////////////////////////////////////////////////////////TRIM/////////////////////////////////////////////////////////////////////
 
-function doTrimBasics() 
-{
+function doTrimBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52];
 
   SheetNames.forEach(SheetName => 
   {
     try 
     {
-      doTrimSheet(SheetName);
+      doTrimBasic(SheetName);
     } 
     catch (error) 
     {
@@ -28,16 +26,11 @@ function doTrimBasics()
   });
 }
 
-function doTrimBasic(SheetName) 
-{
+function doTrimBasic(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = ss.getSheetByName(SheetName); // Target
 
-  if (!sheet_sr) 
-  {
-    Logger.error(`Sheet ${SheetName} not found.`);
-    return;
-  }
+  if (!sheet_sr) {Logger.error(`Sheet ${SheetName} not found.`); return;}
 
   var LR = sheet_sr.getLastRow();
   var LC = sheet_sr.getLastColumn();
@@ -68,61 +61,6 @@ function doTrimBasic(SheetName)
     // Default logic for other sheets
     Logger.log(`No specific logic defined for ${SheetName}.`);
   }
-}
-
-/////////////////////////////////////////////////////////////////////CLEAR/////////////////////////////////////////////////////////////////////
-
-function doClearBasics() 
-{
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
-
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doClearBasic(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
-    }
-  });
-}
-
-function doClearFinancials() 
-{
-  const SheetNames = [BLC, DRE, FLC, DVA];
-
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doClearFinancial(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
-    }
-  });
-}
-
-function doCleanBasics() 
-{
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
-
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-      doCleanBasic(SheetName);
-    } 
-    catch (error) 
-    {
-      Logger.error(`Error cleaning sheet ${SheetName}: ${error}`);
-    }
-  });
 }
 
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
@@ -170,18 +108,24 @@ function doCopyFinancial(SheetName)
 
 /////////////////////////////////////////////////////////////////////CLEAR/////////////////////////////////////////////////////////////////////
 
-function doClearProventos()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Prov');
+function doClearBasics() {
+  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
-  var LR = ss.getLastRow();
-  var LC = ss.getLastColumn();
+  SheetNames.forEach(SheetName => 
+  {
+    try 
+    {
+    doClearBasic(SheetName);
+    } 
+    catch (error) 
+    {
+      // Handle the error here, you can log it or take appropriate actions.
+      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
+    }
+  });
+}
 
-  ss.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
-};
-
-function doClearBasic(SheetName) 
-{
+function doClearBasic(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
   var LR = ss.getLastRow();
@@ -196,8 +140,24 @@ function doClearBasic(SheetName)
 
 }
 
-function doClearFinancial(SheetName) 
-{
+function doClearFinancials() {
+  const SheetNames = [BLC, DRE, FLC, DVA];
+
+  SheetNames.forEach(SheetName => 
+  {
+    try 
+    {
+    doClearFinancial(SheetName);
+    } 
+    catch (error) 
+    {
+      // Handle the error here, you can log it or take appropriate actions.
+      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
+    }
+  });
+}
+
+function doClearFinancial(SheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
   Logger.log(`Clear: ${SheetName}`);
@@ -230,25 +190,65 @@ function doClearFinancial(SheetName)
     Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
 
-  if (SheetName === BLC)
-  {
-    doClearFinancial(Balanco);
-  } 
-  else if (SheetName === DRE)
-  {
-    doClearFinancial(Resultado );
-  } 
-  else if (SheetName === FLC)
-  {
-    doClearFinancial(Fluxo);
-  } 
-  else if (SheetName === DVA)
-  {
-    doClearFinancial(Valor);
-  }
+  if (SheetName === BLC) {doClearFinancial(Balanco);} 
+  else if (SheetName === DRE) {doClearFinancial(Resultado );} 
+  else if (SheetName === FLC) {doClearFinancial(Fluxo);} 
+  else if (SheetName === DVA) {doClearFinancial(Valor);}
 }
 
+
+function doClearProventos()
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Prov');
+
+  var LR = ss.getLastRow();
+  var LC = ss.getLastColumn();
+
+  ss.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
+};
+
+/////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
+
+function doRecycleTrade()
+{
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet_sr = ss.getSheetByName(TRADE);
+
+    var LR = sheet_sr.getLastRow();
+    var LC = sheet_sr.getLastColumn();
+
+  const sheet_co = ss.getSheetByName('Config');
+
+    var AX = sheet_co.getRange(PDT).getDisplayValue();        // PDT = Periodo de Trade
+    var AX_ = sheet_sr.getRange("A" + AX ).getValue();
+
+//  Logger.log(AX_);
+
+  if( AX_ !== "" )
+  {
+    sheet_sr.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
+  }
+};
+
 /////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
+
+function doCleanBasics() 
+{
+  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
+
+  SheetNames.forEach(SheetName => 
+  {
+    try 
+    {
+      doCleanBasic(SheetName);
+    } 
+    catch (error) 
+    {
+      Logger.error(`Error cleaning sheet ${SheetName}: ${error}`);
+    }
+  });
+}
+
 
 function doCleanBasic(SheetName) 
 {
@@ -273,29 +273,6 @@ function doCleanBasic(SheetName)
 
   Logger.log(`SUCESS CLEAN. Sheet: ${SheetName}.`);
 }
-
-/////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
-
-function doRecycleTrade()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_sr = ss.getSheetByName(TRADE);
-
-    var LR = sheet_sr.getLastRow();
-    var LC = sheet_sr.getLastColumn();
-
-  const sheet_co = ss.getSheetByName('Config');
-
-    var AX = sheet_co.getRange(PDT).getDisplayValue();        // PDT = Periodo de Trade
-    var AX_ = sheet_sr.getRange("A" + AX ).getValue();
-
-//  Logger.log(AX_);
-
-  if( AX_ !== "" )
-  {
-    sheet_sr.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
-  }
-};
 
 /////////////////////////////////////////////////////////////////////SPLIT/////////////////////////////////////////////////////////////////////
 

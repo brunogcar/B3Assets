@@ -1,5 +1,31 @@
 /////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
-
+/**
+ * Processes a batch “save” operation over a list of sheet names.
+ *
+ * This function:
+ * 1. Fetches each sheet by name and calls `checkCallback(sheetName)` to decide
+ *    whether that sheet has data to save (expects `"TRUE"` for “yes”).
+ * 2. Collects all sheets that pass into an array.
+ * 3. Flushes the spreadsheet to ensure any pending writes are applied.
+ * 4. Iterates over the filtered list, calls `saveCallback(sheetName)` on each,
+ *    and logs progress and success/errors conditionally based on DEBUG mode.
+ *
+ * @param {string[]} SheetNames
+ *   An array of sheet‐name constants (e.g. [`SWING_4`, `SWING_12`, …]) to consider.
+ * @param {function(string):string} checkCallback
+ *   A function that returns `"TRUE"` or `"FALSE"` when given a sheet name,
+ *   indicating whether there is new data to save.
+ * @param {function(string):void} saveCallback
+ *   The function to perform the actual save on a sheet name.
+ *
+ * Behavior:
+ * - If a sheet does not exist, logs an error and skips it.
+ * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
+ * - Otherwise, for each sheet:
+ *    • Logs `[i/N] (P%) saving <SheetName>...`  
+ *    • Calls `saveCallback(SheetName)` inside a try/catch  
+ *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
+ */
 function processSave(SheetNames, checkCallback, saveCallback) {
   var sheetsToSave = [];
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
@@ -36,6 +62,55 @@ function processSave(SheetNames, checkCallback, saveCallback) {
   } else {
     Logger.log(`No valid data found. Skipping save operation.`);
   }
+}
+
+/**
+ * Converts an array of date strings into timestamps (milliseconds since epoch),
+ * handling either "DD/MM/YYYY" or "YYYY-MM-DD" formats. Invalid or unparsable
+ * entries return an empty string.
+ *
+ * @param {string[]} dateStrings
+ *   An array of date strings to convert. Supported formats:
+ *     • "DD/MM/YYYY" (e.g. "12/5/2024")
+ *     • "YYYY-MM-DD" (e.g. "2024-05-12")
+ *
+ * @returns {(number|string)[]}
+ *   An array where each element is:
+ *     • A number representing the timestamp (ms since epoch) if parsing succeeded
+ *     • An empty string ("") if the input was invalid or not in a supported format
+ *
+ * @example
+ *   const inputs = ["12/5/2024", "2023-10-03", "invalid", null];
+ *   const results = doFinancialDateHelper(inputs);
+ *   // results might be [1715558400000, 1696281600000, "", ""]
+ */
+function doFinancialDateHelper(dateStrings) {
+  return dateStrings.map(v => {
+    // Reject nullish or non-string/non-number values
+    if (v == null || typeof v.toString !== "function") {
+      return "";
+    }
+
+    const str = v.toString().trim();
+
+    // Case 1: "DD/MM/YYYY"
+    if (str.includes("/")) {
+      const [d, m, y] = str.split("/");
+      if (d && m && y) {
+        return new Date(+y, +m - 1, +d).getTime();
+      }
+    }
+    // Case 2: "YYYY-MM-DD"
+    else if (str.includes("-")) {
+      const [y, m, d] = str.split("-");
+      if (y && m && d) {
+        return new Date(+y, +m - 1, +d).getTime();
+      }
+    }
+
+    // Fallback: return empty string for invalid formats
+    return "";
+  });
 }
 
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
