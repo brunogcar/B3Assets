@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////PROCESS SHEET/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS BASICS/////////////////////////////////////////////////////////////////////
 
-function processSaveSheet(sheet_sr, SheetName, Save, Edit)
+function processSaveBasic(sheet_sr, SheetName, Save, Edit)
 {
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
@@ -40,7 +40,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
-        doExportSheet(SheetName);
+        doExportBasic(SheetName);
       }
       else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
       {
@@ -53,7 +53,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
-        doExportSheet(SheetName);
+        doExportBasic(SheetName);
       }
       else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
                  ( IsEqual ) ) ||
@@ -61,7 +61,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
       {
         if( Edit == "TRUE" )
         {
-          doEditSheet(SheetName);
+          doEditBasic(SheetName);
         }
         if ( Edit != "TRUE" )
         {
@@ -70,7 +70,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
       }
       else
       {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveSheet`);
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveBasic`);
       }
     }
     if ( Save != "TRUE" )
@@ -80,7 +80,7 @@ function processSaveSheet(sheet_sr, SheetName, Save, Edit)
   }
   else
   {
-    Logger.log(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSaveSheet`);
+    Logger.log(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSaveBasic`);
   }
 }
 
@@ -147,7 +147,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
       {
         if( Edit == "TRUE" )
         {
-          doEditSheet(SheetName);
+          doEditBasic(SheetName);
         }
         if ( Edit != "TRUE" )
         {
@@ -170,11 +170,9 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
   }
 }
 
-/////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
-
-function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit) {
+function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit) {
   var LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
   var LC = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
   var SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
@@ -205,7 +203,7 @@ function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Sav
           mappingFunc = (source, target) => source;
         }
       } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`);
       }
 
       if ( Edit == "TRUE" ) {
@@ -236,7 +234,7 @@ function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Sav
           mappingFunc = (source, target) => source;
         }
       } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`);
       }
 
       if ( Edit == "TRUE" ) {
@@ -267,7 +265,7 @@ function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Sav
           mappingFunc = (source, target) => source;
         }
       } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveData`);
+        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`);
       }
 
       if ( Edit == "TRUE" ) {
@@ -301,7 +299,7 @@ function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Sav
     const updatedValues = mappingFunc(values_sr, values_tr);
     save_range_tr.setValues(updatedValues);
     Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
-    doExportData(SheetName);
+    doExportFinancial(SheetName);
   }
 
   // Finally, perform the common EDIT check.
@@ -310,7 +308,7 @@ function processSaveData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Sav
     const editValues_tr = edit_range_tr.getValues();
     const areEqual = editValues_tr.every((row, index) => row[0] === editValues_sr[index][0]);
     if (!areEqual) {
-      doEditData(SheetName);
+      doEditFinancial(SheetName);
     }
   }
 }

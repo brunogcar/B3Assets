@@ -100,19 +100,19 @@ function doCreateTriggers(){
     {
       Logger.log("Creating new triggers...");
 
-      var Hour_1 = sheet_co.getRange(TG1).getValue();                              // TG1 = Sheet Trigger Event
-      var Hour_2 = sheet_co.getRange(TG2).getValue();                              // TG2 = Data  Trigger Event
+      var Hour_1 = sheet_co.getRange(TG1).getValue();                              // TG1 = Basic Trigger Event
+      var Hour_2 = sheet_co.getRange(TG2).getValue();                              // TG2 = Financial  Trigger Event
       var Hour_3 = sheet_co.getRange(TG3).getValue();                              // TG3 = Extra Trigger Event
       var Hour_4 = sheet_co.getRange(TG4).getValue();                              // TG4 = Settings Trigger Event
       var Hour_5 = sheet_co.getRange(TG5).getValue();                              // TG5 = SaveAll Trigger Event
 
-      ScriptApp.newTrigger("doSaveAllSheets")
+      ScriptApp.newTrigger("doSaveAllBasics")
        .timeBased()
        .atHour(Hour_1)
        .everyDays(1)
        .create();
 
-      ScriptApp.newTrigger("doSaveAllDatas")
+      ScriptApp.newTrigger("doSaveAllFinancials")
        .timeBased()
        .atHour(Hour_2)
        .everyDays(1)
@@ -138,7 +138,7 @@ function doCreateTriggers(){
     }
     else if (Class == 'BDR' || Class == 'ETF') 
     {
-      ScriptApp.newTrigger("doSaveAllSheets")                                   // Change to not stock settings, to not export, etc
+      ScriptApp.newTrigger("doSaveAllBasics")                                   // Change to not stock settings, to not export, etc
        .timeBased()
        .atHour(20)
        .everyDays(1)
@@ -146,7 +146,7 @@ function doCreateTriggers(){
     }
     else if (Class == 'ADR') 
     {
-      ScriptApp.newTrigger("doSaveSWING")                                   // Change to not stock settings, to not export, etc
+      ScriptApp.newTrigger("doSaveSWING")                                       // Change to not stock settings, to not export, etc
        .timeBased()
        .atHour(20)
        .everyDays(1)

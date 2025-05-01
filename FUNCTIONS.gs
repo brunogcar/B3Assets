@@ -78,47 +78,6 @@ function getConfigValue(Acronym, Source = "Both") {
   return Value;
 }
 
-function getConfigValue(Acronym, source = "Both") 
-{
-  const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
-  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
-
-  if (!sheet_se && !sheet_co) {
-    Logger.log('ERROR: Neither Settings nor Config sheet found.');
-    return null;
-  }
-
-  // Helper to check if value is invalid
-  const isInvalid = (val) => !val || val === "DEFAULT" || ErrorValues.includes(val);
-
-  if (source === "Settings") 
-  {
-    if (!sheet_se) return null;
-
-    const value = sheet_se.getRange(Acronym).getDisplayValue().trim();
-    return isInvalid(value) ? null : value;
-  }
-
-  if (source === "Config") 
-  {
-    if (!sheet_co) return null;
-
-    const value = sheet_co.getRange(Acronym).getDisplayValue().trim();
-    return isInvalid(value) ? null : value;
-  }
-
-  // Default: try Settings, fallback to Config
-  let value = sheet_se ? sheet_se.getRange(Acronym).getDisplayValue().trim() : "";
-
-  if (isInvalid(value)) {
-    value = sheet_co ? sheet_co.getRange(Acronym).getDisplayValue().trim() : "";
-    return isInvalid(value) ? null : value;
-  }
-
-  return value;
-}
-
-
 /////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
 
 function arraysAreEqual(arr1, arr2) {
@@ -150,20 +109,20 @@ function doSettings(){
       {
         var Save = sheet_sr.getRange(SAV).getDisplayValue();                             // SAV = SAVE
 
-        if ( Save == 'SHEETS') { doSaveAllSheets(); }
+        if ( Save == 'SHEETS') { doSaveAllBasics(); }
         if ( Save == 'EXTRAS') { doSaveAllExtras(); }
-        if ( Save == 'DATAS')  { doSaveAllDatas(); }
+        if ( Save == 'DATAS')  { doSaveAllFinancials(); }
         if ( Save == 'ALL')    { doSaveAll(); }
         if ( Save == 'INDIVIDUAL')
           { 
             var Individual = sheet_sr.getRange(IND).getDisplayValue();                   // IND = INDIVIDUAL
 
             if ( Individual == 'SWING')  { doSaveSWING(); }
-            if ( Individual == 'OPCOES') { doSaveSheet(OPCOES); }
-            if ( Individual == 'BTC')    { doSaveSheet(BTC); }
-            if ( Individual == 'TERMO')  { doSaveSheet(TERMO); }
-            if ( Individual == 'FUND')   { doSaveSheet(FUND); }
-            if ( Individual == 'FUTURE') { doSaveSheet(FUTURE); }
+            if ( Individual == 'OPCOES') { doSaveBasic(OPCOES); }
+            if ( Individual == 'BTC')    { doSaveBasic(BTC); }
+            if ( Individual == 'TERMO')  { doSaveBasic(TERMO); }
+            if ( Individual == 'FUND')   { doSaveBasic(FUND); }
+            if ( Individual == 'FUTURE') { doSaveBasic(FUTURE); }
           }
       }
       if ( True == 'EXPORT') {doExportAll(); }

@@ -11,37 +11,37 @@ function import_15x_to_163()
 
   doImportShares();
 
-  doImportData(BLC);
-  doImportData(Balanco);
-  doImportData(DRE);
-  doImportData(Resultado);
-  doImportData(FLC);
-  doImportData(Fluxo);
-  doImportData(DVA);
-  doImportData(Valor);
+  doImportFinancial(BLC);
+  doImportFinancial(Balanco);
+  doImportFinancial(DRE);
+  doImportFinancial(Resultado);
+  doImportFinancial(FLC);
+  doImportFinancial(Fluxo);
+  doImportFinancial(DVA);
+  doImportFinancial(Valor);
 
-//  doImportSheet(SWING_4);
+//  doImportBasic(SWING_4);
   doImport_SWING_12_to_SWING_4();
-  doImportSheet(SWING_12);
-  doImportSheet(SWING_52);
-  doImportSheet(OPCOES);
-  doImportSheet(BTC);
-  doImportSheet(TERMO);
-  doImportSheet(FUND);
+  doImportBasic(SWING_12);
+  doImportBasic(SWING_52);
+  doImportBasic(OPCOES);
+  doImportBasic(BTC);
+  doImportBasic(TERMO);
+  doImportBasic(FUND);
 
-  doImportSheet(FUTURE);
-  doImportSheet(FUTURE_1);
-  doImportSheet(FUTURE_2);
-  doImportSheet(FUTURE_3);
+  doImportBasic(FUTURE);
+  doImportBasic(FUTURE_1);
+  doImportBasic(FUTURE_2);
+  doImportBasic(FUTURE_3);
 
-  doImportSheet(RIGHT_1);
-  doImportSheet(RIGHT_2);
-  doImportSheet(RECEIPT_9);
-  doImportSheet(RECEIPT_10);
-  doImportSheet(WARRANT_11);
-  doImportSheet(WARRANT_12);
-  doImportSheet(WARRANT_13);
-  doImportSheet(BLOCK);
+  doImportBasic(RIGHT_1);
+  doImportBasic(RIGHT_2);
+  doImportBasic(RECEIPT_9);
+  doImportBasic(RECEIPT_10);
+  doImportBasic(WARRANT_11);
+  doImportBasic(WARRANT_12);
+  doImportBasic(WARRANT_13);
+  doImportBasic(BLOCK);
 
   doCheckTriggers();
   update_form();

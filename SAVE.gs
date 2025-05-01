@@ -5,14 +5,14 @@ function doSaveAll() {
 
   SpreadsheetApp.flush();
 
-  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
+  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doProventos();
 
-  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
+  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
   
-  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
+  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
 
   processSave([
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
@@ -20,7 +20,7 @@ function doSaveAll() {
     RECEIPT_9, RECEIPT_10,
     WARRANT_11, WARRANT_12, WARRANT_13,
     BLOCK
-  ], doCheckDATA, doSaveSheet);
+  ], doCheckDATA, doSaveBasic);
 
   doIsFormula();
   doDisableSheets();
@@ -29,21 +29,21 @@ function doSaveAll() {
 
 /////////////////////////////////////////////////////////////////////Individual/////////////////////////////////////////////////////////////////////
 
-//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
-function doSaveAllSheets() {
+//-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
+function doSaveAllBasics() {
   Logger.log(SNAME(2));
 
   SpreadsheetApp.flush();
 
-  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
+  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
   
-  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
+  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
   
   doSaveShares();
   doExportProventos();
 
   doExportExtras();
-  doExportDatas();
+  doExportFinancials();
 
   doIsFormula();
   doDisableSheets();
@@ -59,32 +59,32 @@ function doSaveAllExtras() {
     RECEIPT_9, RECEIPT_10,
     WARRANT_11, WARRANT_12, WARRANT_13,
     BLOCK
-  ], doCheckDATA, doSaveSheet);
+  ], doCheckDATA, doSaveBasic);
 
   SpreadsheetApp.flush();
 
   doSaveShares();
   doExportProventos();
 
-  doExportSheets();
-  doExportDatas();
+  doExportBasics();
+  doExportFinancials();
 
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
 }
 //-------------------------------------------------------------------DATAS-------------------------------------------------------------------//
-function doSaveAllDatas() {
+function doSaveAllFinancials() {
   Logger.log(SNAME(2));
 
   SpreadsheetApp.flush();
 
-  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
+  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doExportProventos();
 
-  doExportSheets();
+  doExportBasics();
   doExportExtras();
 
   doIsFormula();
@@ -97,9 +97,9 @@ function doSaveAllDatas() {
   // could add addicional checks with && "and" || "or"
   // can get SheetName from ss.getName() as well
 
-/////////////////////////////////////////////////////////////////////SHEETS/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////BASICS/////////////////////////////////////////////////////////////////////
 
-function doSaveSheets() {
+function doSaveBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
 
   SheetNames.forEach(SheetName => {
@@ -121,7 +121,7 @@ function doSaveExtras() {
 
 /////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
 
-function doSaveDatas()
+function doSaveFinancials()
 {
   const SheetNames = [BLC, DRE, FLC, DVA];                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
@@ -133,7 +133,7 @@ function doSaveDatas()
   if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA == 0 || SOMA > 125000))))
   {
     SheetNames.forEach(SheetName => {
-      try { doSaveData(SheetName); }
+      try { doSaveFinancial(SheetName); }
       catch (error) { Logger.error(`Error saving sheet ${SheetName}: ${error}`); }
     });
   }

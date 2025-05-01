@@ -68,8 +68,8 @@ function import_Current(){
   doImportProventos();
   doImportShares();
 
-  doImportSheets();
-  doImportDatas();
+  doImportBasics();
+  doImportFinancials();
 
   doCheckTriggers();
   update_form();
@@ -99,9 +99,9 @@ function doImportProventos()
   });
 }
 
-//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
+//-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
-function doImportSheets(){
+function doImportBasics(){
   const SheetNames = [
     SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, 
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, 
@@ -125,7 +125,7 @@ function doImportSheets(){
     if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
-      doImportSheet(SheetName);
+      doImportBasic(SheetName);
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
@@ -136,7 +136,7 @@ function doImportSheets(){
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
-function doImportDatas(){
+function doImportFinancials(){
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
   const totalSheets = SheetNames.length;
   let Count = 0;
@@ -152,7 +152,7 @@ function doImportDatas(){
     if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
-      doImportData(SheetName);
+      doImportFinancial(SheetName);
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
@@ -248,9 +248,9 @@ function doImportProv(ProvName){
   }
 }
 
-/////////////////////////////////////////////////////////////////////Sheets/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////BASIC/////////////////////////////////////////////////////////////////////
 
-function doImportSheet(SheetName){
+function doImportBasic(SheetName){
   Logger.log(`IMPORT: ${SheetName}`);
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
@@ -258,9 +258,9 @@ function doImportSheet(SheetName){
   const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);      // Source Sheet
-  if (!sheet_sr) { Logger.log(`ERROR IMPORT: Source sheet ${SheetName} - Does not exist on doImportSheet from ${Source_Id}`); return; }
+  if (!sheet_sr) { Logger.log(`ERROR IMPORT: Source sheet ${SheetName} - Does not exist on doImportBasic from ${Source_Id}`); return; }
   const sheet_tr = fetchSheetByName(SheetName);                                       // Target Sheet
-  if (!sheet_tr) { Logger.log(`ERROR IMPORT: Target sheet ${SheetName} - does not exist on doImportSheet.`); return; }
+  if (!sheet_tr) { Logger.log(`ERROR IMPORT: Target sheet ${SheetName} - does not exist on doImportBasic.`); return; }
 
   let Import;
 
@@ -352,7 +352,7 @@ function doImportSheet(SheetName){
     }
     else
     {
-      Logger.log(`ERROR IMPORT: ${SheetName} - A5 cell is Blank on doImportSheet`);
+      Logger.log(`ERROR IMPORT: ${SheetName} - A5 cell is Blank on doImportBasic`);
     }
   }
   else
@@ -361,16 +361,16 @@ function doImportSheet(SheetName){
   }
 }
 
-/////////////////////////////////////////////////////////////////////DATA////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////FINANCIAL////////////////////////////////////////////////////////////////////
 
-function doImportData(SheetName){
+function doImportFinancial(SheetName){
   Logger.log(`IMPORT: ${SheetName}`);
   const sheet_co = fetchSheetByName('Config');                                         // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_se = fetchSheetByName('Settings');                                       // Settings sheet
   if (!sheet_co || !sheet_se) return;
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);         // Source Sheet
-  if (!sheet_sr) { Logger.log(`ERROR IMPORT: ${SheetName} - Does not exist on doImportData from ${Source_Id}`); return; }
+  if (!sheet_sr) { Logger.log(`ERROR IMPORT: ${SheetName} - Does not exist on doImportFinancial from ${Source_Id}`); return; }
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
   const sheet_tr = fetchSheetByName(SheetName);                                        // Target Sheet
@@ -395,7 +395,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -421,7 +421,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -447,7 +447,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -473,7 +473,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - D1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - D1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -499,7 +499,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -525,7 +525,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -551,7 +551,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - B1 cell is Blank on doImportFinancial`);
       }
     }
     else
@@ -577,7 +577,7 @@ function doImportData(SheetName){
       }
       else
       {
-        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportData`);
+        Logger.log(`ERROR IMPORT: ${SheetName} - C1 cell is Blank on doImportFinancial`);
       }
     }
     else

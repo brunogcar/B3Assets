@@ -13,14 +13,14 @@ function onOpen()
       (ui.createMenu('Save All')
         .addItem('Save All', 'doSaveAll')
         .addSeparator()
-        .addItem('Save Sheets',  'doSaveAllSheets')
+        .addItem('Save Basics',  'doSaveAllBasics')
         .addItem('Save Extras',  'doSaveAllExtras')
-        .addItem('Save Datas',   'doSaveAllDatas')
+        .addItem('Save Financials',   'doSaveAllFinancials')
       )
       .addSeparator()
       .addItem('Save Proventos', 'doSaveProventos')
       .addSeparator()
-      .addItem('Save Grafics (Swing - Opções - BTC - Termo - Fund)', 'doSaveSheets')
+      .addItem('Save Grafics (Swing - Opções - BTC - Termo - Fund)', 'doSaveBasics')
       .addSeparator()
       .addSubMenu
       (ui.createMenu('Save Swing')
@@ -36,7 +36,7 @@ function onOpen()
       .addItem('Save Future',    'menuSaveFuture')
       .addItem('Save Fund',      'menuSaveFund')
       .addSeparator()
-      .addItem('Save Balanço (BLC - DRE - FLC - DVA)','doSaveDatas')
+      .addItem('Save Balanço (BLC - DRE - FLC - DVA)','doSaveFinancials')
       .addSeparator()
       .addSubMenu
       (ui.createMenu('BLC')
@@ -67,7 +67,7 @@ function onOpen()
     (ui.createMenu('Edit')
       .addItem('Edit ALL','doEditAll')
       .addSeparator()
-      .addItem('Edit Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doEditSheets')
+      .addItem('Edit Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doEditBasics')
       .addSeparator()
       .addItem('Edit Swing 4',    'menuEditSwing_4')
       .addItem('Edit Swing 12',   'menuEditSwing_12')
@@ -78,7 +78,7 @@ function onOpen()
       .addItem('Edit Future',     'menuEditFuture')
       .addItem('Edit Fund',       'menuEditFund')
       .addSeparator()
-      .addItem('Edit Balanço (BLC - DRE - FLC - DVA)','doEditDatas')
+      .addItem('Edit Balanço (BLC - DRE - FLC - DVA)','doEditFinancials')
       .addSeparator()
       .addSubMenu
       (ui.createMenu('BLC')
@@ -149,7 +149,7 @@ function onOpen()
       (ui.createMenu('Clear')
         .addItem('Clear ALL(Grafics - Balanço)', 'doClearAll')
         .addSeparator()
-        .addItem('Clear Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doClearSheets')
+        .addItem('Clear Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doClearBasics')
         .addSeparator()
         .addItem('Clear Swing 4',  'menuClearSwing_4')
         .addItem('Clear Swing 12', 'menuClearSwing_12')
@@ -160,7 +160,7 @@ function onOpen()
         .addItem('Clear Future',   'menuClearFuture')
         .addItem('Clear Fund',     'menuClearFund')
         .addSeparator()
-        .addItem('Clear Balanço (BLC - DRE - FLC - DVA)','doClearDatas')
+        .addItem('Clear Balanço (BLC - DRE - FLC - DVA)','doClearFinancials')
         .addSeparator()
         .addItem('Clear BLC',      'menuClearBLC')
         .addItem('Clear DRE',      'menuClearDRE')
@@ -173,7 +173,7 @@ function onOpen()
 
       .addSubMenu
       (ui.createMenu('Clean "0" and "-"')
-        .addItem('Clean Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doCleanSheets')
+        .addItem('Clean Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doCleanBasics')
         .addSeparator()
         .addItem('Clean Swing 4',  'menuCleanSwing_4')
         .addItem('Clean Swing 12', 'menuCleanSwing_12')
@@ -213,7 +213,7 @@ function onOpen()
         .addSeparator()
         .addItem('Export Proventos', 'doExportProventos')
         .addSeparator()
-        .addItem('Export Graphics (Swing - Options - BTC - Future - Fund)', 'doExportSheets')
+        .addItem('Export Graphics (Swing - Options - BTC - Future - Fund)', 'doExportBasics')
         .addSeparator()
         .addItem('Export Swing 4',   'menuExportSwing_4')
         .addItem('Export Swing 12',  'menuExportSwing_12')
@@ -224,7 +224,7 @@ function onOpen()
         .addItem('Export Future',    'menuExportFuture')
         .addItem('Export Fund',      'menuExportFund')
         .addSeparator()
-        .addItem('Export Balanço (BLC - DRE - FLC - DVA)', 'doExportDatas')
+        .addItem('Export Balanço (BLC - DRE - FLC - DVA)', 'doExportFinancials')
         .addSeparator()
         .addItem('Export BLC',       'menuExportBLC')
         .addItem('Export DRE',       'menuExportDRE')
@@ -275,110 +275,110 @@ function onOpen()
 
 /////////////////////////////////////////////////////////////////////SAVE/////////////////////////////////////////////////////////////////////
 
-function menuSaveSwing_4()    { doSaveSheet(SWING_4);}
-function menuSaveSwing_12()   { doSaveSheet(SWING_12);}
-function menuSaveSwing_52()   { doSaveSheet(SWING_52);}
-function menuSaveOpcoes()     { doSaveSheet(OPCOES);}
-function menuSaveBTC()        { doSaveSheet(BTC);}
-function menuSaveTermo()      { doSaveSheet(TERMO);}
-function menuSaveFuture()     { doSaveSheet(FUTURE);}
-function menuSaveFund()       { doSaveSheet(FUND);}
+function menuSaveSwing_4()    { doSaveBasic(SWING_4);}
+function menuSaveSwing_12()   { doSaveBasic(SWING_12);}
+function menuSaveSwing_52()   { doSaveBasic(SWING_52);}
+function menuSaveOpcoes()     { doSaveBasic(OPCOES);}
+function menuSaveBTC()        { doSaveBasic(BTC);}
+function menuSaveTermo()      { doSaveBasic(TERMO);}
+function menuSaveFuture()     { doSaveBasic(FUTURE);}
+function menuSaveFund()       { doSaveBasic(FUND);}
 
-function menuSaveBLC()        { doSaveData(BLC);}
-function menuSaveBalanco()    { doSaveData(Balanco);}
-function menuSaveDRE()        { doSaveData(DRE);}
-function menuSaveResultado()  { doSaveData(Resultado);}
-function menuSaveFLC()        { doSaveData(FLC);}
-function menuSaveFluxo()      { doSaveData(Fluxo);}
-function menuSaveDVA()        { doSaveData(DVA);}
-function menuSaveValor()      { doSaveData(Valor);}
+function menuSaveBLC()        { doSaveFinancial(BLC);}
+function menuSaveBalanco()    { doSaveFinancial(Balanco);}
+function menuSaveDRE()        { doSaveFinancial(DRE);}
+function menuSaveResultado()  { doSaveFinancial(Resultado);}
+function menuSaveFLC()        { doSaveFinancial(FLC);}
+function menuSaveFluxo()      { doSaveFinancial(Fluxo);}
+function menuSaveDVA()        { doSaveFinancial(DVA);}
+function menuSaveValor()      { doSaveFinancial(Valor);}
 
 /////////////////////////////////////////////////////////////////////EDIT/////////////////////////////////////////////////////////////////////
 
-function menuEditSwing_4()    { doEditSheet(SWING_4);}
-function menuEditSwing_12()   { doEditSheet(SWING_12);}
-function menuEditSwing_52()   { doEditSheet(SWING_52);}
-function menuEditOpcoes()     { doEditSheet(OPCOES);}
-function menuEditBTC()        { doEditSheet(BTC);}
-function menuEditTermo()      { doEditSheet(TERMO);}
-function menuEditFuture()     { doEditSheet(FUTURE);}
-function menuEditFund()       { doEditSheet(FUND);}
+function menuEditSwing_4()    { doEditBasic(SWING_4);}
+function menuEditSwing_12()   { doEditBasic(SWING_12);}
+function menuEditSwing_52()   { doEditBasic(SWING_52);}
+function menuEditOpcoes()     { doEditBasic(OPCOES);}
+function menuEditBTC()        { doEditBasic(BTC);}
+function menuEditTermo()      { doEditBasic(TERMO);}
+function menuEditFuture()     { doEditBasic(FUTURE);}
+function menuEditFund()       { doEditBasic(FUND);}
 
 
-function menuEditBLC()        {doEditData(BLC);}
-function menuEditBalanco()    {doEditData(Balanco);}
-function menuEditDRE()        {doEditData(DRE);}
-function menuEditResultado()  {doEditData(Resultado);}
-function menuEditFLC()        {doEditData(FLC);}
-function menuEditFluxo()      {doEditData(Fluxo);}
-function menuEditDVA()        {doEditData(DVA);}
-function menuEditValor()      {doEditData(Valor);}
+function menuEditBLC()        {doEditFinancial(BLC);}
+function menuEditBalanco()    {doEditFinancial(Balanco);}
+function menuEditDRE()        {doEditFinancial(DRE);}
+function menuEditResultado()  {doEditFinancial(Resultado);}
+function menuEditFLC()        {doEditFinancial(FLC);}
+function menuEditFluxo()      {doEditFinancial(Fluxo);}
+function menuEditDVA()        {doEditFinancial(DVA);}
+function menuEditValor()      {doEditFinancial(Valor);}
 
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
 
-function menuCopySwing_4()    { doCopySheet(SWING_4);}
-function menuCopySwing_12()   { doCopySheet(SWING_12);}
-function menuCopySwing_52()   { doCopySheet(SWING_52);}
-function menuCopyOpcoes()     { doCopySheet(OPCOES);}
-function menuCopyBTC()        { doCopySheet(BTC);}
-function menuCopyTermo()      { doCopySheet(TERMO);}
-function menuCopyFuture()     { doCopySheet(FUTURE);}
-function menuCopyFund()       { doCopySheet(FUND);}
+function menuCopySwing_4()    { doCopyBasic(SWING_4);}
+function menuCopySwing_12()   { doCopyBasic(SWING_12);}
+function menuCopySwing_52()   { doCopyBasic(SWING_52);}
+function menuCopyOpcoes()     { doCopyBasic(OPCOES);}
+function menuCopyBTC()        { doCopyBasic(BTC);}
+function menuCopyTermo()      { doCopyBasic(TERMO);}
+function menuCopyFuture()     { doCopyBasic(FUTURE);}
+function menuCopyFund()       { doCopyBasic(FUND);}
 
-function menuCopyBLC()        { doCopyData(BLC);}
-function menuCopyBalanco()    { doCopyData(Balanco);}
-function menuCopyDRE()        { doCopyData(DRE);}
-function menuCopyResultado()  { doCopyData(Resultado);}
-function menuCopyFLC()        { doCopyData(FLC);}
-function menuCopyFluxo()      { doCopyData(Fluxo);}
-function menuCopyDVA()        { doCopyData(DVA);}
-function menuCopyValor()      { doCopyData(Valor);}
-
-/////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
-
-function menuClearSwing_4()   { doClearSheet(SWING_4);}
-function menuClearSwing_12()  { doClearSheet(SWING_12);}
-function menuClearSwing_52()  { doClearSheet(SWING_52);}
-function menuClearOpcoes()    { doClearSheet(OPCOES);}
-function menuClearBTC()       { doClearSheet(BTC);}
-function menuClearTermo()     { doClearSheet(TERMO);}
-function menuClearFuture()    { doClearSheet(FUTURE);}
-function menuClearFund()      { doClearSheet(FUND);}
-
-function menuClearBLC()       { doClearData(BLC);}
-function menuClearDRE()       { doClearData(DRE);}
-function menuClearFLC()       { doClearData(FLC);}
-function menuClearDVA()       { doClearData(DVA);}
+function menuCopyBLC()        { doCopyFinancial(BLC);}
+function menuCopyBalanco()    { doCopyFinancial(Balanco);}
+function menuCopyDRE()        { doCopyFinancial(DRE);}
+function menuCopyResultado()  { doCopyFinancial(Resultado);}
+function menuCopyFLC()        { doCopyFinancial(FLC);}
+function menuCopyFluxo()      { doCopyFinancial(Fluxo);}
+function menuCopyDVA()        { doCopyFinancial(DVA);}
+function menuCopyValor()      { doCopyFinancial(Valor);}
 
 /////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
 
-function menuCleanSwing_4()   { doCleanSheet(SWING_4);}
-function menuCleanSwing_12()  { doCleanSheet(SWING_12);}
-function menuCleanSwing_52()  { doCleanSheet(SWING_52);}
-function menuCleanOpcoes()    { doCleanSheet(OPCOES);}
-function menuCleanBTC()       { doCleanSheet(BTC);}
-function menuCleanTermo()     { doCleanSheet(TERMO);}
-function menuCleanFuture()    { doCleanSheet(FUTURE);}
-function menuCleanFund()      { doCleanSheet(FUND);}
+function menuClearSwing_4()   { doClearBasic(SWING_4);}
+function menuClearSwing_12()  { doClearBasic(SWING_12);}
+function menuClearSwing_52()  { doClearBasic(SWING_52);}
+function menuClearOpcoes()    { doClearBasic(OPCOES);}
+function menuClearBTC()       { doClearBasic(BTC);}
+function menuClearTermo()     { doClearBasic(TERMO);}
+function menuClearFuture()    { doClearBasic(FUTURE);}
+function menuClearFund()      { doClearBasic(FUND);}
+
+function menuClearBLC()       { doClearFinancial(BLC);}
+function menuClearDRE()       { doClearFinancial(DRE);}
+function menuClearFLC()       { doClearFinancial(FLC);}
+function menuClearDVA()       { doClearFinancial(DVA);}
+
+/////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
+
+function menuCleanSwing_4()   { doCleanBasic(SWING_4);}
+function menuCleanSwing_12()  { doCleanBasic(SWING_12);}
+function menuCleanSwing_52()  { doCleanBasic(SWING_52);}
+function menuCleanOpcoes()    { doCleanBasic(OPCOES);}
+function menuCleanBTC()       { doCleanBasic(BTC);}
+function menuCleanTermo()     { doCleanBasic(TERMO);}
+function menuCleanFuture()    { doCleanBasic(FUTURE);}
+function menuCleanFund()      { doCleanBasic(FUND);}
 
 /////////////////////////////////////////////////////////////////////EXPORT/////////////////////////////////////////////////////////////////////
 
-function menuExportSwing_4()  { doExportSheet(SWING_4);}
-function menuExportSwing_12() { doExportSheet(SWING_12);}
-function menuExportSwing_52() { doExportSheet(SWING_52);}
-function menuExportOpcoes()   { doExportSheet(OPCOES);}
-function menuExportBTC()      { doExportSheet(BTC);}
-function menuExportTermo()    { doExportSheet(TERMO);}
-function menuExportFuture()   { doExportSheet(FUTURE);}
-function menuExportFund()     { doExportSheet(FUND);}
+function menuExportSwing_4()  { doExportBasic(SWING_4);}
+function menuExportSwing_12() { doExportBasic(SWING_12);}
+function menuExportSwing_52() { doExportBasic(SWING_52);}
+function menuExportOpcoes()   { doExportBasic(OPCOES);}
+function menuExportBTC()      { doExportBasic(BTC);}
+function menuExportTermo()    { doExportBasic(TERMO);}
+function menuExportFuture()   { doExportBasic(FUTURE);}
+function menuExportFund()     { doExportBasic(FUND);}
 
-function menuExportBLC()      { doExportData(BLC);}
-function menuExportDRE()      { doExportData(DRE);}
-function menuExportFLC()      { doExportData(FLC);}
-function menuExportDVA()      { doExportData(DVA);}
+function menuExportBLC()      { doExportFinancial(BLC);}
+function menuExportDRE()      { doExportFinancial(DRE);}
+function menuExportFLC()      { doExportFinancial(FLC);}
+function menuExportDVA()      { doExportFinancial(DVA);}
 
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////
 
-function doSaveSWING()      { doSaveSheet(SWING_4); doSaveSheet(SWING_12); doSaveSheet(SWING_52);}
+function doSaveSWING()      { doSaveBasic(SWING_4); doSaveBasic(SWING_12); doSaveBasic(SWING_52);}
 
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////

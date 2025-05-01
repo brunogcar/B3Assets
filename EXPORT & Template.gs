@@ -2,16 +2,16 @@
 
 function doExportAll()
 {
-  doExportSheets();
+  doExportBasics();
   doExportExtras();
-  doExportDatas();
+  doExportFinancials();
 };
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-//-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
+//-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
-function doExportSheets() {
+function doExportBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
   const totalSheets = SheetNames.length;
   let Count = 0;
@@ -27,18 +27,18 @@ function doExportSheets() {
     if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
-      doExportSheet(SheetName);
+      doExportBasic(SheetName);
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
+  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} basics exported successfully`);
 }
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
-function doExportDatas() {
+function doExportFinancials() {
   const SheetNames = [BLC, DRE, FLC, DVA];
   const totalSheets = SheetNames.length;
   let Count = 0;
@@ -54,13 +54,13 @@ function doExportDatas() {
     if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
-      doExportData(SheetName);
+      doExportFinancial(SheetName);
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
       if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} data sheets exported successfully`);
+  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} Financial sheets exported successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -92,9 +92,7 @@ function doExportExtras() {
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
-
-function doExportSheet(SheetName){
+function doExportBasic(SheetName){
   Logger.log(`EXPORT: ${SheetName}`);
 
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
@@ -114,7 +112,7 @@ function doExportSheet(SheetName){
 
   const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
   if (!sheet_sr) {
-    Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportSheet from sheet_sr`);
+    Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportBasic from sheet_sr`);
     return;
   }
 
@@ -124,7 +122,7 @@ function doExportSheet(SheetName){
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: Target sheet ${SheetName} - Target sheet does not exist on doExportSheet from sheet_tr`);
+    Logger.log(`ERROR EXPORT: Target sheet ${SheetName} - Target sheet does not exist on doExportBasic from sheet_tr`);
     return;
   }
 
@@ -132,12 +130,12 @@ function doExportSheet(SheetName){
   let Export;                                                                          // Declare Export without an initial value
 
   if (ErrorValues.includes(A2) && A5 == "") {
-    Logger.log(`ERROR EXPORT: ${SheetName} - ErrorValues in A2 or A5_ = "" on doExportSheet`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - ErrorValues in A2 or A5_ = "" on doExportBasic`);
     return;
   }
 
   if (Class !== 'STOCK') {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportSheet`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportBasic`);
     return;
   }
 
@@ -214,12 +212,12 @@ function doExportSheet(SheetName){
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
   if (ShouldExport != true) {
-    Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportSheet.`);
+    Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
     return;
   }
 
   if (Export != "TRUE") {
-        Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportSheet.`);
+        Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportBasic.`);
     return;
   }
 
@@ -330,15 +328,15 @@ function doExportExtra(SheetName){
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(target_sh[SheetName] || SheetName);           // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportData from sheet_tr`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`);
     return;
   }
   processExport(TKT, Data, sheet_tr, SheetName);
 }
 
-/////////////////////////////////////////////////////////////////////DATA TEMPLATE/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doExportData(SheetName) {
+function doExportFinancial(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
@@ -354,14 +352,14 @@ function doExportData(SheetName) {
 
   const sheet_sr = fetchSheetByName('Index');                                         // Source sheet
   if (!sheet_sr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportData from sheet_sr`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_sr`);
     return;
   }
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportData from sheet_tr`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`);
     return; }
 
   // Mapping export config settings
@@ -371,7 +369,7 @@ function doExportData(SheetName) {
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
   if (Export !== "TRUE") {
-    Logger.log(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportData`);
+    Logger.log(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`);
     return;
   }
 

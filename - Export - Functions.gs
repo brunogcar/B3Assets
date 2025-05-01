@@ -149,7 +149,6 @@ function doClearExport(SheetName){
   var Target_Id = sheet_co.getRange(TDR).getDisplayValue();                      // TDR = Target ID Range
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                            // TKR = Ticket Range
 
-
   const ss_tr = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                              // Target sheet
   if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}

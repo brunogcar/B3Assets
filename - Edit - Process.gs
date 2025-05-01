@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////////////////////PROCESS SHEET/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS BASIC/////////////////////////////////////////////////////////////////////
 
-function processEditSheet(sheet_sr, SheetName, Edit) 
+function processEditBasic(sheet_sr, SheetName, Edit) 
 {
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
@@ -17,7 +17,7 @@ function processEditSheet(sheet_sr, SheetName, Edit)
     {
       if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
       {
-        doSaveSheet(SheetName);
+        doSaveBasic(SheetName);
       }
       else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
                ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
@@ -30,7 +30,7 @@ function processEditSheet(sheet_sr, SheetName, Edit)
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
-          doExportSheet(SheetName);
+          doExportBasic(SheetName);
         }
         else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
         {
@@ -40,7 +40,7 @@ function processEditSheet(sheet_sr, SheetName, Edit)
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
-          doExportSheet(SheetName);
+          doExportBasic(SheetName);
         }
       }
       else
@@ -76,7 +76,7 @@ function processEditExtra(sheet_sr, SheetName, Edit)
     {
       if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
       {
-        doSaveSheet(SheetName);
+        doSaveBasic(SheetName);
       }
       else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
                ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
@@ -118,9 +118,9 @@ function processEditExtra(sheet_sr, SheetName, Edit)
   }
 }
 
-/////////////////////////////////////////////////////////////////////PROCESS DATA/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 
-function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
+function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
 
   const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
   const LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
@@ -135,7 +135,7 @@ function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edi
       case FLC:
       case DVA:
         if (New_sr.valueOf() > New_tr.valueOf()) {
-          doSaveData(SheetName);
+          doSaveFinancial(SheetName);
           return;
         }
         if (New_sr.valueOf() == New_tr.valueOf()) {
@@ -149,7 +149,7 @@ function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edi
 //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
       case Balanco:
         if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveData(SheetName);
+          doSaveFinancial(SheetName);
           return;
         }
         if (New_sr.valueOf() == Old_sr.valueOf()) {
@@ -164,7 +164,7 @@ function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edi
       case Valor:
       case Fluxo:
         if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveData(SheetName);
+          doSaveFinancial(SheetName);
           return;
         }
         if (New_sr.valueOf() == Old_sr.valueOf()) {
@@ -193,7 +193,7 @@ function processEditData(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edi
     const updatedValues = mappingFunc(values_sr, values_tr);
     range_tr.setValues(updatedValues);
     Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-    doExportData(SheetName);
+    doExportFinancial(SheetName);
   }
 }
 

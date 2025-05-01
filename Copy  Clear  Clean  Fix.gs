@@ -3,15 +3,15 @@
 function doClearAll()
 {
   doClearProventos();
-  doClearSheets();
-  doClearDatas();
+  doClearBasics();
+  doClearFinancials();
 };
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////TRIM/////////////////////////////////////////////////////////////////////
 
-function doTrimSheets() 
+function doTrimBasics() 
 {
   const SheetNames = [SWING_4, SWING_12, SWING_52];
 
@@ -28,7 +28,7 @@ function doTrimSheets()
   });
 }
 
-function doTrimSheet(SheetName) 
+function doTrimBasic(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = ss.getSheetByName(SheetName); // Target
@@ -72,7 +72,7 @@ function doTrimSheet(SheetName)
 
 /////////////////////////////////////////////////////////////////////CLEAR/////////////////////////////////////////////////////////////////////
 
-function doClearSheets() 
+function doClearBasics() 
 {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
@@ -80,7 +80,7 @@ function doClearSheets()
   {
     try 
     {
-    doClearSheet(SheetName);
+    doClearBasic(SheetName);
     } 
     catch (error) 
     {
@@ -90,7 +90,7 @@ function doClearSheets()
   });
 }
 
-function doClearDatas() 
+function doClearFinancials() 
 {
   const SheetNames = [BLC, DRE, FLC, DVA];
 
@@ -98,7 +98,7 @@ function doClearDatas()
   {
     try 
     {
-    doClearData(SheetName);
+    doClearFinancial(SheetName);
     } 
     catch (error) 
     {
@@ -108,7 +108,7 @@ function doClearDatas()
   });
 }
 
-function doCleanSheets() 
+function doCleanBasics() 
 {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
@@ -116,7 +116,7 @@ function doCleanSheets()
   {
     try 
     {
-      doCleanSheet(SheetName);
+      doCleanBasic(SheetName);
     } 
     catch (error) 
     {
@@ -127,7 +127,7 @@ function doCleanSheets()
 
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
 
-function doCopySheet(SheetName) 
+function doCopyBasic(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
@@ -137,7 +137,7 @@ function doCopySheet(SheetName)
   ss.getRange(5, 1, LR - 4, LC).activate();
 }
 
-function doCopyData(SheetName) 
+function doCopyFinancial(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
@@ -180,7 +180,7 @@ function doClearProventos()
   ss.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
 };
 
-function doClearSheet(SheetName) 
+function doClearBasic(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
@@ -196,7 +196,7 @@ function doClearSheet(SheetName)
 
 }
 
-function doClearData(SheetName) 
+function doClearFinancial(SheetName) 
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
@@ -230,27 +230,27 @@ function doClearData(SheetName)
     Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
 
-  if (SheetName === BLC) 
+  if (SheetName === BLC)
   {
-    doClearData(Balanco);
+    doClearFinancial(Balanco);
   } 
-  else if (SheetName === DRE) 
+  else if (SheetName === DRE)
   {
-    doClearData(Resultado );
+    doClearFinancial(Resultado );
   } 
-  else if (SheetName === FLC) 
+  else if (SheetName === FLC)
   {
-    doClearData(Fluxo);
+    doClearFinancial(Fluxo);
   } 
-  else if (SheetName === DVA) 
+  else if (SheetName === DVA)
   {
-    doClearData(Valor);
+    doClearFinancial(Valor);
   }
 }
 
 /////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
 
-function doCleanSheet(SheetName) 
+function doCleanBasic(SheetName) 
 {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
