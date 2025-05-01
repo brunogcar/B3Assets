@@ -1,7 +1,7 @@
 
 /////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
 
-function doAutorizeScript(){
+function doAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');  
   if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;}
     Logger.log(`Autorizing Script`);
@@ -13,7 +13,7 @@ function doAutorizeScript(){
   Logger.log("L2 cell color updated to dark green with white font.");
 }
 
-function checkAutorizeScript(){
+function checkAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');  
   if (!sheet_co) {
     Logger.log("Sheet 'Config' not found.");
@@ -36,9 +36,9 @@ function checkAutorizeScript(){
 }
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
-function doCheckTriggers(){
+function doCheckTriggers() {
   const sheet_co = fetchSheetByName('Config');
-  var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
 
   var Triggers = ScriptApp.getProjectTriggers().length;
 
@@ -80,9 +80,9 @@ function doCheckTriggers(){
   }
 };
 
-function doCreateTriggers(){
+function doCreateTriggers() {
   const sheet_co = fetchSheetByName('Config');
-  var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
+  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
 
   var triggers = ScriptApp.getProjectTriggers();
   var shouldCreateTrigger = true;
@@ -155,14 +155,13 @@ function doCreateTriggers(){
   }
 }
 
-function getSheetTriggers(){
+function getSheetTriggers() {
   const sheet_Triggers = ScriptApp.getProjectTriggers();
 
   return sheet_Triggers.length;
 };
 
-function getSheetTriggersHandle() 
-{
+function getSheetTriggersHandle() {
   const triggers = ScriptApp.getProjectTriggers();
   const handlerFunctions = [];
 
@@ -173,8 +172,7 @@ function getSheetTriggersHandle()
   return handlerFunctions;
 }
 
-function writeTriggersToSheet(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function writeTriggersToSheet() {
   const sheet = fetchSheetByName("Config");
 
   if (!sheet) {

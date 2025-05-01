@@ -2,7 +2,6 @@
 
 function processEditBasic(sheet_sr, SheetName, Edit) 
 {
-    var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
 
     var A1 = sheet_sr.getRange("A1").getValue();
@@ -63,7 +62,6 @@ function processEditBasic(sheet_sr, SheetName, Edit)
 
 function processEditExtra(sheet_sr, SheetName, Edit) 
 {
-    var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
 
     var A1 = sheet_sr.getRange("A1").getValue();

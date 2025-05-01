@@ -20,21 +20,21 @@ function doEditBasics() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  if (DEBUG = TRUE) Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
+  if (DEBUG = "TRUE") Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -47,21 +47,21 @@ function doEditExtras() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  if (DEBUG = TRUE) Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
+  if (DEBUG = "TRUE") Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
 }
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
@@ -74,18 +74,18 @@ function doEditFinancials() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditFinancial(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
   Logger.log(`Edit completed: ${Count} of ${totalSheets} data sheets edited successfully`);
@@ -113,7 +113,8 @@ function doEditBasic(SheetName) {
     case SWING_12:
     case SWING_52:
       Edit = getConfigValue(DTR);                                                 // DTR = Edit to Swing
-      var Class = sheet_co.getRange(IST).getDisplayValue();                       // IST = Is Stock? 
+      const Class = getConfigValue(IST, 'Config');                                // IST = Is Stock?
+
       var C2 = sheet_sr.getRange("C2").getValue();
       if (Class == 'STOCK') {
         if (C2 > 0) {
@@ -281,13 +282,13 @@ function doEditFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Balanco);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -312,7 +313,7 @@ function doEditFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -336,13 +337,13 @@ function doEditFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Resultado);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
  
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
@@ -367,7 +368,7 @@ function doEditFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
  
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
@@ -391,13 +392,13 @@ function doEditFinancial(SheetName) {
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Fluxo);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
@@ -421,7 +422,7 @@ function doEditFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
       
       var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
@@ -443,19 +444,14 @@ function doEditFinancial(SheetName) {
       const sheet_tr = fetchSheetByName(DVA);
       if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
 
-      var LR = sheet_tr.getLastRow();
-      var LC = sheet_tr.getLastColumn();
-
-      var B = sheet_tr.getRange("B1:B" + LR).getValues().flat();
-
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = do_Data_helper(Values_tr);
+      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Valor);
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
       
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       
@@ -476,7 +472,7 @@ function doEditFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = do_Data_helper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
       
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       

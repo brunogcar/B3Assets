@@ -9,8 +9,7 @@
  * @param {string} SheetName - The exact name of the sheet to fetch.
  * @returns {GoogleAppsScript.Spreadsheet.Sheet | null} - The Sheet object if found; otherwise, null.
  */
-function fetchSheetByName(SheetName) 
-{
+function fetchSheetByName(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
   if (!sheet) {
     Logger.log(`Sheet not found: ${SheetName}`);
@@ -35,10 +34,10 @@ function fetchSheetByName(SheetName)
  *
  * Usage:
  *   const val1 = getConfigValue(ETE);                // Default behavior (Settings -> Config)
- *   const val2 = getConfigValue(ETE, "Settings");    // Only from Settings
- *   const val3 = getConfigValue(ETE, "Config");      // Only from Config
+ *   const val2 = getConfigValue(ETE, 'Settings');    // Only from Settings
+ *   const val3 = getConfigValue(ETE, 'Config');      // Only from Config
  */
-function getConfigValue(Acronym, Source = "Both") {
+function getConfigValue(Acronym, Source = 'Both') {
   const sheet_se = (Source !== "Config") ? fetchSheetByName('Settings') : null;
   const sheet_co = (Source !== "Settings") ? fetchSheetByName('Config') : null;
 
@@ -93,9 +92,9 @@ function arraysAreEqual(arr1, arr2) {
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
-function doSettings(){
+function doSettings() {
   const sheet_co = fetchSheetByName('Config');
-  var Class = sheet_co.getRange(IST).getDisplayValue();                                 // IST = Is Stock? 
+  const Class = getConfigValue(IST, 'Config');                                          // IST = Is Stock?
   const sheet_sr = fetchSheetByName('Settings');
   var Activate  = sheet_sr.getRange(ACT).getDisplayValue();                             // ACT = Activate
 
@@ -143,7 +142,7 @@ function doSettings(){
 
 /////////////////////////////////////////////////////////////////////RETIRE/////////////////////////////////////////////////////////////////////
 
-function doRetire(){
+function doRetire() {
   copypasteSheets();
   doClearSheetID();
   doClearExportAll();
@@ -154,36 +153,47 @@ function doRetire(){
   revokeOwnAccess();
 };
 
-function copypasteSheets(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheets = ss.getSheets();
-  const SheetNames = new Set(['Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT', 'DATA', 'Value', Balanco, Resultado, Fluxo, Valor]);
+function copypasteSheets() {
+  const SheetNames = [
+    'Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT', 'DATA',
+    'Value', 'Balanco', 'Resultado', 'Fluxo', 'Valor'
+  ];
 
-  sheets.forEach(sheet => {
-    if (SheetNames.has(sheet.getName())) 
-    {
-      sheet.getDataRange().copyTo(sheet.getDataRange(), { contentsOnly: true });
+  SheetNames.forEach(Name => {
+    const sheet = fetchSheetByName(Name);
+    if (sheet) {
+      const range = sheet.getDataRange();
+      range.copyTo(range, { contentsOnly: true });
     }
   });
 }
 
-function doDeleteSheets(){
+function doDeleteSheets() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const SheetNames = new Set(['Balanço Ativo', 'Balanço Passivo', 'Demonstração', 'Fluxo de Caixa', 'Demonstração do Valor Adicionado']);
+  const SheetNames = [
+    'Balanço Ativo', 
+    'Balanço Passivo', 
+    'Demonstração', 
+    'Fluxo de Caixa', 
+    'Demonstração do Valor Adicionado'
+  ];
 
-  ss.getSheets().forEach(sheet => {
-    if (SheetNames.has(sheet.getName())) {
+  SheetNames.forEach(Name => {
+    const sheet = fetchSheetByName(Name);
+    if (sheet) {
       try {
         ss.deleteSheet(sheet);
-        Logger.log(`Sheet deleted: ${sheet.getName()}`); // Log the name of the deleted sheet
+        Logger.log(`Sheet deleted: ${Name}`);
       } catch (error) {
-        Logger.log(`Error deleting sheet "${sheet.getName()}": ${error}`); // Log errors if deletion fails
+        Logger.log(`Error deleting sheet "${Name}": ${error}`);
       }
     }
   });
 }
 
-function moveSpreadsheetToFolder(folderName){
+
+
+function moveSpreadsheetToFolder(folderName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const file = DriveApp.getFileById(ss.getId());
 
@@ -200,19 +210,19 @@ function moveSpreadsheetToFolder(folderName){
   Logger.log(`Spreadsheet moved to ${folderName}`);
 }
 
-function moveSpreadsheetToARQUIVO(){
+function moveSpreadsheetToARQUIVO() {
   moveSpreadsheetToFolder("-=ARQUIVO=-");
 }
 
 /////////////////////////////////////////////////////////////////////DELETE/////////////////////////////////////////////////////////////////////
 
-function doDelete(){
+function doDelete() {
   doDeleteTriggers();
   moveSpreadsheetToBACKUP();
   revokeOwnAccess();
 }
 
-function revokeOwnAccess(){
+function revokeOwnAccess() {
   // Invalidate the script's authorization
   var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
   if (authInfo) {
@@ -223,7 +233,7 @@ function revokeOwnAccess(){
   }
 }
 
-function moveSpreadsheetToBACKUP(){
+function moveSpreadsheetToBACKUP() {
   moveSpreadsheetToFolder("-=BACKUP=-");
 }
 
@@ -241,22 +251,26 @@ function doDeleteSpreadsheet(){
 
 /////////////////////////////////////////////////////////////////////Name/////////////////////////////////////////////////////////////////////
 
-function SNAME(option){
+function SNAME(option) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getActiveSheet();
-  const thisSheet = sheet.getName();
 
   switch (option) {
-    case 0:                                                   // Active sheet name
-      return thisSheet;
+    case 0: {                                                 // Active sheet name
+      const activeSheet = ss.getActiveSheet();
+      return activeSheet ? activeSheet.getName() : "#N/A";
+    }
     case 1:                                                   // All sheet names
       return ss.getSheets().map(sheet => sheet.getName());
+
     case 2:                                                   // Spreadsheet name
       return ss.getName();
-    case 3:                                                   // Spreadsheet version
-      const regex = /-(.*)/;
-      const matches = regex.exec(ss.getName());
-      return matches ? matches[1].trim() : "No match found";
+
+    case 3: {                                                 // Extract version from spreadsheet name (after hyphen)
+      const Name = ss.getName();
+      const match = Name.match(/-(.*)/);
+      return match ? match[1].trim() : "No version found";
+    }
+
     default:
       return "#N/A";
   }
@@ -264,59 +278,67 @@ function SNAME(option){
 
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
-function doCleanZeros(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doCleanZeros() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND];
 
   SheetNames.forEach(SheetName => {
-    const sheet = ss.getSheetByName(SheetName);
-    if (!sheet) {
-      Logger.log(`Sheet not found: ${SheetName}`);
-      return;
-    }
+    const sheet = fetchSheetByName(SheetName);
+    if (!sheet) return;
 
     const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
     const Data = range.getValues();
     let Modified = false;
 
-    Data.forEach(row => {
-      row.forEach((cell, i) => {
-        if (cell === 0) {
-          row[i] = "";
+    for (let i = 0; i < Data.length; i++) {
+      for (let j = 0; j < Data[i].length; j++) {
+        if (Data[i][j] === 0) {
+          Data[i][j] = "";
           Modified = true;
         }
-      });
-    });
+      }
+    }
 
-    if (Modified) range.setValues(Data); // Only update if changes were made
+    if (Modified) {
+      range.setValues(Data);
+      Logger.log(`Zeros cleaned in sheet: ${SheetName}`);
+    }
   });
 }
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
-function reverseColumns(){
+function reverseColumns() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const range = sheet.getRange(1, 4, sheet.getLastRow(), sheet.getLastColumn() - 2);
+  const SheetName = sheet.getName();
+  const active = fetchSheetByName(SheetName);
+  if (!active) return;
+
+  const range = active.getRange(1, 4, active.getLastRow(), active.getLastColumn() - 3);
   const values = range.getValues();
 
   const reversedValues = values.map(row => row.reverse());
   range.setValues(reversedValues);
+  Logger.log(`Columns reversed in sheet: ${SheetName}`);
 }
 
-function reverseRows(){
+function reverseRows() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
+  const SheetName = sheet.getName();
+  const active = fetchSheetByName(SheetName);
+  if (!active) return;
+
+  const range = active.getRange(5, 1, active.getLastRow() - 4, active.getLastColumn());
   const values = range.getValues();
 
   values.reverse();
   range.setValues(values);
+  Logger.log(`Rows reversed in sheet: ${SheetName}`);
 }
 
 /////////////////////////////////////////////////////////////////////RESTORE Functions/////////////////////////////////////////////////////////////////////
 
-function doRestoreFundExport(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();                        // Source spreadsheet
-  const sheet_co = ss.getSheetByName('Config');                             // Source sheet
+function doRestoreFundExport() {
+  const sheet_co = fetchSheetByName('Config');
 
   var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';                              
 

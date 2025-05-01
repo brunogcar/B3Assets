@@ -25,7 +25,7 @@ function doSaveBasic(SheetName) {
       Save = getConfigValue(STR)                                                     // STR = Save to Swing
       Edit = getConfigValue(DTR)                                                     // DTR = Edit to Swing
 
-      var Class = sheet_co.getRange(IST).getDisplayValue();                          // IST = Is Stock? 
+     const Class = getConfigValue(IST, 'Config');                                    // IST = Is Stock?
 
       var B2 = sheet_sr.getRange("B2").getValue();
       var C2 = sheet_sr.getRange("C2").getValue();
@@ -276,7 +276,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K5").getValue();
@@ -303,7 +303,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
       if (sheet_sr) {
@@ -333,7 +333,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K6").getValue();
@@ -359,7 +359,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -385,7 +385,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
       var CHECK = sheet_up.getRange("K7").getValue();
@@ -411,7 +411,7 @@ function doSaveFinancial(SheetName) {
       if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, temp_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
@@ -497,7 +497,7 @@ function doGetProventos() {
 
   if (!sheet_tr)  { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
-  const TKT = sheet_co.getRange(TKR).getValue();                                 // TKR = Ticket Range
+  const TKT = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
   const ticker = TKT.substring(0, 4);
   const language = 'pt-br';
 
@@ -597,7 +597,7 @@ function doGetCodeCVM() {
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
 
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  const TKT = sheet_co.getRange(TKR).getValue();                                 // TKR = Ticket Range
+  const TKT = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
   const ticker = TKT.substring(0, 4);
   const language = 'pt-br';
 

@@ -19,21 +19,21 @@ function doExportBasics() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportBasic(SheetName);
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} basics exported successfully`);
+  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} basics exported successfully`);
 }
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
@@ -46,21 +46,21 @@ function doExportFinancials() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportFinancial(SheetName);
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} Financial sheets exported successfully`);
+  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} Financial sheets exported successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -73,35 +73,35 @@ function doExportExtras() {
   const sheet_co = fetchSheetByName('Config');                                  // Config sheet
   const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
+  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportExtra(SheetName);
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
+  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doExportBasic(SheetName){
+function doExportBasic(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
-  var Class = sheet_co.getRange(IST).getDisplayValue();                              // IST = Is Stock? 
-  var TKT = sheet_co.getRange(TKR).getValue();                                       // TKR = Ticket Range
-  var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
+  const Class = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
+  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
+  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
   return;
@@ -242,7 +242,7 @@ function doExportBasic(SheetName){
 
 /////////////////////////////////////////////////////////////////////EXTRA TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doExportExtra(SheetName){
+function doExportExtra(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
@@ -255,8 +255,8 @@ function doExportExtra(SheetName){
     return;
   }
 
-  var TKT = sheet_co.getRange(TKR).getValue();                                       // TKR = Ticket Range
-  var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
+  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
+  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
   return;
@@ -343,7 +343,7 @@ function doExportFinancial(SheetName) {
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
-  var TKT = sheet_co.getRange(TKR).getValue();                                       // TKR = Ticket Range
+  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
   var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
@@ -463,7 +463,7 @@ processExport(TKT, Data, sheet_tr, SheetName);
 
 /////////////////////////////////////////////////////////////////////INFO/////////////////////////////////////////////////////////////////////
 
-function doExportInfo(){
+function doExportInfo() {
   const sheet_co = fetchSheetByName('Config');                      // Config sheet
   const sheet_in = fetchSheetByName('Info');                        // Info sheet
 
@@ -472,8 +472,8 @@ function doExportInfo(){
   var SheetName = sheet_in.getName();
   Logger.log(`Exporting: ${SheetName}`);
 
-  var Target_Id = sheet_co.getRange(DIR).getDisplayValue();         // DIR = DATA Source ID
-  if (!Target_Id) {
+  const Data_Id = getConfigValue(DIR, 'Config');                    // DIR = DATA Source ID
+  if (!Data_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
   return;
   }
@@ -495,10 +495,10 @@ function doExportInfo(){
   // Convert 0 values to blank ("")
   var Data = [[A, B, C, D, E, F, G, H, I, J, K]].map(row => row.map(value => value === 0 ? "" : value));
 
-  var ss_tr = SpreadsheetApp.openById(Target_Id);                    // Target spreadsheet
+  var ss_tr = SpreadsheetApp.openById(Data_Id);                    // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                    // Target sheet
 
-  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Target_Id}`); return; }
+  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Data_Id}`); return; }
 
   var LR = sheet_tr.getLastRow();
 
@@ -512,8 +512,7 @@ function doExportInfo(){
 
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
-function doExportProventos()                                        // possible integration with doExportSheet(SheetName) in future
-{
+function doExportProventos() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config'); 
   const sheet_pv = fetchSheetByName(PROV);  
@@ -521,8 +520,8 @@ function doExportProventos()                                        // possible 
 
   if (!sheet_co || !sheet_ix || !sheet_pv) return;
 
-  var Class = sheet_co.getRange(IST).getDisplayValue();             // IST = Is Stock? 
-  var Target_Id = sheet_co.getRange(TDR).getValues();               // Target sheet ID
+  const Class = getConfigValue(IST, 'Config');                      // IST = Is Stock?
+  const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty."); 
   return;
@@ -532,7 +531,7 @@ function doExportProventos()                                        // possible 
   Logger.log(`Export Proventos: ${SheetName}`);
 
   var ISIN = sheet_pv.getRange("C61").getDisplayValue().trim();     // Código ISIN
-  var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
+  const TKT = getConfigValue(TKR, 'Config');                        // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date
   var C = sheet_ix.getRange("D2").getValue();                       // Price - Index Sheet
