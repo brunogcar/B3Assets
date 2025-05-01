@@ -93,60 +93,60 @@
 
 /////////////////////////////////////////////////////////////////////Import/////////////////////////////////////////////////////////////////////
 
-  const ITR = "R4"     // ITR = Import to Swing            // Tab: Config
-  const IOP = "R6"     // IOP = Import to Option           // Tab: Config
-  const IBT = "R8"     // IBT = Import to BTC              // Tab: Config
-  const ITE = "R10"    // ITE = Import to Termo            // Tab: Config
-  const IFU = "R12"    // IFU = Import to Fund             // Tab: Config
+  const ITR = "R4"     // ITR = Import to Swing            // Tab: Config, Settings
+  const IOP = "R6"     // IOP = Import to Option           // Tab: Config, Settings
+  const IBT = "R8"     // IBT = Import to BTC              // Tab: Config, Settings
+  const ITE = "R10"    // ITE = Import to Termo            // Tab: Config, Settings
+  const IFU = "R12"    // IFU = Import to Fund             // Tab: Config, Settings
 
-  const IBL = "R15"    // IBL = Import to BLC / Balanco    // Tab: Config
-  const IDE = "R17"    // IDE = Import to DRE / Resultado  // Tab: Config
-  const IFL = "R19"    // IFL = Import to FLC / Fluxo      // Tab: Config
-  const IDV = "R21"    // IDV = Import to DVA / Valor      // Tab: Config
+  const IBL = "R15"    // IBL = Import to BLC / Balanco    // Tab: Config, Settings
+  const IDE = "R17"    // IDE = Import to DRE / Resultado  // Tab: Config, Settings
+  const IFL = "R19"    // IFL = Import to FLC / Fluxo      // Tab: Config, Settings
+  const IDV = "R21"    // IDV = Import to DVA / Valor      // Tab: Config, Settings
 
-  const IFT = "R24"    // IFT = Import to Future           // Tab: Config
-  const IRT = "R26"    // IRT = Import to Right            // Tab: Config
-  const IWT = "R28"    // IWT = Import to Warrant          // Tab: Config
-  const IRC = "R30"    // IRC = Import to Receipt          // Tab: Config
-  const IBK = "R32"    // IBK = Import to Block            // Tab: Config
+  const IFT = "R24"    // IFT = Import to Future           // Tab: Config, Settings
+  const IRT = "R26"    // IRT = Import to Right            // Tab: Config, Settings
+  const IWT = "R28"    // IWT = Import to Warrant          // Tab: Config, Settings
+  const IRC = "R30"    // IRC = Import to Receipt          // Tab: Config, Settings
+  const IBK = "R32"    // IBK = Import to Block            // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Save/////////////////////////////////////////////////////////////////////
 
-  const STR = "T4"     // STR = Save to Swing              // Tab: Config
-  const SOP = "T6"     // SOP = Save to Option             // Tab: Config
-  const SBT = "T8"     // SBT = Save to BTC                // Tab: Config
-  const STE = "T10"    // STE = Save to Termo              // Tab: Config
-  const SFU = "T12"    // SFU = Save to Fund               // Tab: Config
+  const STR = "T4"     // STR = Save to Swing              // Tab: Config, Settings
+  const SOP = "T6"     // SOP = Save to Option             // Tab: Config, Settings
+  const SBT = "T8"     // SBT = Save to BTC                // Tab: Config, Settings
+  const STE = "T10"    // STE = Save to Termo              // Tab: Config, Settings
+  const SFU = "T12"    // SFU = Save to Fund               // Tab: Config, Settings
 
-  const SBL = "T15"    // SBL = Save to BLC                // Tab: Config
-  const SDE = "T17"    // SDE = Save to DRE                // Tab: Config
-  const SFL = "T19"    // SFL = Save to FLC                // Tab: Config
-  const SDV = "T21"    // SDV = Save to DVA                // Tab: Config
+  const SBL = "T15"    // SBL = Save to BLC                // Tab: Config, Settings
+  const SDE = "T17"    // SDE = Save to DRE                // Tab: Config, Settings
+  const SFL = "T19"    // SFL = Save to FLC                // Tab: Config, Settings
+  const SDV = "T21"    // SDV = Save to DVA                // Tab: Config, Settings
 
-  const SFT = "T24"    // SFT = Save to Future             // Tab: Config
-  const SRT = "T26"    // SRT = Save to Right              // Tab: Config
-  const SWT = "T28"    // SWT = Save to Warrant            // Tab: Config
-  const SRC = "T30"    // SRC = Save to Receipt            // Tab: Config
-  const SBK = "T32"    // SBK = Save to Block              // Tab: Config
+  const SFT = "T24"    // SFT = Save to Future             // Tab: Config, Settings
+  const SRT = "T26"    // SRT = Save to Right              // Tab: Config, Settings
+  const SWT = "T28"    // SWT = Save to Warrant            // Tab: Config, Settings
+  const SRC = "T30"    // SRC = Save to Receipt            // Tab: Config, Settings
+  const SBK = "T32"    // SBK = Save to Block              // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Edit/////////////////////////////////////////////////////////////////////
 
-  const DTR = "V4"     // DTR = Edit to Swing              // Tab: Config
-  const DOP = "V6"     // DOP = Edit to Option             // Tab: Config
-  const DBT = "V8"     // DBT = Edit to BTC                // Tab: Config
-  const DTE = "V10"    // DTE = Edit to Termo              // Tab: Config
-  const DFU = "V12"    // DFU = Edit to Fund               // Tab: Config
+  const DTR = "V4"     // DTR = Edit to Swing              // Tab: Config, Settings
+  const DOP = "V6"     // DOP = Edit to Option             // Tab: Config, Settings
+  const DBT = "V8"     // DBT = Edit to BTC                // Tab: Config, Settings
+  const DTE = "V10"    // DTE = Edit to Termo              // Tab: Config, Settings
+  const DFU = "V12"    // DFU = Edit to Fund               // Tab: Config, Settings
 
-  const DBL = "V15"    // DBL = Edit to BLC                // Tab: Config
-  const DDE = "V17"    // DDE = Edit to DRE                // Tab: Config
-  const DFL = "V19"    // DFL = Edit to FLC                // Tab: Config
-  const DDV = "V21"    // DDV = Edit to DVA                // Tab: Config
+  const DBL = "V15"    // DBL = Edit to BLC                // Tab: Config, Settings
+  const DDE = "V17"    // DDE = Edit to DRE                // Tab: Config, Settings
+  const DFL = "V19"    // DFL = Edit to FLC                // Tab: Config, Settings
+  const DDV = "V21"    // DDV = Edit to DVA                // Tab: Config, Settings
 
-  const DFT = "V24"    // DFT = Edit to Future             // Tab: Config
-  const DRT = "V26"    // DRT = Edit to Right              // Tab: Config
-  const DWT = "V28"    // DWT = Edit to Warrant            // Tab: Config
-  const DRC = "V30"    // DRC = Edit to Receipt            // Tab: Config
-  const DBK = "V32"    // DBK = Edit to Block              // Tab: Config
+  const DFT = "V24"    // DFT = Edit to Future             // Tab: Config, Settings
+  const DRT = "V26"    // DRT = Edit to Right              // Tab: Config, Settings
+  const DWT = "V28"    // DWT = Edit to Warrant            // Tab: Config, Settings
+  const DRC = "V30"    // DRC = Edit to Receipt            // Tab: Config, Settings
+  const DBK = "V32"    // DBK = Edit to Block              // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 

@@ -19,29 +19,105 @@ function fetchSheetByName(SheetName)
   return sheet;
 }
 
-function getConfigValue(Acronym)                                                    // Only for export, import, save and edit SETTINGS
-{
-  const sheet_se = fetchSheetByName('Settings');
-  const sheet_co = fetchSheetByName('Config');
-  
-  if (!sheet_se || !sheet_co)
-  {
+/**
+ * Retrieves a configuration value based on the provided acronym and source.
+ *
+ * This function checks the 'Settings' sheet first (if enabled),
+ * then falls back to the 'Config' sheet if needed. You can explicitly
+ * force which sheet to check by passing "Settings" or "Config" as the source.
+ *
+ * If the value is "DEFAULT" or one of the error values, it tries to get
+ * the value from the other sheet (when using default behavior).
+ *
+ * @param {string} Acronym - A named cell reference (e.g., "ETE", "ITR") representing a config setting.
+ * @param {string} [source="Both"] - Optional source: "Settings", "Config", or "Both".
+ * @returns {string|null} The retrieved value, or null if not found or invalid.
+ *
+ * Usage:
+ *   const val1 = getConfigValue(ETE);                // Default behavior (Settings -> Config)
+ *   const val2 = getConfigValue(ETE, "Settings");    // Only from Settings
+ *   const val3 = getConfigValue(ETE, "Config");      // Only from Config
+ */
+function getConfigValue(Acronym, Source = "Both") {
+  const sheet_se = (Source !== "Config") ? fetchSheetByName('Settings') : null;
+  const sheet_co = (Source !== "Settings") ? fetchSheetByName('Config') : null;
+
+  if (!sheet_se || !sheet_co){
     Logger.log('Settings or Config sheet not found');
     return null;
   }
 
-  // Get value from Settings
-  let Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
+  let Value = null;
 
-  // Fallback to Config if value is DEFAULT or in ErrorValues
-  if (Value === "DEFAULT" || ErrorValues.includes(Value)) 
-  {
-    Value = sheet_co.getRange(Acronym).getDisplayValue().trim();
-    // Verify Config value isn't also invalid
-    return ErrorValues.includes(Value) ? null : Value;
+  // If Source is Settings or Both, try Settings first
+  if (sheet_se) {
+    try {
+      Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
+      if (!Value || Value === "DEFAULT" || ErrorValues.includes(Value)) {
+        Value = null;                                                        // fallback
+      } else if (Source === "Settings") {
+        return Value;                                                        // shortcut if only using Settings
+      }
+    } catch (e) {
+      Logger.log(`Acronym ${Acronym} not found in Settings`);
+    }
   }
+
+  // If Source is Config or fallback from Settings
+  if (!Value && sheet_co) {
+    try {
+      Value = sheet_co.getRange(Acronym).getDisplayValue().trim();
+      if (!Value || ErrorValues.includes(Value)) {
+        Value = null;
+      }
+    } catch (e) {
+      Logger.log(`Acronym ${Acronym} not found in Config`);
+    }
+  }
+
   return Value;
 }
+
+function getConfigValue(Acronym, source = "Both") 
+{
+  const sheet_se = fetchSheetByName('Settings');                                      // Settings sheet
+  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
+
+  if (!sheet_se && !sheet_co) {
+    Logger.log('ERROR: Neither Settings nor Config sheet found.');
+    return null;
+  }
+
+  // Helper to check if value is invalid
+  const isInvalid = (val) => !val || val === "DEFAULT" || ErrorValues.includes(val);
+
+  if (source === "Settings") 
+  {
+    if (!sheet_se) return null;
+
+    const value = sheet_se.getRange(Acronym).getDisplayValue().trim();
+    return isInvalid(value) ? null : value;
+  }
+
+  if (source === "Config") 
+  {
+    if (!sheet_co) return null;
+
+    const value = sheet_co.getRange(Acronym).getDisplayValue().trim();
+    return isInvalid(value) ? null : value;
+  }
+
+  // Default: try Settings, fallback to Config
+  let value = sheet_se ? sheet_se.getRange(Acronym).getDisplayValue().trim() : "";
+
+  if (isInvalid(value)) {
+    value = sheet_co ? sheet_co.getRange(Acronym).getDisplayValue().trim() : "";
+    return isInvalid(value) ? null : value;
+  }
+
+  return value;
+}
+
 
 /////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
 
