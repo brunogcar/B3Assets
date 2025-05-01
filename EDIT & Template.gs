@@ -2,8 +2,9 @@
 
 function doEditAll()
 {
-  doEditDatas();
   doEditSheets();
+  doEditExtras();
+  doEditDatas();
   doIsFormula();
 };
 
@@ -16,21 +17,24 @@ function doEditSheets() {
   const totalSheets = SheetNames.length;
   let Count = 0;
 
-  Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
+  if (DEBUG = TRUE) Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
+  if (DEBUG = TRUE) Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -40,21 +44,24 @@ function doEditExtras() {
   const totalSheets = SheetNames.length;
   let Count = 0;
 
-  Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
+  if (DEBUG = TRUE) Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
+  if (DEBUG = TRUE) Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
 }
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
@@ -63,6 +70,9 @@ function doEditDatas() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
   const totalSheets = SheetNames.length;
   let Count = 0;
+
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
   Logger.log(`Starting editing of ${totalSheets} sheets...`);
 

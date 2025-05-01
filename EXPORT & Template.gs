@@ -16,21 +16,24 @@ function doExportSheets() {
   const totalSheets = SheetNames.length;
   let Count = 0;
 
-  Logger.log(`Starting export of ${totalSheets} sheets...`);
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
+  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportSheet(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
+  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} sheets exported successfully`);
 }
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
@@ -40,21 +43,24 @@ function doExportDatas() {
   const totalSheets = SheetNames.length;
   let Count = 0;
 
-  Logger.log(`Starting export of ${totalSheets} sheets...`);
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
+  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportData(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Export completed: ${Count} of ${totalSheets} data sheets exported successfully`);
+  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} data sheets exported successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -64,21 +70,24 @@ function doExportExtras() {
   const totalSheets = SheetNames.length;
   let Count = 0;
 
-  Logger.log(`Starting export of ${totalSheets} sheets...`);
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
+  if (DEBUG = TRUE) Logger.log(`Starting export of ${totalSheets} sheets...`);
 
   SheetNames.forEach((SheetName, index) => {
     Count++;
     const progress = Math.round((Count / totalSheets) * 100);
-    Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+    if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportExtra(SheetName);
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG = TRUE) Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
   });
-  Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
+  if (DEBUG = TRUE) Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
@@ -529,7 +538,7 @@ function doExportProventos()                                        // possible 
   var SheetName = sheet_pv.getName();
   Logger.log(`Export Proventos: ${SheetName}`);
 
-  var ISIN = sheet_pv.getRange("C61").getValue();                   // Código ISIN
+  var ISIN = sheet_pv.getRange("C61").getDisplayValue().trim();     // Código ISIN
   var TKT = sheet_co.getRange(TKR).getValue();                      // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date
@@ -550,10 +559,14 @@ function doExportProventos()                                        // possible 
   var P = sheet_pv.getRange("N76").getValue();                      // TOTAL Ações
   var Q = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
 
-  // Build the Data array conditionally
+  if (ErrorValues.includes(B) || ErrorValues.includes(ISIN)) {
+    Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`);
+    return;
+  }
+
   let Data;
-  // If P or Q is in ErrorValues, use only C through N; otherwise, append an empty column plus P and Q.
-  if (ErrorValues.includes(P) || ErrorValues.includes(Q)) {
+
+  if (ErrorValues.includes(P)) {
     Data = [[B, C, D, E, F, G, H, I, J, K, L, M, N]];
   } else {
     Data = [[B, C, D, E, F, G, H, I, J, K, L, M, N, "", P, Q]];
@@ -571,11 +584,6 @@ function doExportProventos()                                        // possible 
   }
 
   var LR = sheet_tr.getLastRow();
-
-  if (ErrorValues.includes(B) || ErrorValues.includes(ISIN)) {
-    Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`);
-    return;
-  }
 
   if (Class !== 'STOCK') {
     Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportProventos`);

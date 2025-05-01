@@ -60,6 +60,7 @@
   const OPR = "L3"     // OPR = Option                     // Tab: Config
   const UFR = "L6"     // UFR = Update Form                // Tab: Config
   const HCR = "L9"     // HCR = Hide Config                // Tab: Config
+  const DBG = "L12"    // DBG = Debug Mode                 // Tab: Config
   const IST = "L18"    // IST = Is Stock?                  // Tab: Config
   const TGR = "L21"    // TGR = Number of Triggers         // Tab: Config
 

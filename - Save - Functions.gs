@@ -2,8 +2,9 @@
 
 function processSave(SheetNames, checkCallback, saveCallback) {
   var sheetsToSave = [];
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
+  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
+  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+
   // Gather sheets that are available and pass the check.
   SheetNames.forEach(function(SheetName) {
     var sheet = fetchSheetByName(SheetName);
@@ -24,12 +25,12 @@ function processSave(SheetNames, checkCallback, saveCallback) {
     sheetsToSave.forEach(function(SheetName) {
       count++;
       const progress = Math.round((count / totalSheets) * 100);
-      Logger.log(`[${count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+      if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
       try {
         saveCallback(SheetName);
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+        if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
       } catch (error) {
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
+        if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
       }
     });
   } else {
