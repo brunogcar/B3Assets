@@ -1,15 +1,14 @@
 function doSaveSheet(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_sr = fetchSheetByName(SheetName); // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
   if (!sheet_sr) {
     Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveSheet from sheet_sr`);
     return;
   }
   
-  const sheet_co = fetchSheetByName('Config');     // Config sheet
-  const sheet_se = fetchSheetByName('Settings');   // Settings sheet
+  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
+  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
   Utilities.sleep(2500); // 2.5 secs pause
@@ -193,7 +192,6 @@ function doSaveSheet(SheetName) {
 
 function doSaveData(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');     // Config sheet
   const sheet_se = fetchSheetByName('Settings');
   const sheet_up = fetchSheetByName('UPDATE');
@@ -434,17 +432,23 @@ function doSaveData(SheetName) {
  */
 function do_Data_helper(dateStrings) {
   return dateStrings.map(v => {
-    if (!v) return "";
-    // split "DD/MM/YYYY" or "D/M/YYYY"
-    const [d, m, y] = v.toString().split("/");
-    if (d && m && y) {
-      return new Date(+y, +m - 1, +d).getTime();
-    } else {
-      return "";
+    if (!v?.toString) return "";
+
+    const str = v.toString();
+    if (str.includes("/")) { // handle "DD/MM/YYYY"
+      const [d, m, y] = str.split("/");
+      if (d && m && y) {
+        return new Date(+y, +m - 1, +d).getTime();
+      }
+    } else if (str.includes("-")) { // handle "YYYY-MM-DD"
+      const [y, m, d] = str.split("-");
+      if (y && m && d) {
+        return new Date(+y, +m - 1, +d).getTime();
+      }
     }
+    return "";
   });
 }
-
 
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////
 
@@ -473,7 +477,6 @@ function doSaveProventos() {
 }
 
 function doSaveProv(config) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName('Prov_');                                    // Source Sheet
 
   if (!sheet_sr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
@@ -511,7 +514,6 @@ function doSaveProv(config) {
 }
 
 function doGetProventos() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   const sheet_tr = fetchSheetByName('Prov_');
 
@@ -612,7 +614,6 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 /////////////////////////////////////////////////////////////////////CodeCVM/////////////////////////////////////////////////////////////////////
 
 function doGetCodeCVM() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_tr = fetchSheetByName('Info');                                    // Target sheet
  
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
@@ -662,7 +663,6 @@ function doGetCodeCVM() {
 /////////////////////////////////////////////////////////////////////SAVE AND SHARES TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doSaveShares() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName('DATA');
 
   if (!sheet_sr) { Logger.log(`ERROR: DATA sheet not found. Skipping shares save.`); return; }

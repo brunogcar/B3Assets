@@ -1,13 +1,9 @@
 
 /////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
 
-function doAutorizeScript() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doAutorizeScript(){
   const sheet_co = fetchSheetByName('Config');  
-  if (!sheet_co) {
-    Logger.log("Sheet 'Config' not found.");
-    return;
-  }
+  if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;}
     Logger.log(`Autorizing Script`);
 
   const cell = sheet_co.getRange("L2");
@@ -17,8 +13,7 @@ function doAutorizeScript() {
   Logger.log("L2 cell color updated to dark green with white font.");
 }
 
-function checkAutorizeScript() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function checkAutorizeScript(){
   const sheet_co = fetchSheetByName('Config');  
   if (!sheet_co) {
     Logger.log("Sheet 'Config' not found.");
@@ -41,9 +36,7 @@ function checkAutorizeScript() {
 }
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
-function doCheckTriggers() 
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doCheckTriggers(){
   const sheet_co = fetchSheetByName('Config');
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
 
@@ -87,9 +80,7 @@ function doCheckTriggers()
   }
 };
 
-function doCreateTriggers()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doCreateTriggers(){
   const sheet_co = fetchSheetByName('Config');
   var Class = sheet_co.getRange(IST).getDisplayValue();                             // IST = Is Stock? 
 
@@ -164,8 +155,7 @@ function doCreateTriggers()
   }
 }
 
-function getSheetTriggers()
-{
+function getSheetTriggers(){
   const sheet_Triggers = ScriptApp.getProjectTriggers();
 
   return sheet_Triggers.length;
@@ -183,7 +173,7 @@ function getSheetTriggersHandle()
   return handlerFunctions;
 }
 
-function writeTriggersToSheet() {
+function writeTriggersToSheet(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = fetchSheetByName("Config");
 

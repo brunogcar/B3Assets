@@ -97,7 +97,6 @@ function doExportExtras() {
 function doExportSheet(SheetName){
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -248,7 +247,6 @@ function doExportSheet(SheetName){
 function doExportExtra(SheetName){
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -343,7 +341,6 @@ function doExportExtra(SheetName){
 function doExportData(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -468,9 +465,7 @@ processExport(TKT, Data, sheet_tr, SheetName);
 
 /////////////////////////////////////////////////////////////////////INFO/////////////////////////////////////////////////////////////////////
 
-function doExportInfo()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doExportInfo(){
   const sheet_co = fetchSheetByName('Config');                      // Config sheet
   const sheet_in = fetchSheetByName('Info');                        // Info sheet
 

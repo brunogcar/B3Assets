@@ -1,6 +1,14 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
-
+/**
+ * IMPORTANT:
+ * Because this function already calls SpreadsheetApp.getActiveSpreadsheet(), 
+ * you do NOT need to manually declare `var ss = SpreadsheetApp.getActiveSpreadsheet()` 
+ * in any function that only uses this to access sheets.
+ *
+ * @param {string} SheetName - The exact name of the sheet to fetch.
+ * @returns {GoogleAppsScript.Spreadsheet.Sheet | null} - The Sheet object if found; otherwise, null.
+ */
 function fetchSheetByName(SheetName) 
 {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
@@ -11,10 +19,8 @@ function fetchSheetByName(SheetName)
   return sheet;
 }
 
-function getConfigValue(Acronym)                                                    // Only for export, import, save and edit settings
+function getConfigValue(Acronym)                                                    // Only for export, import, save and edit SETTINGS
 {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
   const sheet_se = fetchSheetByName('Settings');
   const sheet_co = fetchSheetByName('Config');
   
@@ -52,9 +58,7 @@ function arraysAreEqual(arr1, arr2) {
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
-function doSettings()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet()
+function doSettings(){
   const sheet_co = fetchSheetByName('Config');
   var Class = sheet_co.getRange(IST).getDisplayValue();                                 // IST = Is Stock? 
   const sheet_sr = fetchSheetByName('Settings');
@@ -104,11 +108,10 @@ function doSettings()
 
 /////////////////////////////////////////////////////////////////////RETIRE/////////////////////////////////////////////////////////////////////
 
-function doRetire() 
-{
+function doRetire(){
   copypasteSheets();
   doClearSheetID();
-  clearExportALL();
+  doClearExportAll();
   doDeleteSheets();
   moveSpreadsheetToARQUIVO();
 
@@ -116,8 +119,7 @@ function doRetire()
   revokeOwnAccess();
 };
 
-function copypasteSheets() 
-{
+function copypasteSheets(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheets = ss.getSheets();
   const SheetNames = new Set(['Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT', 'DATA', 'Value', Balanco, Resultado, Fluxo, Valor]);
@@ -130,7 +132,7 @@ function copypasteSheets()
   });
 }
 
-function doDeleteSheets() {
+function doDeleteSheets(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = new Set(['Balanço Ativo', 'Balanço Passivo', 'Demonstração', 'Fluxo de Caixa', 'Demonstração do Valor Adicionado']);
 
@@ -146,8 +148,7 @@ function doDeleteSheets() {
   });
 }
 
-function moveSpreadsheetToFolder(folderName) 
-{
+function moveSpreadsheetToFolder(folderName){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const file = DriveApp.getFileById(ss.getId());
 
@@ -164,22 +165,19 @@ function moveSpreadsheetToFolder(folderName)
   Logger.log(`Spreadsheet moved to ${folderName}`);
 }
 
-function moveSpreadsheetToARQUIVO() 
-{
+function moveSpreadsheetToARQUIVO(){
   moveSpreadsheetToFolder("-=ARQUIVO=-");
 }
 
 /////////////////////////////////////////////////////////////////////DELETE/////////////////////////////////////////////////////////////////////
 
-function doDelete() 
-{
+function doDelete(){
   doDeleteTriggers();
   moveSpreadsheetToBACKUP();
   revokeOwnAccess();
 }
 
-function revokeOwnAccess() 
-{
+function revokeOwnAccess(){
   // Invalidate the script's authorization
   var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
   if (authInfo) {
@@ -190,13 +188,11 @@ function revokeOwnAccess()
   }
 }
 
-function moveSpreadsheetToBACKUP() 
-{
+function moveSpreadsheetToBACKUP(){
   moveSpreadsheetToFolder("-=BACKUP=-");
 }
 
-function doDeleteSpreadsheet() 
-{
+function doDeleteSpreadsheet(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var fileId = ss.getId();
   
@@ -210,7 +206,7 @@ function doDeleteSpreadsheet()
 
 /////////////////////////////////////////////////////////////////////Name/////////////////////////////////////////////////////////////////////
 
-function SNAME(option) {
+function SNAME(option){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getActiveSheet();
   const thisSheet = sheet.getName();
@@ -233,7 +229,7 @@ function SNAME(option) {
 
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
-function doCleanZeros() {
+function doCleanZeros(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND];
 
@@ -263,8 +259,7 @@ function doCleanZeros() {
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
-function reverseColumns() 
-{
+function reverseColumns(){
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const range = sheet.getRange(1, 4, sheet.getLastRow(), sheet.getLastColumn() - 2);
   const values = range.getValues();
@@ -273,8 +268,7 @@ function reverseColumns()
   range.setValues(reversedValues);
 }
 
-function reverseRows() 
-{
+function reverseRows(){
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
   const values = range.getValues();
@@ -285,8 +279,7 @@ function reverseRows()
 
 /////////////////////////////////////////////////////////////////////RESTORE Functions/////////////////////////////////////////////////////////////////////
 
-function doRestoreFundExport()
-{
+function doRestoreFundExport(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();                        // Source spreadsheet
   const sheet_co = ss.getSheetByName('Config');                             // Source sheet
 

@@ -3,14 +3,15 @@
 function doSaveAll() {
   Logger.log(SNAME(2));
 
+  SpreadsheetApp.flush();
+
   processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
 
   doSaveShares();
+  doProventos();
 
   processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
   
-  SpreadsheetApp.flush();
-
   processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
 
   processSave([
@@ -21,7 +22,6 @@ function doSaveAll() {
     BLOCK
   ], doCheckDATA, doSaveSheet);
 
-  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -33,20 +33,18 @@ function doSaveAll() {
 function doSaveAllSheets() {
   Logger.log(SNAME(2));
 
-  doSaveShares();
-
-  // Process first group (OPCOES, BTC, TERMO)
-  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
-  
   SpreadsheetApp.flush();
 
-  // Process second group (FUND, SWING_4, SWING_12, SWING_52)
+  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveSheet);
+  
   processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveSheet);
   
+  doSaveShares();
+  doExportProventos();
+
   doExportExtras();
   doExportDatas();
 
-  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -66,11 +64,11 @@ function doSaveAllExtras() {
   SpreadsheetApp.flush();
 
   doSaveShares();
+  doExportProventos();
 
   doExportSheets();
   doExportDatas();
 
-  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -84,11 +82,11 @@ function doSaveAllDatas() {
   processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveData);
 
   doSaveShares();
+  doExportProventos();
 
   doExportSheets();
   doExportExtras();
 
-  doProventos();
   doIsFormula();
   doDisableSheets();
   doCheckTriggers();
@@ -127,7 +125,6 @@ function doSaveDatas()
 {
   const SheetNames = [BLC, DRE, FLC, DVA];                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_up = fetchSheetByName(`UPDATE`);                         // UPDATE sheet
 
     var ACTV = sheet_up.getRange(`B3`).getValue();

@@ -3,17 +3,14 @@
 function getSheetID()
 {
   const sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
-
   return sheet_Id;
 };
 
-function setSheetID()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function setSheetID(){
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
-  var Target_Id = sheet_co.getRange(DIR).getValues();                              // DIR = DATA ID Range
+  var Target_Id = sheet_co.getRange(DIR).getDisplayValue();                        // DIR = DATA ID Range
 
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                              // TKR = Ticket 
   var EXP = sheet_co.getRange(EXR).getDisplayValue();                              // EXR = Export 
@@ -28,6 +25,7 @@ function setSheetID()
 
   var ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                                    // Target sheet
+  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
 
   var bgcolor = sheet_co.getRange(IDR).getBackground();
   var colour = '#d9ead3';
@@ -46,9 +44,7 @@ function setSheetID()
   }
 };
 
-function doIsIdExported()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doIsIdExported(){
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
@@ -60,17 +56,16 @@ function doIsIdExported()
   }
 };
 
-function doClearSheetID()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doClearSheetID(){
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
-  var Target_Id = sheet_co.getRange(DIR).getValues();                              // DIR = DATA ID Range
+  var Target_Id = sheet_co.getRange(DIR).getDisplayValue();                        // DIR = DATA ID Range
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                              // TKR = Ticket Range
 
   var ss_tr = SpreadsheetApp.openById(Target_Id);                                  // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
+  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
 
   const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
   if (!search) return;
@@ -83,9 +78,7 @@ function doClearSheetID()
 
 /////////////////////////////////////////////////////////////////////EXPORT CHECKS/////////////////////////////////////////////////////////////////////
 
-function doIsFormula()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doIsFormula(){
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
@@ -102,9 +95,7 @@ function doIsFormula()
   }
 };
 
-function doIsExportable()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doIsExportable(){
   const sheet_co = fetchSheetByName('Config');                                    // Config sheet
   if (!sheet_co) return;
 
@@ -116,9 +107,7 @@ function doIsExportable()
   }
 };
 
-function doIsInfoExported()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doIsInfoExported(){
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   if (!sheet_co) return;
 
@@ -144,30 +133,28 @@ function doIsInfoExported()
 
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 
-function clearExportALL() 
-{
+function doClearExportAll(){
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND, BLC, DRE, FLC, DVA];
 
   SheetNames.forEach(SheetName => 
   {
-    clearExport(SheetName);
+    doClearExport(SheetName);
   });
 }
 
-function clearExport(SheetName) 
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doClearExport(SheetName){
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   if (!sheet_co) return;
 
+  var Target_Id = sheet_co.getRange(TDR).getDisplayValue();                      // TDR = Target ID Range
   var TKT = sheet_co.getRange(TKR).getDisplayValue();                            // TKR = Ticket Range
-  var Target_Id = sheet_co.getRange(TDR).getValues();                            // TDR = Target ID Range
 
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                              // Target sheet
+  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
 
-  let success = false; // Initialize success flag to false
+  let success = false;                                                           // Initialize success flag to false
 
   var search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
 

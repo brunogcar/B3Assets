@@ -95,7 +95,6 @@ function doEditDatas() {
 
 function doEditSheet(SheetName) {
   Logger.log(`EDIT: ${SheetName}`);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName); // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
 
@@ -262,7 +261,6 @@ function doEditSheet(SheetName) {
 
 function doEditData(SheetName) {
     Logger.log(`EDIT: ${SheetName}`);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName);                        // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditData from sheet_sr`); return; }
 

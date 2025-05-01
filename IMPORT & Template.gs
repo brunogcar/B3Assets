@@ -1,15 +1,9 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////IMPORT/////////////////////////////////////////////////////////////////////
 
-function Import() 
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();                              // Active spreadsheet
+function Import(){
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-
-  if (!sheet_co) {
-    Logger.log("ERROR: 'Config' sheet not found.");
-    return;
-  }
+  if (!sheet_co) {Logger.log("ERROR: 'Config' sheet not found."); return;}
 
   // Check if L2 has the expected colors
   if (!checkAutorizeScript()) {
@@ -20,7 +14,6 @@ function Import()
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   if (!Source_Id) {Logger.log("Warning: Source ID is empty."); return;}
   const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
-  const sheet_sr = SpreadsheetApp.openById(Source_Id);                           // Open source spreadsheet by ID
 
   if (Option === "AUTO") 
   {
@@ -67,8 +60,7 @@ function Import()
 
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
 
-function import_Current()
-{
+function import_Current(){
   console.log('Import: import_Current');
 
   import_config();
@@ -109,7 +101,7 @@ function doImportProventos()
 
 //-------------------------------------------------------------------SHEETS-------------------------------------------------------------------//
 
-function doImportSheets() {
+function doImportSheets(){
   const SheetNames = [
     SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, 
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, 
@@ -144,7 +136,7 @@ function doImportSheets() {
 
 //-------------------------------------------------------------------DATA-------------------------------------------------------------------//
 
-function doImportDatas() {
+function doImportDatas(){
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
   const totalSheets = SheetNames.length;
   let Count = 0;
@@ -171,9 +163,7 @@ function doImportDatas() {
 
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
 
-function update_form() 
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function update_form(){
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
   var Update_Form = ss.getRange(UFR).getDisplayValue();                               // UFR = Update Form
 
@@ -196,9 +186,7 @@ function update_form()
 
 /////////////////////////////////////////////////////////////////////Config/////////////////////////////////////////////////////////////////////
 
-function import_config()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet()
+function import_config(){
   const sheet_co = fetchSheetByName('Config');
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');   // Source Sheet
@@ -212,7 +200,6 @@ function import_config()
 
 function doImportShares() 
 {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');    // Source Sheet
@@ -237,9 +224,7 @@ Logger.log(`SUCCESS IMPORT: Shares and FF`);
 
 /////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
 
-function doImportProv(ProvName)
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+function doImportProv(ProvName){
   const sheet_co = fetchSheetByName('Config');
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');     // Source Sheet
@@ -265,10 +250,8 @@ function doImportProv(ProvName)
 
 /////////////////////////////////////////////////////////////////////Sheets/////////////////////////////////////////////////////////////////////
 
-function doImportSheet(SheetName) 
-{
+function doImportSheet(SheetName){
   Logger.log(`IMPORT: ${SheetName}`);
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
     if (!Source_Id) { Logger.log(`ERROR: Source ID not found in Config sheet`); return;}
@@ -380,10 +363,8 @@ function doImportSheet(SheetName)
 
 /////////////////////////////////////////////////////////////////////DATA////////////////////////////////////////////////////////////////////
 
-function doImportData(SheetName) 
-{
+function doImportData(SheetName){
   Logger.log(`IMPORT: ${SheetName}`);
-  const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet_co = fetchSheetByName('Config');                                         // Config sheet
   const Source_Id = sheet_co.getRange(SIR).getDisplayValue().trim();             // SIR = Source ID
   const sheet_se = fetchSheetByName('Settings');                                       // Settings sheet

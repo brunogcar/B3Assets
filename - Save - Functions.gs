@@ -69,7 +69,6 @@ function doCheckDATAS()
 /////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doCheckDATA(SheetName) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName);     // Source sheet
   const sheet_i = fetchSheetByName('Index');       // Index sheet
   const sheet_d = fetchSheetByName('DATA');        // DATA sheet
@@ -245,7 +244,6 @@ function doTrim() {
 }
 
 function doTrimSheet(SheetName) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(SheetName);
 
   Logger.log(`TRIM: ${SheetName}`);
@@ -285,8 +283,20 @@ function doTrimSheet(SheetName) {
 }
 
 /////////////////////////////////////////////////////////////////////Hide and Show Sheets/////////////////////////////////////////////////////////////////////
-
-function doDisableSheets() {
+/**
+ * Hides or deletes specific sheets based on the asset class defined in the Config sheet.
+ *
+ * This function needs direct access to the `SpreadsheetApp.getActiveSpreadsheet()` object 
+ * because it performs actions that require the spreadsheet context itself — such as:
+ * - Fetching *all* sheets using `getSheets()`
+ * - Deleting sheets using `ss.deleteSheet(sheet)`
+ *
+ * These operations go beyond simply fetching a sheet by name (which `fetchSheetByName()` handles),
+ * so we must declare `const ss = SpreadsheetApp.getActiveSpreadsheet();` here directly.
+ *
+ * @returns {void}
+ */
+function doDisableSheets(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config');
   const sheets = ss.getSheets();
