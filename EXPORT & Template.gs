@@ -12,83 +12,94 @@ function doExportAll()
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doExportBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
-  const totalSheets = SheetNames.length;
-  let Count = 0;
+  const SheetNames   = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
+  const totalSheets  = SheetNames.length;
+  let count          = 0;
 
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+  const sheet_co = fetchSheetByName('Config');                  
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";      
 
-  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
+  if (DEBUG) Logger.log(`Starting export of ${totalSheets} sheets...`);
 
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportBasic(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
-  });
-  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} basics exported successfully`);
+  }
+
+  if (DEBUG) Logger.log(`Export completed: ${count} of ${totalSheets} basics exported successfully`);
 }
 
-//-------------------------------------------------------------------DATA-------------------------------------------------------------------//
-
-function doExportFinancials() {
-  const SheetNames = [BLC, DRE, FLC, DVA];
-  const totalSheets = SheetNames.length;
-  let Count = 0;
-
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
-
-  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
-
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
-
-    try {
-      doExportFinancial(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
-    } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
-    }
-  });
-  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} Financial sheets exported successfully`);
-}
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doExportExtras() {
-  const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
-  const totalSheets = SheetNames.length;
-  let Count = 0;
+  const SheetNames   = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const totalSheets  = SheetNames.length;
+  let count          = 0;
 
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+  const sheet_co = fetchSheetByName('Config');                  
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";      
 
-  if (DEBUG = "TRUE") Logger.log(`Starting export of ${totalSheets} sheets...`);
+  if (DEBUG) Logger.log(`Starting export of ${totalSheets} extra sheets...`);
 
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
 
     try {
       doExportExtra(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
     } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
     }
-  });
-  if (DEBUG = "TRUE") Logger.log(`Export completed: ${Count} of ${totalSheets} extra sheets exported successfully`);
+  }
+
+  if (DEBUG) Logger.log(`Export completed: ${count} of ${totalSheets} extra sheets exported successfully`);
 }
+
+//-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
+
+function doExportFinancials() {
+  const SheetNames   = [BLC, DRE, FLC, DVA];
+  const totalSheets  = SheetNames.length;
+  let count          = 0;
+
+  const sheet_co = fetchSheetByName('Config');                  
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";      
+
+  if (DEBUG) Logger.log(`Starting export of ${totalSheets} financial sheets...`);
+
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Exporting ${SheetName}...`);
+
+    try {
+      doExportFinancial(SheetName);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} exported successfully`);
+    } catch (error) {
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error exporting ${SheetName}: ${error}`);
+    }
+  }
+
+  if (DEBUG) Logger.log(`Export completed: ${count} of ${totalSheets} financial sheets exported successfully`);
+}
+
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
 
@@ -513,7 +524,6 @@ function doExportInfo() {
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
 function doExportProventos() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_co = fetchSheetByName('Config'); 
   const sheet_pv = fetchSheetByName(PROV);  
   const sheet_ix = fetchSheetByName('Index');

@@ -82,78 +82,54 @@ function doCheckTriggers() {
 
 function doCreateTriggers() {
   const sheet_co = fetchSheetByName('Config');
-  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
+  if (!sheet_co) return;
+  const Class = getConfigValue(IST, 'Config');  // IST = Is Stock?
 
-  var triggers = ScriptApp.getProjectTriggers();
-  var shouldCreateTrigger = true;
-  triggers.forEach(function (trigger)
-  {
-    if(trigger.getEventType() === ScriptApp.EventType.CLOCK ) 
-    {
-      shouldCreateTrigger = false; 
-    }
-  });
-  
-  if(shouldCreateTrigger)
-  {
-    if (Class == 'STOCK') 
-    {
-      Logger.log("Creating new triggers...");
-
-      var Hour_1 = sheet_co.getRange(TG1).getValue();                              // TG1 = Basic Trigger Event
-      var Hour_2 = sheet_co.getRange(TG2).getValue();                              // TG2 = Financial  Trigger Event
-      var Hour_3 = sheet_co.getRange(TG3).getValue();                              // TG3 = Extra Trigger Event
-      var Hour_4 = sheet_co.getRange(TG4).getValue();                              // TG4 = Settings Trigger Event
-      var Hour_5 = sheet_co.getRange(TG5).getValue();                              // TG5 = SaveAll Trigger Event
-
-      ScriptApp.newTrigger("doSaveAllBasics")
-       .timeBased()
-       .atHour(Hour_1)
-       .everyDays(1)
-       .create();
-
-      ScriptApp.newTrigger("doSaveAllFinancials")
-       .timeBased()
-       .atHour(Hour_2)
-       .everyDays(1)
-       .create();
-
-      ScriptApp.newTrigger("doSaveAllExtras")
-       .timeBased()
-       .atHour(Hour_3)
-       .everyDays(1)
-       .create();
-
-      ScriptApp.newTrigger("doSettings")
-       .timeBased()
-       .atHour(Hour_4)
-       .everyDays(1)
-       .create();
-
-        ScriptApp.newTrigger("doSaveAll")
-       .timeBased()
-       .atHour(Hour_5)
-       .everyDays(1)
-       .create();
-    }
-    else if (Class == 'BDR' || Class == 'ETF') 
-    {
-      ScriptApp.newTrigger("doSaveAllBasics")                                   // Change to not stock settings, to not export, etc
-       .timeBased()
-       .atHour(20)
-       .everyDays(1)
-       .create();
-    }
-    else if (Class == 'ADR') 
-    {
-      ScriptApp.newTrigger("doSaveSWING")                                       // Change to not stock settings, to not export, etc
-       .timeBased()
-       .atHour(20)
-       .everyDays(1)
-       .create();
+  // Check existing triggers
+  const triggers = ScriptApp.getProjectTriggers();
+  let shouldCreateTrigger = true;
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getEventType() === ScriptApp.EventType.CLOCK) {
+      shouldCreateTrigger = false;
+      break;
     }
   }
+
+  if (!shouldCreateTrigger) return;
+
+  if (Class === 'STOCK') {
+    Logger.log("Creating new triggers...");
+    const Hour_1 = sheet_co.getRange(TG1).getValue();  // Basic Trigger Event
+    const Hour_2 = sheet_co.getRange(TG2).getValue();  // Financial Trigger Event
+    const Hour_3 = sheet_co.getRange(TG3).getValue();  // Extras Trigger Event
+    const Hour_4 = sheet_co.getRange(TG4).getValue();  // Settings Trigger Event
+    const Hour_5 = sheet_co.getRange(TG5).getValue();  // SaveAll Trigger Event
+
+    ScriptApp.newTrigger("doSaveAllBasics")
+      .timeBased().atHour(Hour_1).everyDays(1).create();
+
+    ScriptApp.newTrigger("doSaveAllFinancials")
+      .timeBased().atHour(Hour_2).everyDays(1).create();
+
+    ScriptApp.newTrigger("doSaveAllExtras")
+      .timeBased().atHour(Hour_3).everyDays(1).create();
+
+    ScriptApp.newTrigger("doSettings")
+      .timeBased().atHour(Hour_4).everyDays(1).create();
+
+    ScriptApp.newTrigger("doSaveAll")
+      .timeBased().atHour(Hour_5).everyDays(1).create();
+
+  } else if (Class === 'BDR' || Class === 'ETF') {
+    ScriptApp.newTrigger("doSaveAllBasics")
+      .timeBased().atHour(20).everyDays(1).create();
+
+  } else if (Class === 'ADR') {
+    ScriptApp.newTrigger("doSaveSWING")
+      .timeBased().atHour(20).everyDays(1).create();
+  }
 }
+
 
 function getSheetTriggers() {
   const sheet_Triggers = ScriptApp.getProjectTriggers();

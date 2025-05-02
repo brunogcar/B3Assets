@@ -10,13 +10,9 @@
  * 4. Iterates over the filtered list, calls `saveCallback(sheetName)` on each,
  *    and logs progress and success/errors conditionally based on DEBUG mode.
  *
- * @param {string[]} SheetNames
- *   An array of sheet‐name constants (e.g. [`SWING_4`, `SWING_12`, …]) to consider.
- * @param {function(string):string} checkCallback
- *   A function that returns `"TRUE"` or `"FALSE"` when given a sheet name,
- *   indicating whether there is new data to save.
- * @param {function(string):void} saveCallback
- *   The function to perform the actual save on a sheet name.
+ * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
+ * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
+ * @param {function(string):void} saveCallback      The function to perform the actual save on a sheet name.
  *
  * Behavior:
  * - If a sheet does not exist, logs an error and skips it.
@@ -26,41 +22,46 @@
  *    • Calls `saveCallback(SheetName)` inside a try/catch  
  *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
  */
-function processSave(SheetNames, checkCallback, saveCallback) {
-  var sheetsToSave = [];
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
 
-  // Gather sheets that are available and pass the check.
-  SheetNames.forEach(function(SheetName) {
-    var sheet = fetchSheetByName(SheetName);
-    if (sheet) {
-      var availableData = checkCallback(SheetName);
-      if (availableData === "TRUE") {
-        sheetsToSave.push(SheetName);
-      }
-    } else {
-      Logger.log(`ERROR SAVE: ${SheetName} - Does not exist`);
+/**
+ * Processes a batch “save” operation over a list of sheet names.
+ *
+ * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
+ * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
+ * @param {function(string):void} saveCallback      The function to perform the actual save on a sheet name.
+ */
+function processSave(SheetNames, checkCallback, saveCallback) {
+  const sheet_co = fetchSheetByName('Config');                  // Config sheet
+  const DEBUG    = getConfigValue(DBG, 'Config');               // DBG = Debug Mode
+
+  // 1) Gather sheets that exist and pass the check
+  const sheetsToSave = [];
+  for (let i = 0; i < SheetNames.length; i++) {
+    const Name = SheetNames[i];
+    const sheet = fetchSheetByName(Name);
+    if (!sheet) { Logger.log(`ERROR SAVE: ${Name} - Does not exist`); continue; }
+    if (checkCallback(Name) === "TRUE") sheetsToSave.push(Name);
+  }
+
+  const totalSheets = sheetsToSave.length;
+  if (totalSheets === 0) { Logger.log(`No valid data found. Skipping save operation.`); return; }
+
+  // 2) Flush pending changes
+  SpreadsheetApp.flush();
+
+  // 3) Iterate with a simple for-loop
+  for (let idx = 0; idx < totalSheets; idx++) {
+    const SheetName = sheetsToSave[idx];
+    const progress  = Math.round(((idx + 1) / totalSheets) * 100);
+
+    if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+
+    try {
+      saveCallback(SheetName);
+      if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+    } catch (error) {
+      if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
     }
-  });
-  
-  var totalSheets = sheetsToSave.length;
-  if (totalSheets > 0) {
-    SpreadsheetApp.flush();
-    let count = 0;
-    sheetsToSave.forEach(function(SheetName) {
-      count++;
-      const progress = Math.round((count / totalSheets) * 100);
-      if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
-      try {
-        saveCallback(SheetName);
-        if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
-      } catch (error) {
-        if (DEBUG = TRUE) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
-      }
-    });
-  } else {
-    Logger.log(`No valid data found. Skipping save operation.`);
   }
 }
 
@@ -115,8 +116,11 @@ function doFinancialDateHelper(dateStrings) {
 
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
 
-function doCheckDATAS() 
-{
+/**
+ * Iterates through all data-related sheets and runs doCheckDATA on each.
+ * Errors are caught per sheet to prevent one failure from stopping the loop.
+ */
+function doCheckDATAS() {
   const SheetNames = [
     SWING_4, SWING_12, SWING_52,
     PROV, OPCOES, BTC, TERMO, FUND,
@@ -127,24 +131,20 @@ function doCheckDATAS()
     BLOCK
   ];
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
+  for (let i = 0; i < SheetNames.length; i++) {
+    const SheetName = SheetNames[i];
+    try {
       doCheckDATA(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
+    } catch (error) {
       Logger.error(`Error checking DATA for sheet ${SheetName}: ${error}`);
     }
-  });
+  }
 }
 
 /////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doCheckDATA(SheetName) {
-  const sheet_sr = fetchSheetByName(SheetName);     // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);    // Source sheet
   const sheet_i = fetchSheetByName('Index');       // Index sheet
   const sheet_d = fetchSheetByName('DATA');        // DATA sheet
   const sheet_p = fetchSheetByName(PROV);          // PROV sheet
@@ -180,7 +180,7 @@ function doCheckDATA(SheetName) {
     case SWING_12:
     case SWING_52:
       const sheet_co = fetchSheetByName('Config');
-      var Class = sheet_co.getRange(IST).getDisplayValue();                            // IST = Is Stock? 
+      const Class = getConfigValue(IST, 'Config');                                     // IST = Is Stock?
       Check = Class === 'STOCK' ? sheet_d.getRange('B16').getValue() : 'TRUE';
       break;
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
@@ -307,53 +307,47 @@ function processCheckDATA(sheet_sr, SheetName, Check) {
 /////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doTrim() {
-  const SheetNames = [
-    SWING_4, SWING_12, SWING_52
-  ];
+  const SheetNames = [SWING_4, SWING_12, SWING_52];
 
-  SheetNames.forEach(SheetName => 
-  {
-    try { doTrimSheet(SheetName); } 
-    catch (error) { Logger.error(`Error saving sheet ${SheetName}: ${error}`); }
-  });
+  for (let i = 0; i < SheetNames.length; i++) {
+    const SheetName = SheetNames[i];
+    try {
+      doTrimSheet(SheetName);
+    } catch (error) {
+      Logger.error(`Error trimming sheet ${SheetName}: ${error}`);
+    }
+  }
 }
 
 function doTrimSheet(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName);
-
   Logger.log(`TRIM: ${SheetName}`);
+  if (!sheet_sr) { Logger.error(`Sheet ${SheetName} not found.`); return; }
 
-  if (!sheet_sr) { 
-    Logger.error(`Sheet ${SheetName} not found.`); 
-    return; 
-  }
-
-  var LR = sheet_sr.getLastRow();
-  var LC = sheet_sr.getLastColumn();
+  const LR = sheet_sr.getLastRow();
+  const LC = sheet_sr.getLastColumn();
 
   switch (SheetName) {
     case SWING_4:
       if (LR > 126) {
         sheet_sr.getRange(127, 1, LR - 126, LC).clearContent();
-        Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
-        Logger.log(`Cleared data below row 126 in ${SheetName}.`);
+        Logger.log(`SUCCESS TRIM. Cleared rows 127→${LR} in ${SheetName}.`);
       }
       break;
 
     case SWING_12:
       if (LR > 366) {
         sheet_sr.getRange(367, 1, LR - 366, LC).clearContent();
-        Logger.log(`SUCCESS TRIM. Sheet: ${SheetName}.`);
-        Logger.log(`Cleared data below row 366 in ${SheetName}.`);
+        Logger.log(`SUCCESS TRIM. Cleared rows 367→${LR} in ${SheetName}.`);
       }
       break;
 
     case SWING_52:
-      Logger.log(`NOTHING TO TRIM. Sheet: ${SheetName}.`);
+      Logger.log(`NOTHING TO TRIM. ${SheetName} stays at ${LR} rows.`);
       break;
 
     default:
-      Logger.log(`No specific logic defined  to Trim for ${SheetName}.`);
+      Logger.log(`No trim logic defined for ${SheetName}.`);
   }
 }
 
@@ -371,61 +365,85 @@ function doTrimSheet(SheetName) {
  *
  * @returns {void}
  */
-function doDisableSheets(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+/**
+ * Hides or deletes sheets based on the asset class in Config!IST.
+ *
+ * - STOCK: hides specific sheets listed in `stockHidden`.  
+ * - ADR: deletes all sheets *not* in the `adrKeep` set.  
+ * - BDR/ETF: deletes all sheets *not* in the `bdrKeep` set.  
+ * 
+ * Always keeps Config and Settings visible via hideConfig() at end.
+ */
+function doDisableSheets() {
+  const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove 
   const sheet_co = fetchSheetByName('Config');
+  if (!sheet_co) return;
+
+  const Class = getConfigValue(IST, 'Config');                     // IST = asset class
+
   const sheets = ss.getSheets();
 
-  var Class = sheet_co.getRange(IST).getDisplayValue();                                                                 // IST = Is Stock?
-  let SheetNames = [];
-
   switch (Class) {
-    case 'STOCK':
-      SheetNames = ['DATA', 'Prov_', 'FIBO', 'Cotações', 'UPDATE', 'Balanço', 'Balanço Ativo', 'Balanço Passivo', 'Resultado', 'Demonstração', 'Fluxo', 'Fluxo de Caixa', 'Valor', 'Demonstração do Valor Adicionado'];
-
-      sheets.forEach(sheet => {
-        if (!sheet.isSheetHidden() && SheetNames.includes(sheet.getName())) {
-          sheet.hideSheet();
-          Logger.log(`Sheet: ${sheet.getName()} HIDDEN`);
-        }
-      });
-      break;
-
-    case 'ADR':
-      SheetNames = new Set(['Config', 'Settings', 'Index', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações']);
-
-      for (let i = sheets.length - 1; i >= 0; i--) {                                                                    // Reverse iteration to avoid index shifting
-        const sheet = sheets[i];
-        if (!SheetNames.has(sheet.getName())) {                                                                         // Delete all but SheetNames
-          Logger.log(`Deleting sheet: ${sheet.getName()}`);
-          ss.deleteSheet(sheet);
+    case 'STOCK': {
+      const stockHidden = [
+        'DATA','Prov_','FIBO','Cotações','UPDATE','Balanço',
+        'Balanço Ativo','Balanço Passivo','Resultado','Demonstração',
+        'Fluxo','Fluxo de Caixa','Valor','Demonstração do Valor Adicionado'
+      ];
+      for (let i = 0; i < sheets.length; i++) {
+        const sh = sheets[i];
+        const name = sh.getName();
+        if (!sh.isSheetHidden() && stockHidden.indexOf(name) !== -1) {
+          sh.hideSheet();
+          Logger.log(`Sheet hidden: ${name}`);
         }
       }
       break;
-
+    }
+    case 'ADR': {
+      const adrKeep = new Set([
+        'Config','Settings','Index','Preço','FIBO',
+        SWING_4, SWING_12, SWING_52,'Cotações'
+      ]);
+      // reverse order to safely delete
+      for (let i = sheets.length - 1; i >= 0; i--) {
+        const sh = sheets[i];
+        const name = sh.getName();
+        if (!adrKeep.has(name)) {
+          ss.deleteSheet(sh);
+          Logger.log(`Sheet deleted: ${name}`);
+        }
+      }
+      break;
+    }
     case 'BDR':
-    case 'ETF':
-      SheetNames = new Set(['Config', 'Settings', 'Index', 'Prov', 'Prov_', 'Preço', 'FIBO', SWING_4, SWING_12, SWING_52, 'Cotações', 'DATA', 'OPT', 'Opções', 'BTC', 'Termo']);
-
-      for (let i = sheets.length - 1; i >= 0; i--) {                                                                    // Reverse iteration to avoid index shifting
-        const sheet = sheets[i];
-        if (!SheetNames.has(sheet.getName())) {                                                                         // Delete all but SheetNames
-          Logger.log(`Deleting sheet: ${sheet.getName()}`);
-          ss.deleteSheet(sheet);
+    case 'ETF': {
+      const bdrKeep = new Set([
+        'Config','Settings','Index','Prov','Prov_','Preço','FIBO',
+        SWING_4, SWING_12, SWING_52,'Cotações','DATA','OPT','Opções','BTC','Termo'
+      ]);
+      for (let i = sheets.length - 1; i >= 0; i--) {
+        const sh = sheets[i];
+        const name = sh.getName();
+        if (!bdrKeep.has(name)) {
+          ss.deleteSheet(sh);
+          Logger.log(`Sheet deleted: ${name}`);
         }
       }
       break;
-      
+    }
     default:
-      Logger.log(`Class ${Class} not recognized. No sheets modified.`);
+      Logger.log(`Class "${Class}" not recognized. No sheets modified.`);
   }
+
+  // Always run hideConfig() to re‐hide Config/Settings if needed
   hideConfig();
 }
 
 /////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
 
 function hideConfig() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet_sr = fetchSheetByName(`Settings`);                        // Source sheet
   const sheet_co = fetchSheetByName(`Config`);                          // Config sheet
 

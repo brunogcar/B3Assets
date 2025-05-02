@@ -155,42 +155,41 @@ function doRetire() {
 
 function copypasteSheets() {
   const SheetNames = [
-    'Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações', 'OPT', 'DATA',
-    'Value', 'Balanco', 'Resultado', 'Fluxo', 'Valor'
+    'Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações',
+    'OPT', 'DATA', 'Value', 'Balanco', 'Resultado', 'Fluxo', 'Valor'
   ];
 
-  SheetNames.forEach(Name => {
+  for (let i = 0; i < SheetNames.length; i++) {
+    const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
-    if (sheet) {
-      const range = sheet.getDataRange();
-      range.copyTo(range, { contentsOnly: true });
-    }
-  });
+    if (!sheet) continue;
+    const range = sheet.getDataRange();
+    range.copyTo(range, { contentsOnly: true });
+  }
 }
 
 function doDeleteSheets() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();  
   const SheetNames = [
-    'Balanço Ativo', 
-    'Balanço Passivo', 
-    'Demonstração', 
-    'Fluxo de Caixa', 
+    'Balanço Ativo',
+    'Balanço Passivo',
+    'Demonstração',
+    'Fluxo de Caixa',
     'Demonstração do Valor Adicionado'
   ];
 
-  SheetNames.forEach(Name => {
+  for (let i = 0; i < SheetNames.length; i++) {
+    const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
-    if (sheet) {
-      try {
-        ss.deleteSheet(sheet);
-        Logger.log(`Sheet deleted: ${Name}`);
-      } catch (error) {
-        Logger.log(`Error deleting sheet "${Name}": ${error}`);
-      }
+    if (!sheet) continue;
+    try {
+      ss.deleteSheet(sheet);
+      Logger.log(`Sheet deleted: ${Name}`);
+    } catch (error) {
+      Logger.log(`Error deleting sheet "${Name}": ${error}`);
     }
-  });
+  }
 }
-
 
 
 function moveSpreadsheetToFolder(folderName) {
@@ -281,12 +280,17 @@ function SNAME(option) {
 function doCleanZeros() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND];
 
-  SheetNames.forEach(SheetName => {
-    const sheet = fetchSheetByName(SheetName);
-    if (!sheet) return;
+  for (let idx = 0; idx < SheetNames.length; idx++) {
+    const SheetName = SheetNames[idx];
+    const sheet     = fetchSheetByName(SheetName);
+    if (!sheet) continue;
 
-    const range = sheet.getRange(5, 1, sheet.getLastRow() - 4, sheet.getLastColumn());
-    const Data = range.getValues();
+    const LR = sheet.getLastRow();
+    const LC = sheet.getLastColumn();
+    if (LR < 5) continue; // nothing to clean
+
+    const Range = sheet.getRange(5, 1, LR - 4, LC);
+    const Data = Range.getValues();
     let Modified = false;
 
     for (let i = 0; i < Data.length; i++) {
@@ -299,11 +303,13 @@ function doCleanZeros() {
     }
 
     if (Modified) {
-      range.setValues(Data);
+      Range.setValues(Data);
       Logger.log(`Zeros cleaned in sheet: ${SheetName}`);
     }
-  });
+  }
 }
+
+
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
@@ -313,11 +319,13 @@ function reverseColumns() {
   const active = fetchSheetByName(SheetName);
   if (!active) return;
 
-  const range = active.getRange(1, 4, active.getLastRow(), active.getLastColumn() - 3);
-  const values = range.getValues();
+  const LR = sheet.getLastRow();
+  const LC = sheet.getLastColumn();
+  const Range = active.getRange(1, 4, LR, LC - 3);
+  const Values = Range.getValues();
 
-  const reversedValues = values.map(row => row.reverse());
-  range.setValues(reversedValues);
+  const ReversedValues = Values.map(row => row.reverse());
+  Range.setValues(ReversedValues);
   Logger.log(`Columns reversed in sheet: ${SheetName}`);
 }
 
@@ -327,11 +335,13 @@ function reverseRows() {
   const active = fetchSheetByName(SheetName);
   if (!active) return;
 
-  const range = active.getRange(5, 1, active.getLastRow() - 4, active.getLastColumn());
-  const values = range.getValues();
+  const LR = sheet.getLastRow();
+  const LC = sheet.getLastColumn();
+  const Range = active.getRange(5, 1, LR - 4, LC);
+  const Values = Range.getValues();
 
-  values.reverse();
-  range.setValues(values);
+  Values.reverse();
+  Range.setValues(Values);
   Logger.log(`Rows reversed in sheet: ${SheetName}`);
 }
 

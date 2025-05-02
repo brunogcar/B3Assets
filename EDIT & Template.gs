@@ -15,26 +15,29 @@ function doEditAll()
 function doEditBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
   const totalSheets = SheetNames.length;
-  let Count = 0;
+  let count = 0;
 
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+  const sheet_co = fetchSheetByName('Config');                  // Config sheet
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
 
-  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} sheets...`);
 
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
-  });
-  if (DEBUG = "TRUE") Logger.log(`Edit completed: ${Count} of ${totalSheets} sheets edited successfully`);
+  }
+
+  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} sheets edited successfully`);
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
@@ -42,53 +45,59 @@ function doEditBasics() {
 function doEditExtras() {
   const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
   const totalSheets = SheetNames.length;
-  let Count = 0;
+  let count = 0;
 
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+  const sheet_co = fetchSheetByName('Config');                  // Config sheet
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
 
-  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} extra sheets...`);
 
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditSheet(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
-  });
-  if (DEBUG = "TRUE") Logger.log(`Edit completed: ${Count} of ${totalSheets} extra sheets edited successfully`);
+  }
+
+  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} extra sheets edited successfully`);
 }
 
-//-------------------------------------------------------------------DATA-------------------------------------------------------------------//
+//-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doEditFinancials() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
   const totalSheets = SheetNames.length;
-  let Count = 0;
+  let count = 0;
 
-  const sheet_co = fetchSheetByName('Config');                                  // Config sheet
-  const DEBUG = sheet_co.getRange(DBG).getDisplayValue();                       // DBG = Debug Mode
+  const sheet_co = fetchSheetByName('Config');                  // Config sheet
+  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
 
-  if (DEBUG = "TRUE") Logger.log(`Starting editing of ${totalSheets} sheets...`);
+  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} financial sheets...`);
 
-  SheetNames.forEach((SheetName, index) => {
-    Count++;
-    const progress = Math.round((Count / totalSheets) * 100);
-    if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
 
     try {
       doEditFinancial(SheetName);
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
     } catch (error) {
-      if (DEBUG = "TRUE") Logger.log(`[${Count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
+      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
     }
-  });
-  Logger.log(`Edit completed: ${Count} of ${totalSheets} data sheets edited successfully`);
+  }
+
+  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} financial sheets edited successfully`);
 }
 
 /////////////////////////////////////////////////////////////////////BASIC TEMPLATE/////////////////////////////////////////////////////////////////////

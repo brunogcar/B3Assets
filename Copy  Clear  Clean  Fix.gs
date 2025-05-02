@@ -8,61 +8,6 @@ function doClearAll() {
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////TRIM/////////////////////////////////////////////////////////////////////
-
-function doTrimBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52];
-
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-      doTrimBasic(SheetName);
-    } 
-    catch (error) 
-    {
-      Logger.error(`Error saving sheet ${SheetName}: ${error}`);
-    }
-  });
-}
-
-function doTrimBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR CLEAN: ${SheetName} does not exist`); return; }
-
-  if (!sheet_sr) {Logger.error(`Sheet ${SheetName} not found.`); return;}
-
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
-
-
-  if (SheetName === SWING_4) 
-  {
-    if (LR > 81) 
-    {
-      sheet.getRange(82, 1, LR - 81, LC).clearContent(); // Clear data below row 128
-      Logger.log(`Cleared data below row 81 in ${SheetName}.`);
-    }
-  } 
-  else if (SheetName === SWING_12) 
-  {
-    if (LR > 208) 
-    {
-      sheet.getRange(209, 1, LR - 208, LC).clearContent(); // Clear data below row 128
-      Logger.log(`Cleared data below row 208 in ${SheetName}.`);
-    }
-  } 
-  else if (SheetName === SWING_52) 
-  {
-
-  } 
-  else 
-  {
-    // Default logic for other sheets
-    Logger.log(`No specific logic defined for ${SheetName}.`);
-  }
-}
-
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
 
 function doCopyBasic(SheetName) {
@@ -110,18 +55,14 @@ function doCopyFinancial(SheetName) {
 function doClearBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doClearBasic(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
+  for (let i = 0; i < SheetNames.length; i++) {
+    const sheetName = SheetNames[i];
+    try {
+      doClearBasic(sheetName);
+    } catch (error) {
+      Logger.error(`Error Clearing ${sheetName}: ${error}`);
     }
-  });
+  }
 }
 
 function doClearBasic(SheetName) {
@@ -143,18 +84,14 @@ function doClearBasic(SheetName) {
 function doClearFinancials() {
   const SheetNames = [BLC, DRE, FLC, DVA];
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-    doClearFinancial(SheetName);
-    } 
-    catch (error) 
-    {
-      // Handle the error here, you can log it or take appropriate actions.
-      Logger.error(`Error Clearing  ${SheetName}: ${error}`);
+  for (let i = 0; i < SheetNames.length; i++) {
+    const sheetName = SheetNames[i];
+    try {
+      doClearFinancial(sheetName);
+    } catch (error) {
+      Logger.error(`Error Clearing ${sheetName}: ${error}`);
     }
-  });
+  }
 }
 
 function doClearFinancial(SheetName) {
@@ -233,17 +170,14 @@ function doRecycleTrade() {
 function doCleanBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
-  SheetNames.forEach(SheetName => 
-  {
-    try 
-    {
-      doCleanBasic(SheetName);
-    } 
-    catch (error) 
-    {
-      Logger.error(`Error cleaning sheet ${SheetName}: ${error}`);
+  for (let i = 0; i < SheetNames.length; i++) {
+    const sheetName = SheetNames[i];
+    try {
+      doCleanBasic(sheetName);
+    } catch (error) {
+      Logger.error(`Error cleaning sheet ${sheetName}: ${error}`);
     }
-  });
+  }
 }
 
 function doCleanBasic(SheetName) {
@@ -300,7 +234,6 @@ function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
   Logger.log(`FIX: ${SheetName} starting at row ${SR} with multiplier ${M}`);
 
   blocks.forEach(({from, to = from, op = 'mul'}) => {
-    // build A1 range like "B5:Y100" or "D10:D200"
     const RangeA1 = `${from}${SR}:${to}${LR}`;
     const Values = sheet.getRange(RangeA1).getValues();
 
