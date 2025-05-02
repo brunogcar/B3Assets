@@ -54,13 +54,13 @@ function processSave(SheetNames, checkCallback, saveCallback) {
     const SheetName = sheetsToSave[idx];
     const progress  = Math.round(((idx + 1) / totalSheets) * 100);
 
-    if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
+    if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
 
     try {
       saveCallback(SheetName);
-      if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
+      if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
     } catch (error) {
-      if (DEBUG === "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
+      if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
     }
   }
 }
