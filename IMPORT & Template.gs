@@ -91,7 +91,7 @@ function doImportProventos() {
     try {
       doImportProv(ProvName);
     } catch (error) {
-      Logger.error(`Error importing ${ProvName}: ${error}`);
+      Logger.log(`Error importing ${ProvName}: ${error}`);
     }
   }
 }
@@ -113,24 +113,24 @@ function doImportBasics() {
   const sheet_co = fetchSheetByName('Config');                
   const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";  
 
-  if (DEBUG) Logger.log(`Starting import of ${totalSheets} sheets...`);
+  if (DEBUG == "TRUE") Logger.log(`Starting import of ${totalSheets} sheets...`);
 
   for (let i = 0; i < totalSheets; i++) {
     const SheetName = SheetNames[i];
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+    if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
       doImportBasic(SheetName);
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
+      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   }
 
-  if (DEBUG) Logger.log(`Import completed: ${count} of ${totalSheets} sheets imported successfully`);
+  if (DEBUG == "TRUE") Logger.log(`Import completed: ${count} of ${totalSheets} sheets imported successfully`);
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
@@ -143,24 +143,24 @@ function doImportFinancials() {
   const sheet_co = fetchSheetByName('Config');                
   const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";  
 
-  if (DEBUG) Logger.log(`Starting import of ${totalSheets} data sheets...`);
+  if (DEBUG == "TRUE") Logger.log(`Starting import of ${totalSheets} data sheets...`);
 
   for (let i = 0; i < totalSheets; i++) {
     const SheetName = SheetNames[i];
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
+    if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
 
     try {
       doImportFinancial(SheetName);
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
+      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
     } catch (error) {
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
+      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
     }
   }
 
-  if (DEBUG) Logger.log(`Import completed: ${count} of ${totalSheets} data sheets imported successfully`);
+  if (DEBUG == "TRUE") Logger.log(`Import completed: ${count} of ${totalSheets} data sheets imported successfully`);
 }
 
 
