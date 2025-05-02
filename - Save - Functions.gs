@@ -11,16 +11,8 @@
  *    and logs progress and success/errors conditionally based on DEBUG mode.
  *
  * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
- * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
- * @param {function(string):void} saveFunction      The function to perform the actual save on a sheet name.
- *
- * Behavior:
- * - If a sheet does not exist, logs an error and skips it.
- * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
- * - Otherwise, for each sheet:
- *    • Logs `[i/N] (P%) saving <SheetName>...`
- *    • Calls `saveFunction(SheetName)` inside a try/catch
- *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
+ * @param {function(string):string}  checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
+ * @param {function(string):void}    saveFunction      The function to perform the actual save on a sheet name.
  */
 function doSaveGroup(SheetNames, checkCallback, saveFunction) {
 
@@ -122,133 +114,83 @@ function doCheckDATAS() {
 
 function doCheckDATA(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName);    // Source sheet
-  const sheet_i = fetchSheetByName('Index');       // Index sheet
-  const sheet_d = fetchSheetByName('DATA');        // DATA sheet
-  const sheet_p = fetchSheetByName(PROV);          // PROV sheet
-  const sheet_o = fetchSheetByName('OPT');         // OPT sheet
-  const sheet_b = fetchSheetByName(Balanco);       // Balanco sheet
-  const sheet_r = fetchSheetByName(Resultado);     // Resultado sheet
-  const sheet_f = fetchSheetByName(Fluxo);         // Fluxo sheet
-  const sheet_v = fetchSheetByName(Valor);         // Valor sheet
-
-  let Check;
+  const sheet_i  = fetchSheetByName('Index');      // Index sheet
+  const sheet_d  = fetchSheetByName('DATA');       // DATA sheet
+  const sheet_p  = fetchSheetByName(PROV);         // PROV sheet
+  const sheet_o  = fetchSheetByName('OPT');        // OPT sheet
+  const sheet_b  = fetchSheetByName(Balanco);      // Balanco sheet
+  const sheet_r  = fetchSheetByName(Resultado);    // Resultado sheet
+  const sheet_f  = fetchSheetByName(Fluxo);        // Fluxo sheet
+  const sheet_v  = fetchSheetByName(Valor);        // Valor sheet
 
   Logger.log(`CHECK Sheet: ${SheetName}`);
 
-  switch (SheetName) {
-//-------------------------------------------------------------------PROV-------------------------------------------------------------------//
-    case PROV:
-      Check = sheet_p.getRange("B3").getValue();
-      break;
+  const cfg = {
+    [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, cells: null },
+    [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, cells: null },
+    [SWING_4]:    { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
+    [SWING_12]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
+    [SWING_52]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
+    [BTC]:        { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: false, cells: null },
+    [TERMO]:      { sheetVar: sheet_d, cell:  "B24",       toggleHide: false, classSheet: false, cells: null },
+    [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, cells: null },
+    [FUTURE]:     { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, cells: ["B32","B33","B34"] },
+    [FUTURE_1]:   { sheetVar: sheet_d, cell:  "B32",       toggleHide: false, classSheet: false, cells: null },
+    [FUTURE_2]:   { sheetVar: sheet_d, cell:  "B33",       toggleHide: false, classSheet: false, cells: null },
+    [FUTURE_3]:   { sheetVar: sheet_d, cell:  "B34",       toggleHide: false, classSheet: false, cells: null },
+    [RIGHT_1]:    { sheetVar: sheet_d, cell:  "C38",       toggleHide: false, classSheet: false, cells: null },
+    [RIGHT_2]:    { sheetVar: sheet_d, cell:  "C39",       toggleHide: false, classSheet: false, cells: null },
+    [RECEIPT_9]:  { sheetVar: sheet_d, cell:  "C44",       toggleHide: false, classSheet: false, cells: null },
+    [RECEIPT_10]: { sheetVar: sheet_d, cell:  "C45",       toggleHide: false, classSheet: false, cells: null },
+    [WARRANT_11]: { sheetVar: sheet_d, cell:  "C50",       toggleHide: false, classSheet: false, cells: null },
+    [WARRANT_12]: { sheetVar: sheet_d, cell:  "C51",       toggleHide: false, classSheet: false, cells: null },
+    [WARRANT_13]: { sheetVar: sheet_d, cell:  "C52",       toggleHide: false, classSheet: false, cells: null },
+    [BLOCK]:      { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, cells: ["C56","C57","C58"] },
+    [BLC]:        { sheetVar: sheet_b, cell:  "B1",        toggleHide: false, classSheet: false, cells: null },
+    [DRE]:        { sheetVar: sheet_r, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
+    [FLC]:        { sheetVar: sheet_f, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
+    [DVA]:        { sheetVar: sheet_v, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
+  }[SheetName];
 
-//-------------------------------------------------------------------OPCOES-------------------------------------------------------------------//
-    case OPCOES:
-      Check = sheet_o.getRange("B2").getValue();
-      if (Check === '') {
-        sheet_o.hideSheet();
-        Logger.log(`HIDDEN:`, `OPT`);
-      } else if (sheet_o.isSheetHidden()) {
-        sheet_o.showSheet();
-        Logger.log(`DISPLAYED:  ${SheetName}`);
+  if (!cfg) {
+    Logger.log(`Sheet Name "${SheetName}" not recognized.`);
+    return processCheckDATA(sheet_sr, SheetName, 'FALSE');
+  }
+
+  let Check = 'FALSE';
+
+  // 1) toggleHide case (OPCOES)
+  if (cfg.toggleHide) {
+    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
+    if (Check === '') {
+      sheet_o.hideSheet();
+      Logger.log(`HIDDEN: OPT`);
+    } else if (sheet_o.isSheetHidden()) {
+      sheet_o.showSheet();
+      Logger.log(`DISPLAYED: ${SheetName}`);
+    }
+
+  // 2) classSheet case (SWING_x)
+  } else if (cfg.classSheet) {
+    const sheet_co = fetchSheetByName('Config');
+    const Class   = getConfigValue(IST, 'Config');
+    Check = (Class === 'STOCK')
+      ? sheet_d.getRange(cfg.cell).getValue()
+      : 'TRUE';
+
+  // 3) cells array case (FUTURE, BLOCK)
+  } else if (cfg.cells) {
+    for (let addr of cfg.cells) {
+      const val = sheet_d.getRange(addr).getValue();
+      if (!ErrorValues.includes(val)) {
+        Check = val;
+        break;
       }
-      break;
-//-------------------------------------------------------------------SWING-------------------------------------------------------------------//
-    case SWING_4:
-    case SWING_12:
-    case SWING_52:
-      const sheet_co = fetchSheetByName('Config');
-      const Class = getConfigValue(IST, 'Config');                                     // IST = Is Stock?
-      Check = Class === 'STOCK' ? sheet_d.getRange('B16').getValue() : 'TRUE';
-      break;
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-    case BTC:
-      Check = sheet_d.getRange("B3").getValue();
-      break;
-//-------------------------------------------------------------------TERMO-------------------------------------------------------------------//
-    case TERMO:
-      Check = sheet_d.getRange("B24").getValue();
-      break;
-//-------------------------------------------------------------------FUND-------------------------------------------------------------------//
-    case FUND:
-      Check = sheet_i.getRange("D2").getValue();
-      break;
-//-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
-    case FUTURE:
-      const futureChecks = ["B32", "B33", "B34"];
-      for (let i = 0; i < futureChecks.length; i++) {
-        Check = sheet_d.getRange(futureChecks[i]).getValue();
-        if (!ErrorValues.includes(Check)) break;
-      }
-      break;
+    }
 
-    case FUTURE_1:
-      Check = sheet_d.getRange("B32").getValue();
-      break;
-
-    case FUTURE_2:
-      Check = sheet_d.getRange("B33").getValue();
-      break;
-
-    case FUTURE_3:
-      Check = sheet_d.getRange("B34").getValue();
-      break;
-//-------------------------------------------------------------------RIGHT-------------------------------------------------------------------//
-    case RIGHT_1:
-      Check = sheet_d.getRange("C38").getValue();
-      break;
-
-    case RIGHT_2:
-      Check = sheet_d.getRange("C39").getValue();
-      break;
-//-------------------------------------------------------------------RECEIPT-------------------------------------------------------------------//
-    case RECEIPT_9:
-      Check = sheet_d.getRange("C44").getValue();
-      break;
-
-    case RECEIPT_10:
-      Check = sheet_d.getRange("C45").getValue();
-      break;
-//-------------------------------------------------------------------WARRANT-------------------------------------------------------------------//
-    case WARRANT_11:
-      Check = sheet_d.getRange("C50").getValue();
-      break;
-
-    case WARRANT_12:
-      Check = sheet_d.getRange("C51").getValue();
-      break;
-
-    case WARRANT_13:
-      Check = sheet_d.getRange("C52").getValue();
-      break;
-//-------------------------------------------------------------------BLOCK-------------------------------------------------------------------//
-    case BLOCK:
-      const blockChecks = ["C56", "C57", "C58"];
-      for (let i = 0; i < blockChecks.length; i++) {
-        Check = sheet_d.getRange(blockChecks[i]).getValue();
-        if (!ErrorValues.includes(Check)) break;
-      }
-      break;
-//-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-    case BLC:
-      Check = sheet_b.getRange("B1").getValue();
-      break;
-
-    case DRE:
-      Check = sheet_r.getRange("C1").getValue();
-      break;
-
-    case FLC:
-      Check = sheet_f.getRange("C1").getValue();
-      break;
-
-    case DVA:
-      Check = sheet_v.getRange("C1").getValue();
-      break;
-//-------------------------------------------------------------------DEFAULT-------------------------------------------------------------------//
-    default:
-      Check = 'FALSE';
-      Logger.log(`Sheet Name ${SheetName} not recognized.`);
-      break;
+  // 4) simple cell case
+  } else {
+    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
   }
 
   return processCheckDATA(sheet_sr, SheetName, Check);

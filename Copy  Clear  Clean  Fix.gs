@@ -115,7 +115,7 @@ function doClearFinancial(SheetName) {
     Logger.log(`Unsupported sheet name: ${SheetName}`);
   }
 
-  if (SheetName === BLC) {doClearFinancial(Balanco);}
+  if      (SheetName === BLC) {doClearFinancial(Balanco);}
   else if (SheetName === DRE) {doClearFinancial(Resultado );}
   else if (SheetName === FLC) {doClearFinancial(Fluxo);}
   else if (SheetName === DVA) {doClearFinancial(Valor);}

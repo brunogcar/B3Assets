@@ -43,8 +43,8 @@ function doExportBasic(SheetName) {
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
-  const Class = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
-  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
+  const Class     = getConfigValue(IST, 'Config');                                   // IST = Is Stock?
+  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
     Logger.log("ERROR EXPORT: Target ID is empty.");
@@ -90,6 +90,7 @@ function doExportBasic(SheetName) {
     case SWING_12:
     case SWING_52:
       Export = getConfigValue(ETR);                                             // ETR = Export to Swing
+
       var C2 = sheet_sr.getRange("C2").getValue();
       if (C2 > 0) {
         ShouldExport = true;
@@ -98,6 +99,7 @@ function doExportBasic(SheetName) {
 //-------------------------------------------------------------------Opções-------------------------------------------------------------------//
     case OPCOES:
       Export = getConfigValue(EOP);                                             // EOP = Export to Option
+
       var [Call, Put] = ["C2", "E2"].map(r => sheet_sr.getRange(r).getValue());
       if (Call != 0 && Put != 0 && Call != "" && Put != "") {
         ShouldExport = true;
@@ -106,6 +108,7 @@ function doExportBasic(SheetName) {
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
     case BTC:
       Export = getConfigValue(EBT);                                             // EBT = Export to BTC
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         ShouldExport = true;
@@ -114,6 +117,7 @@ function doExportBasic(SheetName) {
 //-------------------------------------------------------------------Termo-------------------------------------------------------------------//
     case TERMO:
       Export = getConfigValue(ETE);                                             // ETE = Export to Termo
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         ShouldExport = true;
@@ -122,6 +126,7 @@ function doExportBasic(SheetName) {
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
     case FUTURE:
       Export = getConfigValue(ETF);                                             // ETF = Export to Future
+
       var C2 = sheet_sr.getRange("C2").getValue();
       var E2 = sheet_sr.getRange("E2").getValue();
       var G2 = sheet_sr.getRange("G2").getValue();
@@ -135,6 +140,7 @@ function doExportBasic(SheetName) {
     case FUTURE_2:
     case FUTURE_3:
       Export = getConfigValue(ETF);                                             // ETF = Export to Future
+
       var C2 = sheet_sr.getRange("C2").getValue();
       var B2 = sheet_sr.getRange("B2").getValue();
       if (!ErrorValues.includes(B2) && C2 > 0) {
@@ -144,6 +150,7 @@ function doExportBasic(SheetName) {
 //-------------------------------------------------------------------Fund-------------------------------------------------------------------//
     case FUND:
       Export = getConfigValue(EFU);                                             // EFU = Export to Fund
+
       var B2 = sheet_sr.getRange("B2").getValue();
       if (!ErrorValues.includes(B2)) {
         ShouldExport = true;
@@ -199,12 +206,9 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
+  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty.");
-  return;
-  }
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   // Mapping export config settings
   const target_co = {
@@ -287,12 +291,9 @@ function doExportFinancial(SheetName) {
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
 
-  const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
-  var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
-  if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty.");
-  return;
-  }
+  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
+  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   const sheet_sr = fetchSheetByName('Index');                                         // Source sheet
   if (!sheet_sr) {
@@ -312,10 +313,7 @@ function doExportFinancial(SheetName) {
   };
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
-  if (Export !== "TRUE") {
-    Logger.log(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`);
-    return;
-  }
+  if (Export !== "TRUE") { Logger.log(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`); return; }
 
   let Data = [];
 
@@ -461,14 +459,14 @@ function doExportProventos() {
 
   if (!sheet_co || !sheet_ix || !sheet_pv) return;
 
-  const Class = getConfigValue(IST, 'Config');                      // IST = Is Stock?
+  const Class     = getConfigValue(IST, 'Config');                  // IST = Is Stock?
   const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
   if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   var SheetName = sheet_pv.getName();
   Logger.log(`Export Proventos: ${SheetName}`);
 
-  var ISIN = sheet_pv.getRange("C61").getDisplayValue().trim();     // Código ISIN
+  var ISIN  = sheet_pv.getRange("C61").getDisplayValue().trim();    // Código ISIN
   const TKT = getConfigValue(TKR, 'Config');                        // TKR = Ticket Range
 
   var B = sheet_pv.getRange("J2").getValue();                       // Date

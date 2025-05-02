@@ -102,40 +102,41 @@ function doSaveAllFinancials() {
 function doSaveBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
 
-  SheetNames.forEach(SheetName => {
+  for (let i = 0; i < SheetNames.length; i++) {
+    const SheetName = SheetNames[i];
     try { doSaveSheet(SheetName); }
     catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
-  });
+  }
 }
+
 
 /////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
 function doSaveExtras() {
   const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
 
-  SheetNames.forEach(SheetName => {
+  for (let i = 0; i < SheetNames.length; i++) {
+    const SheetName = SheetNames[i];
     try { doSaveSheet(SheetName); }
     catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
-  });
+  }
 }
 
 /////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
 
-function doSaveFinancials()
-{
+function doSaveFinancials() {
   const SheetNames = [BLC, DRE, FLC, DVA];                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
-  const sheet_up = fetchSheetByName(`UPDATE`);                         // UPDATE sheet
+  const sheet_up = fetchSheetByName(`UPDATE`);
+  const ACTV = sheet_up.getRange(`B3`).getValue();
+  const SOMA = sheet_up.getRange(`K8`).getValue();
 
-    var ACTV = sheet_up.getRange(`B3`).getValue();
-    var SOMA = sheet_up.getRange(`K8`).getValue();
-
-  if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA == 0 || SOMA > 125000))))
-  {
-    SheetNames.forEach(SheetName => {
+  if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA === 0 || SOMA > 125000)))) {
+    for (let i = 0; i < SheetNames.length; i++) {
+      const SheetName = SheetNames[i];
       try { doSaveFinancial(SheetName); }
       catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
-    });
+    }
   }
 }
 

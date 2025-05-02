@@ -9,14 +9,16 @@
  * @param {string} actionLabel          Verb in gerund form ("Editing", "Exporting", "Importing").
  * @param {string} resultLabel          Past‐tense for summary ("edited", "exported", "imported").
  * @param {string} groupLabel           Descriptor for logging ("basic", "extra", "financial", etc.).
+ *
+ * Behavior:
+ * - If a sheet does not exist, logs an error and skips it.
+ * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
+ * - Otherwise, for each sheet:
+ *    • Logs `[i/N] (P%) action <SheetName>...`
+ *    • Calls `fn(SheetName)` inside a try/catch
+ *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
  */
-function _doGroup(
-  SheetNames,
-  fn,
-  actionLabel,
-  resultLabel,
-  groupLabel
-) {
+function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
   const totalSheets = SheetNames.length;
   let count = 0;
 
@@ -150,19 +152,19 @@ function arraysAreEqual(arr1, arr2) {
 
 function doSettings() {
   const sheet_co = fetchSheetByName('Config');
-  const Class = getConfigValue(IST, 'Config');                                          // IST = Is Stock?
-  const sheet_sr = fetchSheetByName('Settings');
-  var Activate  = sheet_sr.getRange(ACT).getDisplayValue();                             // ACT = Activate
+  const Class    = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
+  const sheet_st = fetchSheetByName('Settings');
+  const Activate = getConfigValue(ACT, 'Settings');                                     // ACT = Activate
 
   if (Class == 'STOCK')
   {
     if ( Activate == "TRUE")                                              // TRUE
     {
-      var True = sheet_sr.getRange(TRU).getDisplayValue();                               // TRU = True
+      var True = sheet_st.getRange(TRU).getDisplayValue();                               // TRU = True
 
       if ( True == 'SAVE')                                                // SAVE
       {
-        var Save = sheet_sr.getRange(SAV).getDisplayValue();                             // SAV = SAVE
+        const Save = getConfigValue(SAV, 'Settings');                                    // SAV = SAVE
 
         if ( Save == 'SHEETS') { doSaveAllBasics(); }
         if ( Save == 'EXTRAS') { doSaveAllExtras(); }
@@ -170,7 +172,7 @@ function doSettings() {
         if ( Save == 'ALL')    { doSaveAll(); }
         if ( Save == 'INDIVIDUAL')
           {
-            var Individual = sheet_sr.getRange(IND).getDisplayValue();                   // IND = INDIVIDUAL
+            const Individual = getConfigValue(IND, 'Settings');                          // IND = INDIVIDUAL
 
             if ( Individual == 'SWING')  { doSaveSWING(); }
             if ( Individual == 'OPCOES') { doSaveBasic(OPCOES); }
@@ -183,14 +185,15 @@ function doSettings() {
       if ( True == 'EXPORT') {doExportAll(); }
       if ( True == 'OTHER')                                               // OTHER
       {
-        var Other = sheet_sr.getRange(EXT).getDisplayValue();                             // EXT = Extra
+        const Other = getConfigValue(EXT, 'Settings');                                    // EXT = Extra
 
-        if ( Other == 'ZEROS')    { doCleanZeros(); }
-        if ( Other == 'TRIGGERS') { doCheckTriggers(); }
-        if ( Other == 'CHECK')    { doCheckDATAS(); }                                    // Check and hide or show Sheets
-        if ( Other == 'PROV')     { doSaveProventos(); }
-        if ( Other == 'SHARES')   { doSaveShares(); }
-        if ( Other == 'RIGHTS')   { doRestoreRight(); }
+        if ( Other == 'ZEROS')           { doCleanZeros(); }
+        if ( Other == 'TRIGGERS')        { doCheckTriggers(); }
+        if ( Other == 'CHECK')           { doCheckDATAS(); }                              // Check and hide or show Sheets
+        if ( Other == 'PROV')            { doSaveProventos(); }
+        if ( Other == 'SHARES')          { doSaveShares(); }
+        if ( Other == 'RIGHTS')          { doRestoreRight(); }
+        if ( Other == 'ZEROS OPTIONS')   { doDeleteZeroOptions(); }
       }
     }
   }
@@ -365,6 +368,52 @@ function doCleanZeros() {
   }
 }
 
+function doDeleteZeroOptions() {
+  const sheet   = fetchSheetByName(OPCOES);
+  if (!sheet) {
+    Logger.log(`ERROR: Sheet "${OPCOES}" not found. Aborting.`);
+    return;
+  }
+
+  const DEBUG   = getConfigValue(DBG, 'Config') === "TRUE";
+  const lastRow = sheet.getLastRow();
+
+  for (let row = lastRow; row > 4; row--) {
+    try {
+      const C = sheet.getRange(row, 3).getValue();
+      const E = sheet.getRange(row, 5).getValue();
+      const H = sheet.getRange(row, 8).getDisplayValue().trim();
+      const I = sheet.getRange(row, 9).getDisplayValue().trim();
+      const J = sheet.getRange(row,10).getDisplayValue().trim();
+
+      const zeroCE   = (C === 0 || E === 0);
+      const allBlank = (H === "" && I === "" && J === "");
+
+      if (zeroCE || allBlank) {
+        // Decide the reason for logging
+        let reason;
+        if (zeroCE) {
+          reason = `zero in C or E (C=${C}, E=${E})`;
+        } else {
+          reason = `blank H/I/J (H='${H}', I='${I}', J='${J}')`;
+        }
+
+        if (DEBUG) {
+          Logger.log(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`);
+        }
+        sheet.deleteRow(row);
+      }
+
+    } catch (err) {
+      if (DEBUG) {
+        Logger.log(`[doDeleteZeroOptions] Error on row ${row}: ${err}`);
+      }
+    }
+  }
+  if (DEBUG) {
+    Logger.log(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`);
+  }
+}
 
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////

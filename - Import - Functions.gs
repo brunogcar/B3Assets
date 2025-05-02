@@ -83,7 +83,7 @@ function doCheckTriggers() {
 function doCreateTriggers() {
   const sheet_co = fetchSheetByName('Config');
   if (!sheet_co) return;
-  const Class = getConfigValue(IST, 'Config');  // IST = Is Stock?
+  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
 
   // Check existing triggers
   const triggers = ScriptApp.getProjectTriggers();

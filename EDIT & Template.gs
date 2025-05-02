@@ -56,7 +56,7 @@ function doEditBasic(SheetName) {
     case SWING_4:
     case SWING_12:
     case SWING_52:
-      Edit = getConfigValue(DTR);                                                 // DTR = Edit to Swing
+      Edit        = getConfigValue(DTR);                                          // DTR = Edit to Swing
       const Class = getConfigValue(IST, 'Config');                                // IST = Is Stock?
 
       var C2 = sheet_sr.getRange("C2").getValue();
@@ -77,6 +77,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------Opções-------------------------------------------------------------------//
     case OPCOES:
       Edit = getConfigValue(DOP);                                                 // DOP = Edit to Option
+
       var Call = sheet_sr.getRange("C2").getValue();
       var Put = sheet_sr.getRange("E2").getValue();
       if ((Call != 0 && Put != 0) &&
@@ -90,6 +91,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
     case BTC:
       Edit = getConfigValue(DBT);                                                 // DBT = Edit to BTC
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditBasic(sheet_sr, SheetName, Edit);
@@ -101,6 +103,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------Termo-------------------------------------------------------------------//
     case TERMO:
       Edit = getConfigValue(DTE);                                                 // DTE = Edit to Termo
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditBasic(sheet_sr, SheetName, Edit);
@@ -112,6 +115,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------Fund-------------------------------------------------------------------//
     case FUND:
       Edit = getConfigValue(DFU);                                                 // DFU = Edit to Fund
+
       var B2 = sheet_sr.getRange("B2").getValue();
       if (!ErrorValues.includes(B2)) {
         processEditBasic(sheet_sr, SheetName, Edit);
@@ -123,6 +127,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
     case FUTURE:
       Edit = getConfigValue(DFT);                                                 // DFT = Edit to Future
+
       var C2 = sheet_sr.getRange("C2").getValue();
       var E2 = sheet_sr.getRange("E2").getValue();
       var G2 = sheet_sr.getRange("G2").getValue();
@@ -138,6 +143,7 @@ function doEditBasic(SheetName) {
     case FUTURE_2:
     case FUTURE_3:
       Edit = getConfigValue(DFT);                                                 // DFT = Edit to Future
+
       var C2 = sheet_sr.getRange("C2").getValue();
       if (!ErrorValues.includes(C2)) {
         processEditExtra(sheet_sr, SheetName, Edit);
@@ -150,6 +156,7 @@ function doEditBasic(SheetName) {
     case RIGHT_1:
     case RIGHT_2:
       Edit = getConfigValue(DRT);                                                 // DRT = Edit to Right
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditExtra(sheet_sr, SheetName, Edit);
@@ -162,6 +169,7 @@ function doEditBasic(SheetName) {
     case RECEIPT_9:
     case RECEIPT_10:
       Edit = getConfigValue(DRC);                                                 // DRC = Edit to Receipt
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditExtra(sheet_sr, SheetName, Edit);
@@ -175,6 +183,7 @@ function doEditBasic(SheetName) {
     case WARRANT_12:
     case WARRANT_13:
       Edit = getConfigValue(DWT);                                                 // DWT = Edit to Warrant
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditExtra(sheet_sr, SheetName, Edit);
@@ -186,6 +195,7 @@ function doEditBasic(SheetName) {
 //-------------------------------------------------------------------Block-------------------------------------------------------------------//
     case BLOCK:
       Edit = getConfigValue(DBK);                                                 // DBK = Edit to Block
+
       var D2 = sheet_sr.getRange("D2").getValue();
       if (!ErrorValues.includes(D2)) {
         processEditExtra(sheet_sr, SheetName, Edit);

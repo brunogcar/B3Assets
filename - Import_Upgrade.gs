@@ -61,6 +61,7 @@ function doImport_SWING_12_to_SWING_4()
   const sheet_co = fetchSheetByName('Config');
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
+  if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
   const ss_sr = SpreadsheetApp.openById(Source_Id);
   const sheet_sr = ss_sr.getSheetByName(SWING_12);                                    // Source Sheet (Trade)
 

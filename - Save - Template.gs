@@ -220,7 +220,6 @@ function doSaveFinancial(SheetName) {
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
       var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
-
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
       var CHECK1 = sheet_up.getRange("K3").getValue();
@@ -442,32 +441,36 @@ function doProventos()
 
 function doSaveProventos() {
   const ProvNames = [
-    { name: 'Proventos', checkCell: "B3", expectedValue: 'Proventos', sourceRange: "B3:H60", targetRange: "B3:H60" },
-    { name: 'Subscrição', checkCell: "L3", expectedValue: 'Tipo', sourceRange: "L3:T60", targetRange: "L3:T60" },
-    { name: 'Ativos', checkCell: "B64", expectedValue: 'Proventos', sourceRange: "B64:H200", targetRange: "B64:H200" },
-    { name: 'Historico', checkCell: "L64", expectedValue: 'Tipo de Ativo', dynamicRange: true }
+    { name: 'Proventos',  checkCell: "B3",  expectedValue: 'Proventos',     sourceRange: "B3:H60",   targetRange: "B3:H60"   },
+    { name: 'Subscrição', checkCell: "L3",  expectedValue: 'Tipo',          sourceRange: "L3:T60",   targetRange: "L3:T60"   },
+    { name: 'Ativos',     checkCell: "B64", expectedValue: 'Proventos',     sourceRange: "B64:H200", targetRange: "B64:H200" },
+    { name: 'Historico',  checkCell: "L64", expectedValue: 'Tipo de Ativo', dynamicRange: true }
   ];
 
-  ProvNames.forEach(config => {
-    try { doSaveProv(config); }
-    catch (error) { Logger.log(`Error saving ${config.name}: ${error}`); }
-  });
+  for (let i = 0; i < ProvNames.length; i++) {
+    const Prov_Values = ProvNames[i];
+    _doGroup(
+      [ Prov_Values.name ],            // sheetNames (1‑item array)
+      () => doSaveProv(Prov_Values),   // callback uses full config object
+      "Saving",                // actionLabel
+      "saved",                 // resultLabel
+      Prov_Values.name                 // groupLabel ← your per‑item name
+    );
+  }
 }
 
-function doSaveProv(config) {
+function doSaveProv(Prov_Values) {
   const sheet_sr = fetchSheetByName('Prov_');                                    // Source Sheet
-
   if (!sheet_sr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
   const sheet_tr = fetchSheetByName('Prov');                                     // Target Sheet
-
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov" does not exist. Skipping operation.`); return; }
-  const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
+  const checkValue = sheet_sr.getRange(Prov_Values.checkCell).getDisplayValue().trim();
 
-  if (checkValue === config.expectedValue) {
+  if (checkValue === Prov_Values.expectedValue) {
     let Data;
 
-    if (config.dynamicRange) {
+    if (Prov_Values.dynamicRange) {
       const lr = sheet_sr.getLastRow();
       const lc = sheet_sr.getLastColumn();
       const sourceRange = sheet_sr.getRange(64, 12, lr - 63, lc - 11);
@@ -477,17 +480,17 @@ function doSaveProv(config) {
       targetRange.clearContent(); // Clear target range before writing data
       targetRange.setValues(Data);
     } else {
-      const sourceRange = sheet_sr.getRange(config.sourceRange);
-      const targetRange = sheet_tr.getRange(config.targetRange);
+      const sourceRange = sheet_sr.getRange(Prov_Values.sourceRange);
+      const targetRange = sheet_tr.getRange(Prov_Values.targetRange);
 
       Data = sourceRange.getValues();
       targetRange.clearContent(); // Clear target range before writing data
       targetRange.setValues(Data);
     }
 
-    Logger.log(`SUCCESS SAVE: ${config.name}.`);
+    Logger.log(`SUCCESS SAVE: ${Prov_Values.name}.`);
   } else {
-    Logger.log(`ERROR SAVE: ${config.name}, ${config.checkCell} != ${config.expectedValue}`);
+    Logger.log(`ERROR SAVE: ${Prov_Values.name}, ${Prov_Values.checkCell} != ${Prov_Values.expectedValue}`);
   }
 }
 
@@ -497,8 +500,8 @@ function doGetProventos() {
 
   if (!sheet_tr)  { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
-  const TKT = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
-  const ticker = TKT.substring(0, 4);
+  const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
+  const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 
   const data = JSON.stringify({
@@ -597,8 +600,8 @@ function doGetCodeCVM() {
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
 
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  const TKT = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
-  const ticker = TKT.substring(0, 4);
+  const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
+  const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 
   const data = JSON.stringify({

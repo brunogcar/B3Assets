@@ -10,9 +10,9 @@ function setSheetID() {
   if (!sheet_co) return;
 
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
-  const TKT = getConfigValue(TKR, 'Config');                                       // TKR = Ticket Range
-  const EXP = getConfigValue(EXR, 'Config');                                       // EXR = Export
-  const SHI = getConfigValue(ICR, 'Config');                                       // ICR = Sheet ID
+  const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
+  const EXP     = getConfigValue(EXR, 'Config');                                   // EXR = Export
+  const SHI     = getConfigValue(ICR, 'Config');                                   // ICR = Sheet ID
 
   Logger.log('Setting Sheet ID');
 
@@ -58,8 +58,9 @@ function doClearSheetID() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
+  const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
-  const TKT = getConfigValue(TKR, 'Config');                                       // TKR = Ticket Range
+  if (!Data_Id) { Logger.log("ERROR EXPORT: DATA ID is empty."); return; }
 
   var ss_tr = SpreadsheetApp.openById(Data_Id);                                    // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
@@ -80,7 +81,7 @@ function doIsFormula() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
-  const Formula = getConfigValue(FOR, 'Config');                                   // FOR = Formula Range
+  const Formula  = getConfigValue(FOR, 'Config');                                  // FOR = Formula Range
   const Sheet_Id = getConfigValue(ICR, 'Config');                                  // ICR = Sheet ID Check Range
 
   if( Formula == "TRUE" ) //Check if formula true to export info
@@ -141,8 +142,9 @@ function doClearExport(SheetName) {
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   if (!sheet_co) return;
 
-  const Target_Id = getConfigValue(TDR, 'Config');                               // Target sheet ID
-  const TKT = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
+  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
+  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                              // Target sheet
