@@ -81,88 +81,37 @@ function import_Current(){
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-/**
- * Imports “Proventos” data.
- */
-function doImportProventos() {
-  const ProvNames = ['Proventos'];
-  for (let i = 0; i < ProvNames.length; i++) {
-    const ProvName = ProvNames[i];
-    try {
-      doImportProv(ProvName);
-    } catch (error) {
-      Logger.log(`Error importing ${ProvName}: ${error}`);
-    }
-  }
+function doImportGroup(SheetNames, importFunction, label) {
+  _doGroup(SheetNames, importFunction, "Importing", "imported", label);
 }
 
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doImportBasics() {
-  const SheetNames  = [
-    SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, 
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, 
-    RIGHT_1, RIGHT_2, 
-    RECEIPT_9, RECEIPT_10, 
-    WARRANT_11, WARRANT_12, WARRANT_13, 
+  const SheetNames = [
+    SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND,
+    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
+    RIGHT_1, RIGHT_2,
+    RECEIPT_9, RECEIPT_10,
+    WARRANT_11, WARRANT_12, WARRANT_13,
     BLOCK
   ];
-  const totalSheets = SheetNames.length;
-  let count         = 0;
-
-  const sheet_co = fetchSheetByName('Config');                
-  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";  
-
-  if (DEBUG == "TRUE") Logger.log(`Starting import of ${totalSheets} sheets...`);
-
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
-
-    if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
-
-    try {
-      doImportBasic(SheetName);
-      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
-    } catch (error) {
-      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
-    }
-  }
-
-  if (DEBUG == "TRUE") Logger.log(`Import completed: ${count} of ${totalSheets} sheets imported successfully`);
+  doImportGroup(SheetNames, doImportBasic, 'basic');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doImportFinancials() {
-  const SheetNames  = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
-  const totalSheets = SheetNames.length;
-  let count         = 0;
-
-  const sheet_co = fetchSheetByName('Config');                
-  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";  
-
-  if (DEBUG == "TRUE") Logger.log(`Starting import of ${totalSheets} data sheets...`);
-
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
-
-    if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Importing ${SheetName}...`);
-
-    try {
-      doImportFinancial(SheetName);
-      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} imported successfully`);
-    } catch (error) {
-      if (DEBUG == "TRUE") Logger.log(`[${count}/${totalSheets}] (${progress}%) Error importing ${SheetName}: ${error}`);
-    }
-  }
-
-  if (DEBUG == "TRUE") Logger.log(`Import completed: ${count} of ${totalSheets} data sheets imported successfully`);
+  const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
+  doImportGroup(SheetNames, doImportFinancial, 'financial');
 }
 
+//-------------------------------------------------------------------PROVENTOS-------------------------------------------------------------------//
+
+function doImportProventos() {
+  const ProvNames = ['Proventos'];
+  doImportGroup(ProvNames, doImportProv, 'proventos');
+}
 
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
 

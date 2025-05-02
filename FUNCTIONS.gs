@@ -1,5 +1,61 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
+
+/**
+ * Generic batch‐runner for sheet operations (edit/export/import).
+ *
+ * @param {string[]} SheetNames         List of sheet‐name constants.
+ * @param {function(string):void} fn    Operation to perform on each sheet.
+ * @param {string} actionLabel          Verb in gerund form ("Editing", "Exporting", "Importing").
+ * @param {string} resultLabel          Past‐tense for summary ("edited", "exported", "imported").
+ * @param {string} groupLabel           Descriptor for logging ("basic", "extra", "financial", etc.).
+ */
+function _doGroup(
+  SheetNames,
+  fn,
+  actionLabel,
+  resultLabel,
+  groupLabel
+) {
+  const totalSheets = SheetNames.length;
+  let count = 0;
+
+  const sheet_co = fetchSheetByName('Config');                  // Config sheet
+  const DEBUG    = getConfigValue(DBG, 'Config');               // DBG = Debug Mode
+
+  if (DEBUG == "TRUE") {
+    Logger.log(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`);
+  }
+
+  for (let i = 0; i < totalSheets; i++) {
+    const SheetName = SheetNames[i];
+    count++;
+    const progress = Math.round((count / totalSheets) * 100);
+
+    if (DEBUG == "TRUE") {
+      Logger.log(`[${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`);
+    }
+
+    try {
+      fn(SheetName);
+      if (DEBUG == "TRUE") {
+        Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`);
+      }
+    } catch (error) {
+      if (DEBUG == "TRUE") {
+        Logger.log(`[${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`);
+      }
+    }
+  }
+
+  if (DEBUG == "TRUE") {
+    Logger.log(
+      `${actionLabel} completed: ${count} of ${totalSheets} ` +
+      `${groupLabel} sheets ${resultLabel} successfully`
+    );
+  }
+}
+
 /**
  * IMPORTANT:
  * Because this function already calls SpreadsheetApp.getActiveSpreadsheet(), 

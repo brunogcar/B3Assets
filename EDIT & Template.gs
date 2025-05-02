@@ -10,94 +10,29 @@ function doEditAll()
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
 
+function doEditGroup(SheetNames, editFunction, label) {
+  _doGroup(SheetNames, editFunction, "Editing", "edited", label);
+}
+
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doEditBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
-  const totalSheets = SheetNames.length;
-  let count = 0;
-
-  const sheet_co = fetchSheetByName('Config');                  // Config sheet
-  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
-
-  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} sheets...`);
-
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
-
-    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
-
-    try {
-      doEditSheet(SheetName);
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
-    } catch (error) {
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
-    }
-  }
-
-  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} sheets edited successfully`);
+  doEditGroup(SheetNames, doEditSheet, 'basic');
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doEditExtras() {
   const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
-  const totalSheets = SheetNames.length;
-  let count = 0;
-
-  const sheet_co = fetchSheetByName('Config');                  // Config sheet
-  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
-
-  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} extra sheets...`);
-
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
-
-    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
-
-    try {
-      doEditSheet(SheetName);
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
-    } catch (error) {
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
-    }
-  }
-
-  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} extra sheets edited successfully`);
+  doEditGroup(SheetNames, doEditSheet, 'extra');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doEditFinancials() {
   const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
-  const totalSheets = SheetNames.length;
-  let count = 0;
-
-  const sheet_co = fetchSheetByName('Config');                  // Config sheet
-  const DEBUG    = getConfigValue(DBG, 'Config') === "TRUE";    // DBG = Debug Mode
-
-  if (DEBUG) Logger.log(`Starting editing of ${totalSheets} financial sheets...`);
-
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
-
-    if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Editing ${SheetName}...`);
-
-    try {
-      doEditFinancial(SheetName);
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} edited successfully`);
-    } catch (error) {
-      if (DEBUG) Logger.log(`[${count}/${totalSheets}] (${progress}%) Error editing ${SheetName}: ${error}`);
-    }
-  }
-
-  if (DEBUG) Logger.log(`Edit completed: ${count} of ${totalSheets} financial sheets edited successfully`);
+  doEditGroup(SheetNames, doEditFinancial, 'financial');
 }
 
 /////////////////////////////////////////////////////////////////////BASIC TEMPLATE/////////////////////////////////////////////////////////////////////

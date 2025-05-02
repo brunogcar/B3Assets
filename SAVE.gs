@@ -5,16 +5,16 @@ function doSaveAll() {
 
   SpreadsheetApp.flush();
 
-  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
+  doSaveGroup([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doProventos();
 
-  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
+  doSaveGroup([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
   
-  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
+  doSaveGroup([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
 
-  processSave([
+  doSaveGroup([
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -35,9 +35,9 @@ function doSaveAllBasics() {
 
   SpreadsheetApp.flush();
 
-  processSave([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
+  doSaveGroup([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
   
-  processSave([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
+  doSaveGroup([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
   
   doSaveShares();
   doExportProventos();
@@ -53,7 +53,7 @@ function doSaveAllBasics() {
 function doSaveAllExtras() {
   Logger.log(SNAME(2));
 
-  processSave([
+  doSaveGroup([
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -79,7 +79,7 @@ function doSaveAllFinancials() {
 
   SpreadsheetApp.flush();
 
-  processSave([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
+  doSaveGroup([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doExportProventos();

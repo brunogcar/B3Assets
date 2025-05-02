@@ -7,19 +7,19 @@
  *    whether that sheet has data to save (expects `"TRUE"` for “yes”).
  * 2. Collects all sheets that pass into an array.
  * 3. Flushes the spreadsheet to ensure any pending writes are applied.
- * 4. Iterates over the filtered list, calls `saveCallback(sheetName)` on each,
+ * 4. Iterates over the filtered list, calls `saveFunction(sheetName)` on each,
  *    and logs progress and success/errors conditionally based on DEBUG mode.
  *
  * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
  * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
- * @param {function(string):void} saveCallback      The function to perform the actual save on a sheet name.
+ * @param {function(string):void} saveFunction      The function to perform the actual save on a sheet name.
  *
  * Behavior:
  * - If a sheet does not exist, logs an error and skips it.
  * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
  * - Otherwise, for each sheet:
  *    • Logs `[i/N] (P%) saving <SheetName>...`  
- *    • Calls `saveCallback(SheetName)` inside a try/catch  
+ *    • Calls `saveFunction(SheetName)` inside a try/catch  
  *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
  */
 
@@ -28,42 +28,28 @@
  *
  * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
  * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
- * @param {function(string):void} saveCallback      The function to perform the actual save on a sheet name.
+ * @param {function(string):void} saveFunction      The function to perform the actual save on a sheet name.
  */
-function processSave(SheetNames, checkCallback, saveCallback) {
-  const sheet_co = fetchSheetByName('Config');                  // Config sheet
-  const DEBUG    = getConfigValue(DBG, 'Config');               // DBG = Debug Mode
+function doSaveGroup(SheetNames, checkCallback, saveFunction) {
 
-  // 1) Gather sheets that exist and pass the check
-  const sheetsToSave = [];
+  const SheetNamesToSave = [];
   for (let i = 0; i < SheetNames.length; i++) {
     const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
     if (!sheet) { Logger.log(`ERROR SAVE: ${Name} - Does not exist`); continue; }
-    if (checkCallback(Name) === "TRUE") sheetsToSave.push(Name);
-  }
-
-  const totalSheets = sheetsToSave.length;
-  if (totalSheets === 0) { Logger.log(`No valid data found. Skipping save operation.`); return; }
-
-  // 2) Flush pending changes
-  SpreadsheetApp.flush();
-
-  // 3) Iterate with a simple for-loop
-  for (let idx = 0; idx < totalSheets; idx++) {
-    const SheetName = sheetsToSave[idx];
-    const progress  = Math.round(((idx + 1) / totalSheets) * 100);
-
-    if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) saving ${SheetName}...`);
-
-    try {
-      saveCallback(SheetName);
-      if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) ${SheetName} saved successfully`);
-    } catch (error) {
-      if (DEBUG == "TRUE") Logger.log(`[${idx+1}/${totalSheets}] (${progress}%) Error saving ${SheetName}: ${error}`);
+    if (checkCallback(Name) === "TRUE") {
+      SheetNamesToSave.push(Name);
     }
   }
+
+  const totalSheets = SheetNamesToSave.length;
+  if (totalSheets === 0) { Logger.log(`No valid data found. Skipping save operation.`); return; }
+
+  SpreadsheetApp.flush();
+
+  _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
 }
+
 
 /**
  * Converts an array of date strings into timestamps (milliseconds since epoch),
