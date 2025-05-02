@@ -18,17 +18,9 @@
  * - If a sheet does not exist, logs an error and skips it.
  * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
  * - Otherwise, for each sheet:
- *    • Logs `[i/N] (P%) saving <SheetName>...`  
- *    • Calls `saveFunction(SheetName)` inside a try/catch  
+ *    • Logs `[i/N] (P%) saving <SheetName>...`
+ *    • Calls `saveFunction(SheetName)` inside a try/catch
  *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
- */
-
-/**
- * Processes a batch “save” operation over a list of sheet names.
- *
- * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
- * @param {function(string):string} checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
- * @param {function(string):void} saveFunction      The function to perform the actual save on a sheet name.
  */
 function doSaveGroup(SheetNames, checkCallback, saveFunction) {
 
@@ -49,7 +41,6 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
 
   _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
 }
-
 
 /**
  * Converts an array of date strings into timestamps (milliseconds since epoch),
@@ -122,7 +113,7 @@ function doCheckDATAS() {
     try {
       doCheckDATA(SheetName);
     } catch (error) {
-      Logger.error(`Error checking DATA for sheet ${SheetName}: ${error}`);
+      Logger.log(`Error checking DATA for sheet ${SheetName}: ${error}`);
     }
   }
 }
@@ -300,7 +291,7 @@ function doTrim() {
     try {
       doTrimSheet(SheetName);
     } catch (error) {
-      Logger.error(`Error trimming sheet ${SheetName}: ${error}`);
+      Logger.log(`Error trimming sheet ${SheetName}: ${error}`);
     }
   }
 }
@@ -308,7 +299,7 @@ function doTrim() {
 function doTrimSheet(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName);
   Logger.log(`TRIM: ${SheetName}`);
-  if (!sheet_sr) { Logger.error(`Sheet ${SheetName} not found.`); return; }
+  if (!sheet_sr) { Logger.log(`Sheet ${SheetName} not found.`); return; }
 
   const LR = sheet_sr.getLastRow();
   const LC = sheet_sr.getLastColumn();
@@ -341,7 +332,7 @@ function doTrimSheet(SheetName) {
 /**
  * Hides or deletes specific sheets based on the asset class defined in the Config sheet.
  *
- * This function needs direct access to the `SpreadsheetApp.getActiveSpreadsheet()` object 
+ * This function needs direct access to the `SpreadsheetApp.getActiveSpreadsheet()` object
  * because it performs actions that require the spreadsheet context itself — such as:
  * - Fetching *all* sheets using `getSheets()`
  * - Deleting sheets using `ss.deleteSheet(sheet)`
@@ -355,14 +346,14 @@ function doTrimSheet(SheetName) {
 /**
  * Hides or deletes sheets based on the asset class in Config!IST.
  *
- * - STOCK: hides specific sheets listed in `stockHidden`.  
- * - ADR: deletes all sheets *not* in the `adrKeep` set.  
- * - BDR/ETF: deletes all sheets *not* in the `bdrKeep` set.  
- * 
+ * - STOCK: hides specific sheets listed in `stockHidden`.
+ * - ADR: deletes all sheets *not* in the `adrKeep` set.
+ * - BDR/ETF: deletes all sheets *not* in the `bdrKeep` set.
+ *
  * Always keeps Config and Settings visible via hideConfig() at end.
  */
 function doDisableSheets() {
-  const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove 
+  const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove
   const sheet_co = fetchSheetByName('Config');
   if (!sheet_co) return;
 

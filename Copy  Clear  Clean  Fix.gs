@@ -46,7 +46,7 @@ function doCopyFinancial(SheetName) {
   }
   else
   {
-    Logger.error(`Unsupported sheet name: ${SheetName}`);
+    Logger.log(`Unsupported sheet name: ${SheetName}`);
   }
 }
 
@@ -112,7 +112,7 @@ function doClearFinancial(SheetName) {
   }
   else
   {
-    Logger.error(`Unsupported sheet name: ${SheetName}`);
+    Logger.log(`Unsupported sheet name: ${SheetName}`);
   }
 
   if (SheetName === BLC) {doClearFinancial(Balanco);}

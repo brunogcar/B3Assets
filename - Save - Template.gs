@@ -8,7 +8,7 @@ function doSaveBasic(SheetName) {
     Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveBasic from sheet_sr`);
     return;
   }
-  
+
   const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
   if (!sheet_co || !sheet_se) return;
@@ -29,7 +29,7 @@ function doSaveBasic(SheetName) {
 
       var B2 = sheet_sr.getRange("B2").getValue();
       var C2 = sheet_sr.getRange("C2").getValue();
-      
+
       if (Class == 'STOCK') {
         if (B2 != 0 && C2 > 0) {
           processSaveBasic(sheet_sr, SheetName, Save, Edit);
@@ -52,7 +52,7 @@ function doSaveBasic(SheetName) {
       Save = getConfigValue(SOP)                                                     // SOP = Save to Option
       Edit = getConfigValue(DOP)                                                     // DOP = Edit to Option
 
-      var [Call, Call_, Call_PM, Call_PM_, Put, Put_, Put_PM, Put_PM_, Diff, Diff_2] = 
+      var [Call, Call_, Call_PM, Call_PM_, Put, Put_, Put_PM, Put_PM_, Diff, Diff_2] =
         ["C2", "C3", "D2", "D3", "E2", "E3", "F2", "F3", "K3", "N3"].map(r => sheet_sr.getRange(r).getValue());
 
       if ((Call != 0 && Put != 0) &&
@@ -182,7 +182,7 @@ function doSaveBasic(SheetName) {
         Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
       }
       break;
-      
+
     default:
       Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`);
       break;
@@ -226,7 +226,7 @@ function doSaveFinancial(SheetName) {
       var CHECK1 = sheet_up.getRange("K3").getValue();
       var CHECK2 = sheet_up.getRange("K4").getValue();
 
-      if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) && 
+      if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) &&
           ((CHECK2 >= 90 && CHECK2 <= 92) || (CHECK2 == 0 || CHECK1 > 40000))) {
         if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
             (B2_sr != 0 && B2_sr != "") &&
@@ -422,7 +422,7 @@ function doSaveFinancial(SheetName) {
         Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
       }
       break;
-    default: 
+    default:
       Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveFinancial`);
       break;
   }
@@ -432,7 +432,7 @@ function doSaveFinancial(SheetName) {
 
 /////////////////////////////////////////////////////////////////////PROVENTOS TEMPLATE/////////////////////////////////////////////////////////////////////
 
-function doProventos() 
+function doProventos()
 {
   doCheckDATA(PROV);
   doGetProventos();
@@ -449,8 +449,8 @@ function doSaveProventos() {
   ];
 
   ProvNames.forEach(config => {
-    try { doSaveProv(config); } 
-    catch (error) { Logger.error(`Error saving ${config.name}: ${error}`); }
+    try { doSaveProv(config); }
+    catch (error) { Logger.log(`Error saving ${config.name}: ${error}`); }
   });
 }
 
@@ -463,28 +463,28 @@ function doSaveProv(config) {
 
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov" does not exist. Skipping operation.`); return; }
   const checkValue = sheet_sr.getRange(config.checkCell).getDisplayValue().trim();
-  
+
   if (checkValue === config.expectedValue) {
     let Data;
-    
+
     if (config.dynamicRange) {
       const lr = sheet_sr.getLastRow();
       const lc = sheet_sr.getLastColumn();
       const sourceRange = sheet_sr.getRange(64, 12, lr - 63, lc - 11);
       const targetRange = sheet_tr.getRange(64, 12, lr - 63, lc - 11);
-      
+
       Data = sourceRange.getValues();
       targetRange.clearContent(); // Clear target range before writing data
       targetRange.setValues(Data);
     } else {
       const sourceRange = sheet_sr.getRange(config.sourceRange);
       const targetRange = sheet_tr.getRange(config.targetRange);
-      
+
       Data = sourceRange.getValues();
       targetRange.clearContent(); // Clear target range before writing data
       targetRange.setValues(Data);
     }
-    
+
     Logger.log(`SUCCESS SAVE: ${config.name}.`);
   } else {
     Logger.log(`ERROR SAVE: ${config.name}, ${config.checkCell} != ${config.expectedValue}`);
@@ -524,7 +524,7 @@ function doGetProventos() {
   if (!responseText) { Logger.log("ERROR: Empty response from API."); }
 
   let content;
-  try { content = JSON.parse(responseText); } 
+  try { content = JSON.parse(responseText); }
   catch (error) { Logger.log(`ERROR: Failed to parse JSON response. ${error}`); }
 
   if (!content || !content[0]) { Logger.log("ERROR: No data returned from API."); }
@@ -547,7 +547,7 @@ function fillCashDividends(sheet_tr, dividends) {
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   dividends.slice(0, maxRows).forEach((div, i) => {
-    sheet_tr.getRange(startRow + i, 2, 1, 7).setValues([[ 
+    sheet_tr.getRange(startRow + i, 2, 1, 7).setValues([[
       div.label, div.isinCode, div.approvedOn, div.lastDatePrior, div.rate, div.relatedTo, div.paymentDate
     ]]);
   });
@@ -565,7 +565,7 @@ function fillStockDividends(sheet_tr, stockDividends) {
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   stockDividends.forEach((stockDiv, i) => {
-    sheet_tr.getRange(startRow + 2 + i, 2, 1, 6).setValues([[ 
+    sheet_tr.getRange(startRow + 2 + i, 2, 1, 6).setValues([[
       stockDiv.label, stockDiv.isinCode, stockDiv.approvedOn, stockDiv.lastDatePrior, stockDiv.factor, stockDiv.assetIssued
     ]]);
   });
@@ -583,7 +583,7 @@ function fillSubscriptions(sheet_tr, subscriptions) {
   sheet_tr.getRange(headerRange).setValues([headers]);
 
   subscriptions.forEach((sub, i) => {
-    sheet_tr.getRange(startRow + i, 12, 1, 9).setValues([[ 
+    sheet_tr.getRange(startRow + i, 12, 1, 9).setValues([[
       sub.label, sub.isinCode, sub.approvedOn, sub.lastDatePrior, sub.percentage, sub.assetIssued, sub.priceUnit, sub.tradingPeriod, sub.subscriptionDate
     ]]);
   });
@@ -593,7 +593,7 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 
 function doGetCodeCVM() {
   const sheet_tr = fetchSheetByName('Info');                                    // Target sheet
- 
+
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
 
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
@@ -616,7 +616,7 @@ function doGetCodeCVM() {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
     Logger.log("API Response:", responseText);
-  } 
+  }
   catch (error) {
     Logger.log(`ERROR: Failed to fetch API response. ${error}`);
 
@@ -626,7 +626,7 @@ function doGetCodeCVM() {
   if (!responseText) { Logger.log("ERROR: Empty response from API."); }
 
   let content;
-  try { content = JSON.parse(responseText); } 
+  try { content = JSON.parse(responseText); }
   catch (error) { Logger.log(`ERROR: Failed to parse JSON response. ${error}`); }
 
   if (!content || !content[0]) { Logger.log(`ERROR: No data returned from API.`); }
@@ -659,7 +659,7 @@ function doSaveShares() {
       sheet_sr.getRange("L1:L2").setValues(Data);
       Logger.log(`SUCCESS SAVE: Shares and FF`);
     } else { Logger.log(`ERROR SAVE: Invalid values in M1/M2`); }
-  } 
+  }
   catch (error) { Logger.log(`ERROR in doSaveShares:`, error.message); }
 }
 

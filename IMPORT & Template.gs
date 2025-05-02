@@ -130,7 +130,7 @@ function update_form(){
       break;
 
     default:
-      Logger.error(`Invalid update form value: ${Update_Form}`);
+      Logger.log(`Invalid update form value: ${Update_Form}`);
       break;
   }
 }
