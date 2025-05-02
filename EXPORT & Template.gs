@@ -47,7 +47,7 @@ function doExportBasic(SheetName) {
   const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty."); 
+    Logger.log("ERROR EXPORT: Target ID is empty.");
   return;
   }
 
@@ -168,7 +168,7 @@ function doExportBasic(SheetName) {
   let FilteredData;
   if (SheetName === FUND) {
     // Retrieve data as 2D array and filter row data
-    var Data = sheet_sr.getRange(2, 1, 1, LC).getValues(); 
+    var Data = sheet_sr.getRange(2, 1, 1, LC).getValues();
     FilteredData = Data[0].map((Value, ColIndex) => {
       if (ColIndex + 1 < 3) {
         return Value; // Keep the date as-is (columns 1-2)
@@ -202,7 +202,7 @@ function doExportExtra(SheetName) {
   const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty."); 
+    Logger.log("ERROR EXPORT: Target ID is empty.");
   return;
   }
 
@@ -240,7 +240,7 @@ function doExportExtra(SheetName) {
   let Data = [];
   let ShouldExport = false;
 
-  if (hasNonBlankCell && !ErrorValues.some(error => Range.includes(error))) 
+  if (hasNonBlankCell && !ErrorValues.some(error => Range.includes(error)))
   {
     Data.push([A, B, C, D, E, F, G, H, I, N, O, J, K, L]);
     ShouldExport = true;                                                             // Set ShouldExport to true if conditions are met
@@ -290,7 +290,7 @@ function doExportFinancial(SheetName) {
   const TKT = getConfigValue(TKR, 'Config');                                         // TKR = Ticket Range
   var Target_Id = sheet_co.getRange(TDR).getValues();                                // Target sheet ID
   if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty."); 
+    Logger.log("ERROR EXPORT: Target ID is empty.");
   return;
   }
 
@@ -319,7 +319,7 @@ function doExportFinancial(SheetName) {
 
   let Data = [];
 
-  switch (SheetName) 
+  switch (SheetName)
   {
 //-------------------------------------------------------------------BLC-------------------------------------------------------------------//
     case BLC:
@@ -385,7 +385,7 @@ function doExportFinancial(SheetName) {
     Export = getConfigValue(EDV)                                                     // EDV = Export to DVA
 
     var A = sheet_co.getRange("B18").getValue();                                     // Balanço Atual
-      
+
     var B = sheet_sr.getRange("B77").getValue();                                     // Receitas
     var C = sheet_sr.getRange("B78").getValue();                                     // Insumos Adquiridos de Terceiros
     var D = sheet_sr.getRange("D77").getValue();                                     // Valor Adicionado Bruto
@@ -417,10 +417,8 @@ function doExportInfo() {
   Logger.log(`Exporting: ${SheetName}`);
 
   const Data_Id = getConfigValue(DIR, 'Config');                    // DIR = DATA Source ID
-  if (!Data_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty."); 
-  return;
-  }
+  if (!Data_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+
   var Exported = sheet_co.getRange(EXR).getDisplayValue();          // EXR = Exported?
   if (Exported === "TRUE") { Logger.log("ERROR EXPORT: already exported."); return;  }
 
@@ -440,7 +438,7 @@ function doExportInfo() {
   var Data = [[A, B, C, D, E, F, G, H, I, J, K]].map(row => row.map(value => value === 0 ? "" : value));
 
   var ss_tr = SpreadsheetApp.openById(Data_Id);                    // Target spreadsheet
-  var sheet_tr = ss_tr.getSheetByName('Relação');                    // Target sheet
+  var sheet_tr = ss_tr.getSheetByName('Relação');                   // Target sheet
 
   if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Data_Id}`); return; }
 
@@ -449,7 +447,7 @@ function doExportInfo() {
   // Export data to the next available row
   sheet_tr.getRange(LR + 1, 1, 1, Data[0].length).setValues(Data);
 
-  setSheetID(); // Mark as exported
+  setSheetID();                                                     // Mark as exported
 
   Logger.log(`SUCCESS EXPORT. Sheet: ${SheetName}.`);
 }
@@ -457,18 +455,15 @@ function doExportInfo() {
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
 function doExportProventos() {
-  const sheet_co = fetchSheetByName('Config'); 
-  const sheet_pv = fetchSheetByName(PROV);  
+  const sheet_co = fetchSheetByName('Config');
+  const sheet_pv = fetchSheetByName(PROV);
   const sheet_ix = fetchSheetByName('Index');
 
   if (!sheet_co || !sheet_ix || !sheet_pv) return;
 
   const Class = getConfigValue(IST, 'Config');                      // IST = Is Stock?
   const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
-  if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty."); 
-  return;
-  }
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   var SheetName = sheet_pv.getName();
   Logger.log(`Export Proventos: ${SheetName}`);
@@ -506,12 +501,12 @@ function doExportProventos() {
   } else {
     Data = [[B, C, D, E, F, G, H, I, J, K, L, M, N, "", P, Q]];
   }
-  
+
   // Convert any 0 values to blank ("")
   Data = Data.map(row => row.map(value => value === 0 ? "" : value));
 
-  var ss_tr = SpreadsheetApp.openById(Target_Id);  
-  var sheet_tr = ss_tr.getSheetByName('Poventos');  
+  var ss_tr = SpreadsheetApp.openById(Target_Id);
+  var sheet_tr = ss_tr.getSheetByName('Poventos');
 
   if (!sheet_tr) {
     Logger.log(`ERROR EXPORT: Target sheet 'Poventos' not found in spreadsheet ID ${Target_Id}`);

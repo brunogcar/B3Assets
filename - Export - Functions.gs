@@ -1,19 +1,18 @@
 /////////////////////////////////////////////////////////////////////ID/////////////////////////////////////////////////////////////////////
 
-function getSheetID()
-{
+function getSheetID() {
   const sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
   return sheet_Id;
 };
 
-function setSheetID(){
+function setSheetID() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
   const TKT = getConfigValue(TKR, 'Config');                                       // TKR = Ticket Range
-  const EXP = getConfigValue(EXR, 'Config');                                       // EXR = Export 
-  const SHI = getConfigValue(ICR, 'Config');                                       // ICR = Sheet ID 
+  const EXP = getConfigValue(EXR, 'Config');                                       // EXR = Export
+  const SHI = getConfigValue(ICR, 'Config');                                       // ICR = Sheet ID
 
   Logger.log('Setting Sheet ID');
 
@@ -43,7 +42,7 @@ function setSheetID(){
   }
 };
 
-function doIsIdExported(){
+function doIsIdExported() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
@@ -55,7 +54,7 @@ function doIsIdExported(){
   }
 };
 
-function doClearSheetID(){
+function doClearSheetID() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
@@ -77,7 +76,7 @@ function doClearSheetID(){
 
 /////////////////////////////////////////////////////////////////////EXPORT CHECKS/////////////////////////////////////////////////////////////////////
 
-function doIsFormula(){
+function doIsFormula() {
   const sheet_co = fetchSheetByName('Config');                                     // Config sheet
   if (!sheet_co) return;
 
@@ -94,7 +93,7 @@ function doIsFormula(){
   }
 };
 
-function doIsExportable(){
+function doIsExportable() {
   const sheet_co = fetchSheetByName('Config');                                    // Config sheet
   if (!sheet_co) return;
 
@@ -106,18 +105,18 @@ function doIsExportable(){
   }
 };
 
-function doIsInfoExported(){
+function doIsInfoExported() {
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   if (!sheet_co) return;
 
-  const EXP = getConfigValue(EXR, 'Config');                                     // EXR = Export 
+  const EXP = getConfigValue(EXR, 'Config');                                     // EXR = Export
 
   if( EXP === "TRUE" )
   {
     const sheet_in = fetchSheetByName('Info');
 
     const Data = sheet_in.getRange(TIR).getValues();                             // TIR = Tab Info Range
-    sheet_in.getRange(TIR).setValues(Data);                                      // Copy Paste Info   
+    sheet_in.getRange(TIR).setValues(Data);                                      // Copy Paste Info
 
     const Data_2 = sheet_co.getRange(EXR).getValues();                           // TIR = Tab Info Range
     sheet_co.getRange(EXR).setValues(Data_2);                                    // Set Formula to TRUE // EXP === "TRUE"
@@ -132,16 +131,13 @@ function doIsInfoExported(){
 
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 
-function doClearExportAll(){
+function doClearExportAll() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND, BLC, DRE, FLC, DVA];
 
-  SheetNames.forEach(SheetName => 
-  {
-    doClearExport(SheetName);
-  });
+  _doGroup(SheetNames, doClearExport, "Clearing", "cleared", "");
 }
 
-function doClearExport(SheetName){
+function doClearExport(SheetName) {
   const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   if (!sheet_co) return;
 
@@ -158,17 +154,17 @@ function doClearExport(SheetName){
 
   Logger.log('Clear Export:', SheetName);
 
-  if (search) 
+  if (search)
   {
     search.offset(0, 0, 1, sheet_tr.getLastColumn()).clearContent();
 
     success = true; // Set the success flag to true if data was cleared
   }
-  if (success) 
+  if (success)
   {
     Logger.log(`Exported data cleared successfully. Sheet: ${SheetName}.`);
-  } 
-  else 
+  }
+  else
   {
     Logger.log(`Clear EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`);
   }

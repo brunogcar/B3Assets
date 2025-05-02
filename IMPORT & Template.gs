@@ -13,45 +13,46 @@ function Import(){
 
   const Source_Id = getConfigValue(SIR, 'Config');                               // SIR = Source ID
   if (!Source_Id) {Logger.log("Warning: Source ID is empty."); return;}
-  const Option = sheet_co.getRange(OPR).getDisplayValue();                       // OPR = Option
 
-  if (Option === "AUTO") 
+  const Option = getConfigValue(OPR, 'Config');                                  // OPR = Option
+
+  if (Option === "AUTO")
   {
     // Check for specific sheets
     const hasSwing4 = fetchSheetByName(SWING_4) !== null;
     const hasSwing12 = fetchSheetByName(SWING_12) !== null;
     const hasSwing52 = fetchSheetByName(SWING_52) !== null;
-    const hasTrade = fetchSheetByName('Trade') !== null;
+    const hasTrade = fetchSheetByName('Trade') !== null;                         //only present in versions < 15
 
-    if (hasSwing4 && hasSwing12 && hasSwing52) 
+    if (hasSwing4 && hasSwing12 && hasSwing52)
     {
       import_Current();
-    } 
-    else if (hasSwing12 && hasSwing52) 
+    }
+    else if (hasSwing12 && hasSwing52)
     {
       import_15x_to_161();
-    } 
-    else if (hasTrade) 
+    }
+    else if (hasTrade)
     {
       import_14x_to_161();
-    } 
-    else 
+    }
+    else
     {
       Logger.log(`No matching sheets found for AUTO mode.`);
     }
-  } 
-  else 
+  }
+  else
   {
     // Manual Option Handling
-    if (Option == 1) 
+    if (Option == 1)
     {
       import_Current();
-    } 
-    else if (Option == 2) 
+    }
+    else if (Option == 2)
     {
       import_15x_to_163();
     }
-    else 
+    else
     {
       Logger.log(`Invalid Option: ${Option}`);
     }
@@ -119,7 +120,7 @@ function update_form(){
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
   var Update_Form = ss.getRange(UFR).getDisplayValue();                               // UFR = Update Form
 
-  switch (Update_Form) 
+  switch (Update_Form)
   {
     case 'EDIT':
       doEditAll();
@@ -150,7 +151,7 @@ function import_config(){
 
 /////////////////////////////////////////////////////////////////////SHARES and FF/////////////////////////////////////////////////////////////////////
 
-function doImportShares() 
+function doImportShares()
 {
   const sheet_co = fetchSheetByName('Config');
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
@@ -162,7 +163,7 @@ function doImportShares()
 
   Logger.log(`IMPORT: Shares and FF`);
 
-  if (!ErrorValues.includes(L1) && !ErrorValues.includes(L2)) 
+  if (!ErrorValues.includes(L1) && !ErrorValues.includes(L2))
   {
     var Data = sheet_sr.getRange("L1:L2").getValues();
     sheet_tr.getRange("L1:L2").setValues(Data);
@@ -180,13 +181,13 @@ function doImportProv(ProvName){
   const sheet_co = fetchSheetByName('Config');
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
-  const sheet_tr = fetchSheetByName('Prov');  
+  const sheet_tr = fetchSheetByName('Prov');
 
   Logger.log(`IMPORT: ${ProvName}`);
 
-  if (ProvName == 'Proventos') 
+  if (ProvName == 'Proventos')
   {
-    var Check = sheet_sr.getRange("B3").getDisplayValue();  
+    var Check = sheet_sr.getRange("B3").getDisplayValue();
 
     if( Check == "Proventos" )  // check if error
     {
@@ -216,7 +217,7 @@ function doImportBasic(SheetName){
 
   let Import;
 
-  switch (SheetName) 
+  switch (SheetName)
   {
 
 //-------------------------------------------------------------------Swing-------------------------------------------------------------------//
@@ -278,7 +279,7 @@ function doImportBasic(SheetName){
 
     Import = getConfigValue(IBK)                                                     // IBK = Import to Block
     break;
-      
+
     default:
       Import = null;
     break;
@@ -286,15 +287,15 @@ function doImportBasic(SheetName){
 
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
 
-  if (Import == "TRUE") 
+  if (Import == "TRUE")
   {
     var Check = sheet_sr.getRange("A5").getValue();
 
-    if( Check !== "" ) 
+    if( Check !== "" )
     {
       var LR = sheet_sr.getLastRow();
       var LC = sheet_sr.getLastColumn();
-      
+
       var Data = sheet_sr.getRange(5,1,LR-4,LC).getValues();
         sheet_tr.getRange(5,1,LR-4,LC).setValues(Data);
       var Data_1 = sheet_sr.getRange(1,1,1,LC).getValues();
@@ -332,7 +333,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------BLC-------------------------------------------------------------------//
 
-  if (SheetName === BLC) 
+  if (SheetName === BLC)
   {
     Import = getConfigValue(IBL)                                                     // IBL = Import to BLC / Balanco
 
@@ -358,7 +359,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
 
-  if (SheetName === Balanco) 
+  if (SheetName === Balanco)
   {
     Import = getConfigValue(IBL)                                                     // IBL = Import to BLC / Balanco
 
@@ -384,7 +385,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------DRE-------------------------------------------------------------------//
 
-  if (SheetName === DRE) 
+  if (SheetName === DRE)
   {
     Import = getConfigValue(IDE)                                                     // IDE = Import to DRE / Resultado
 
@@ -410,7 +411,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------Resultado-------------------------------------------------------------------//
 
-  if (SheetName === Resultado) 
+  if (SheetName === Resultado)
   {
     Import = getConfigValue(IDE)                                                     // IDE = Import to DRE / Resultado
 
@@ -436,7 +437,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------FLC-------------------------------------------------------------------//
 
-  if (SheetName === FLC) 
+  if (SheetName === FLC)
   {
     Import = getConfigValue(IFL)                                                     // IFL = Import to FLC / Fluxo
 
@@ -462,7 +463,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------Fluxo-------------------------------------------------------------------//
 
-  if (SheetName === Fluxo) 
+  if (SheetName === Fluxo)
   {
     Import = getConfigValue(IFL)                                                     // IFL = Import to FLC / Fluxo
 
@@ -488,7 +489,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------DVA-------------------------------------------------------------------//
 
-  if (SheetName === DVA) 
+  if (SheetName === DVA)
   {
     Import = getConfigValue(IDV)                                                     // IDV = Import to DVA / Valor
 
@@ -514,7 +515,7 @@ function doImportFinancial(SheetName){
 
 //-------------------------------------------------------------------Valor-------------------------------------------------------------------//
 
-  if (SheetName === Valor) 
+  if (SheetName === Valor)
   {
     Import = getConfigValue(IDV)                                                     // IDV = Import to DVA / Valor
 

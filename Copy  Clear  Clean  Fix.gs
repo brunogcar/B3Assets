@@ -23,7 +23,7 @@ function doCopyBasic(SheetName) {
 function doCopyFinancial(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  if (!sheet) 
+  if (!sheet)
   {
     Logger.log(`ERROR COPY: ${SheetName} Does not exist`);
     return;
@@ -32,19 +32,19 @@ function doCopyFinancial(SheetName) {
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
 
-  if (SheetName === BLC||SheetName === DRE || SheetName === FLC || SheetName === DVA) 
+  if (SheetName === BLC||SheetName === DRE || SheetName === FLC || SheetName === DVA)
   {
     sheet.getRange(1, 2, LR, LC - 1).activate();
-  } 
-  else if (SheetName === Balanco) 
+  }
+  else if (SheetName === Balanco)
   {
     sheet.getRange(1, 3, LR, LC - 2).activate();
-  } 
-  else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) 
+  }
+  else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
   {
     sheet.getRange(1, 4, LR, LC - 3).activate();
   }
-  else 
+  else
   {
     Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
@@ -52,17 +52,11 @@ function doCopyFinancial(SheetName) {
 
 /////////////////////////////////////////////////////////////////////CLEAR/////////////////////////////////////////////////////////////////////
 
+
 function doClearBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const sheetName = SheetNames[i];
-    try {
-      doClearBasic(sheetName);
-    } catch (error) {
-      Logger.error(`Error Clearing ${sheetName}: ${error}`);
-    }
-  }
+  _doGroup(SheetNames, doClearBasic, "Clearing", "cleared", "basic");
 }
 
 function doClearBasic(SheetName) {
@@ -84,14 +78,7 @@ function doClearBasic(SheetName) {
 function doClearFinancials() {
   const SheetNames = [BLC, DRE, FLC, DVA];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const sheetName = SheetNames[i];
-    try {
-      doClearFinancial(sheetName);
-    } catch (error) {
-      Logger.error(`Error Clearing ${sheetName}: ${error}`);
-    }
-  }
+  _doGroup(SheetNames, doClearFinancial, "Clearing", "cleared", "financial");
 }
 
 function doClearFinancial(SheetName) {
@@ -103,34 +90,34 @@ function doClearFinancial(SheetName) {
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
 
-  if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) 
+  if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA)
   {
     sheet.getRange(1, 2, LR, LC - 1).clear({ contentsOnly: true, skipFilteredRows: false });
 
     Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  } 
-  else if 
-  (SheetName === Balanco) 
+  }
+  else if
+  (SheetName === Balanco)
   {
     sheet.getRange(1, 3, LR, LC - 2).clear({ contentsOnly: true, skipFilteredRows: false });
 
     Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  } 
-  else if 
-  (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) 
+  }
+  else if
+  (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
   {
     sheet.getRange(1, 4, LR, LC - 3).clear({ contentsOnly: true, skipFilteredRows: false });
 
     Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  } 
-  else 
+  }
+  else
   {
     Logger.error(`Unsupported sheet name: ${SheetName}`);
   }
 
-  if (SheetName === BLC) {doClearFinancial(Balanco);} 
-  else if (SheetName === DRE) {doClearFinancial(Resultado );} 
-  else if (SheetName === FLC) {doClearFinancial(Fluxo);} 
+  if (SheetName === BLC) {doClearFinancial(Balanco);}
+  else if (SheetName === DRE) {doClearFinancial(Resultado );}
+  else if (SheetName === FLC) {doClearFinancial(Fluxo);}
   else if (SheetName === DVA) {doClearFinancial(Valor);}
 }
 
@@ -170,14 +157,7 @@ function doRecycleTrade() {
 function doCleanBasics() {
   const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const sheetName = SheetNames[i];
-    try {
-      doCleanBasic(sheetName);
-    } catch (error) {
-      Logger.error(`Error cleaning sheet ${sheetName}: ${error}`);
-    }
-  }
+  _doGroup(SheetNames, doCleanBasic, "Cleaning", "cleaned", "basic");
 }
 
 function doCleanBasic(SheetName) {
@@ -220,7 +200,7 @@ function fixSplit() {
  * @param {string} startRowA1       A1-notation cell containing the start row.
  * @param {Array<{from: string, to?: string, op?: string}>} blocks
  *   - from: column letter for the first column in the block (e.g. "B")
- *   - to:   column letter for the last column (e.g. "Y").  
+ *   - to:   column letter for the last column (e.g. "Y").
  *            If omitted, only “from” is processed.
  *   - op:   `"mul"` (default) or `"div"`
  */
