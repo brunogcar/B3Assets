@@ -42,7 +42,7 @@ function doEditBasic(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName); // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
 
-  
+
   const sheet_co = fetchSheetByName('Config');                                    // Config sheet
   const sheet_se = fetchSheetByName('Settings');
   if (!sheet_co || !sheet_se) return;
@@ -73,7 +73,7 @@ function doEditBasic(SheetName) {
         }
       }
       break;
-      
+
 //-------------------------------------------------------------------Opções-------------------------------------------------------------------//
     case OPCOES:
       Edit = getConfigValue(DOP);                                                 // DOP = Edit to Option
@@ -86,7 +86,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------BTC-------------------------------------------------------------------//
     case BTC:
       Edit = getConfigValue(DBT);                                                 // DBT = Edit to BTC
@@ -97,7 +97,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Termo-------------------------------------------------------------------//
     case TERMO:
       Edit = getConfigValue(DTE);                                                 // DTE = Edit to Termo
@@ -108,7 +108,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Fund-------------------------------------------------------------------//
     case FUND:
       Edit = getConfigValue(DFU);                                                 // DFU = Edit to Fund
@@ -119,7 +119,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
     case FUTURE:
       Edit = getConfigValue(DFT);                                                 // DFT = Edit to Future
@@ -132,7 +132,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
     // -------------------- Future variants -------------------- //
     case FUTURE_1:
     case FUTURE_2:
@@ -145,7 +145,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Right-------------------------------------------------------------------//
     case RIGHT_1:
     case RIGHT_2:
@@ -157,7 +157,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Receipt-------------------------------------------------------------------//
     case RECEIPT_9:
     case RECEIPT_10:
@@ -169,7 +169,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Warrant-------------------------------------------------------------------//
     case WARRANT_11:
     case WARRANT_12:
@@ -182,7 +182,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
 //-------------------------------------------------------------------Block-------------------------------------------------------------------//
     case BLOCK:
       Edit = getConfigValue(DBK);                                                 // DBK = Edit to Block
@@ -193,7 +193,7 @@ function doEditBasic(SheetName) {
         Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
       }
       break;
-      
+
     default:
       Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditSheet`);
       break;
@@ -236,8 +236,8 @@ function doEditFinancial(SheetName) {
 
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
-          ( B2_sr != 0 && B2_sr != "" ) && 
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
+          ( B2_sr != 0 && B2_sr != "" ) &&
           ( B27_sr != 0 && B27_sr != "" ) )
       {
         processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
@@ -261,8 +261,8 @@ function doEditFinancial(SheetName) {
 
       var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
 
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
-          ( B2_sr != 0 && B2_sr != "" ) && 
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
+          ( B2_sr != 0 && B2_sr != "" ) &&
           ( B27_sr != 0 && B27_sr != "" ) )
       {
         processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
@@ -288,11 +288,11 @@ function doEditFinancial(SheetName) {
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
- 
+
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
-          ( C4_sr != 0 && C4_sr != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
+          ( C4_sr != 0 && C4_sr != "" ) &&
           ( C27_sr != 0 && C27_sr != "" ) )
       {
         processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
@@ -313,11 +313,11 @@ function doEditFinancial(SheetName) {
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
- 
+
       var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
-          ( C4_sr != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
+          ( C4_sr != "" ) &&
           ( C27_sr != 0 && C27_sr != "" ) )
       {
         processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
@@ -345,8 +345,8 @@ function doEditFinancial(SheetName) {
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
       var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
           ( B2_sr != 0 && B2_sr != "" ) )
       {
         processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
@@ -367,10 +367,10 @@ function doEditFinancial(SheetName) {
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-      
+
       var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
           ( B2_sr != 0 && B2_sr != "" ) )
       {
         processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
@@ -396,10 +396,10 @@ function doEditFinancial(SheetName) {
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-      
+
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
           ( B2_sr != "" ) ) {
         processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
         doEditFinancial(Valor);
@@ -417,10 +417,10 @@ function doEditFinancial(SheetName) {
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-      
+
       var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) && 
+
+      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
           ( C2_sr != "" ) ) {
         processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
       } else {
@@ -429,7 +429,7 @@ function doEditFinancial(SheetName) {
     }
       break;
 
-    default: 
+    default:
       Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditFinancial`);
       break;
   }

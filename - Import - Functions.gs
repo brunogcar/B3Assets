@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
 
 function doAutorizeScript() {
-  const sheet_co = fetchSheetByName('Config');  
+  const sheet_co = fetchSheetByName('Config');
   if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;}
     Logger.log(`Autorizing Script`);
 
@@ -14,7 +14,7 @@ function doAutorizeScript() {
 }
 
 function checkAutorizeScript() {
-  const sheet_co = fetchSheetByName('Config');  
+  const sheet_co = fetchSheetByName('Config');
   if (!sheet_co) {
     Logger.log("Sheet 'Config' not found.");
     return false;
@@ -44,34 +44,34 @@ function doCheckTriggers() {
 
   Logger.log(`Number of existing triggers: ${Triggers}`);
 
-  if (Class == 'STOCK') 
+  if (Class == 'STOCK')
   {
-    if (Triggers == 0) 
+    if (Triggers == 0)
     {
       Logger.log("No triggers found. Creating new triggers...");
       doCreateTriggers();
-    } 
-    else if (Triggers > 0 && Triggers < 5) 
+    }
+    else if (Triggers > 0 && Triggers < 5)
     {
       Logger.log("Found 1-4 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
       doCreateTriggers();
-    } 
-    else if (Triggers > 5) 
+    }
+    else if (Triggers > 5)
     {
       Logger.log("Found more than 5 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
       doCreateTriggers();
     }
   }
-  else 
+  else
   {
-    if (Triggers == 0) 
+    if (Triggers == 0)
     {
       Logger.log("No triggers found. Creating new triggers...");
       doCreateTriggers();
-    } 
-    else if (Triggers > 1) 
+    }
+    else if (Triggers > 1)
     {
       Logger.log("Found more than 1 triggers. Deleting and creating new triggers...");
       doDeleteTriggers();
@@ -178,7 +178,7 @@ function writeTriggersToSheet() {
 
 function doDeleteTriggers() {
   const triggers = ScriptApp.getProjectTriggers();
-  
+
   if (triggers.length === 0) {
     Logger.log("No triggers found to delete.");
   }

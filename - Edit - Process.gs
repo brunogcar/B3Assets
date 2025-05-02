@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////PROCESS BASIC/////////////////////////////////////////////////////////////////////
 
-function processEditBasic(sheet_sr, SheetName, Edit) 
+function processEditBasic(sheet_sr, SheetName, Edit)
 {
     var LC = sheet_sr.getLastColumn();
 
@@ -31,7 +31,7 @@ function processEditBasic(sheet_sr, SheetName, Edit)
 
           doExportBasic(SheetName);
         }
-        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
+        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
         {
           var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
@@ -60,7 +60,7 @@ function processEditBasic(sheet_sr, SheetName, Edit)
 
 /////////////////////////////////////////////////////////////////////PROCESS EXTRA/////////////////////////////////////////////////////////////////////
 
-function processEditExtra(sheet_sr, SheetName, Edit) 
+function processEditExtra(sheet_sr, SheetName, Edit)
 {
     var LC = sheet_sr.getLastColumn();
 
@@ -89,7 +89,7 @@ function processEditExtra(sheet_sr, SheetName, Edit)
 
           doExportExtra(SheetName);
         }
-        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE 
+        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
         {
           var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
           sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);

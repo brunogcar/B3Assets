@@ -9,16 +9,16 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit)
     var A2 = sheet_sr.getRange("A2").getValue();
     var A5 = sheet_sr.getRange("A5").getValue();
 
-  // Get the values of rows 1, 2, and 5, column B, until last col add LC - 1 instead of 1 
+  // Get the values of rows 1, 2, and 5, column B, until last col add LC - 1 instead of 1
     var Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
     var Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
     var Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
 
   // Compare each corresponding cell in rows 1, 2, and 5
   var IsEqual = false;
-  for (var i = 0; i < Row2.length; i++) 
+  for (var i = 0; i < Row2.length; i++)
   {
-    if (Row2[i] == Row1[i] || Row2[i] == Row5[i]) 
+    if (Row2[i] == Row1[i] || Row2[i] == Row5[i])
     {
       IsEqual = true;
       break;
@@ -55,7 +55,7 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit)
 
         doExportBasic(SheetName);
       }
-      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
+      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) &&
                  ( IsEqual ) ) ||
                ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
       {
@@ -95,16 +95,16 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
     var A2 = sheet_sr.getRange("A2").getValue();
     var A5 = sheet_sr.getRange("A5").getValue();
 
-  // Get the values of rows 1, 2, and 5, column B, until last col add LC - 1 instead of 1 
+  // Get the values of rows 1, 2, and 5, column B, until last col add LC - 1 instead of 1
     var Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
     var Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
     var Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0]; // Fetch as a 1D array
 
   // Compare each corresponding cell in rows 1, 2, and 5
   var IsEqual = false;
-  for (var i = 0; i < Row2.length; i++) 
+  for (var i = 0; i < Row2.length; i++)
   {
-    if (Row2[i] == Row1[i] || Row2[i] == Row5[i]) 
+    if (Row2[i] == Row1[i] || Row2[i] == Row5[i])
     {
       IsEqual = true;
       break;
@@ -141,7 +141,7 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
 
         doExportExtra(SheetName);
       }
-      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) && 
+      else if( ( ( A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf() ) &&
                  ( IsEqual ) ) ||
                ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
       {

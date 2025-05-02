@@ -30,11 +30,11 @@ function Import(){
     }
     else if (hasSwing12 && hasSwing52)
     {
-      import_15x_to_161();
+      import_15x_to_161();                                                       // not in use anymore - to be deleted
     }
     else if (hasTrade)
     {
-      import_14x_to_161();
+      import_14x_to_161();                                                       // not in use anymore - to be deleted
     }
     else
     {
@@ -50,7 +50,7 @@ function Import(){
     }
     else if (Option == 2)
     {
-      import_15x_to_163();
+      import_15x_to_16x();
     }
     else
     {
@@ -118,7 +118,7 @@ function doImportProventos() {
 
 function update_form(){
   const sheet_co = fetchSheetByName('Config');                                        // Config sheet
-  var Update_Form = ss.getRange(UFR).getDisplayValue();                               // UFR = Update Form
+  const Update_Form = getConfigValue(UFR, 'Config');                                  // UFR = Update Form
 
   switch (Update_Form)
   {

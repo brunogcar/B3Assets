@@ -58,8 +58,8 @@ function _doGroup(
 
 /**
  * IMPORTANT:
- * Because this function already calls SpreadsheetApp.getActiveSpreadsheet(), 
- * you do NOT need to manually declare `var ss = SpreadsheetApp.getActiveSpreadsheet()` 
+ * Because this function already calls SpreadsheetApp.getActiveSpreadsheet(),
+ * you do NOT need to manually declare `var ss = SpreadsheetApp.getActiveSpreadsheet()`
  * in any function that only uses this to access sheets.
  *
  * @param {string} SheetName - The exact name of the sheet to fetch.
@@ -154,11 +154,11 @@ function doSettings() {
   const sheet_sr = fetchSheetByName('Settings');
   var Activate  = sheet_sr.getRange(ACT).getDisplayValue();                             // ACT = Activate
 
-  if (Class == 'STOCK') 
+  if (Class == 'STOCK')
   {
     if ( Activate == "TRUE")                                              // TRUE
     {
-      var True = sheet_sr.getRange(TRU).getDisplayValue();                               // TRU = True 
+      var True = sheet_sr.getRange(TRU).getDisplayValue();                               // TRU = True
 
       if ( True == 'SAVE')                                                // SAVE
       {
@@ -169,7 +169,7 @@ function doSettings() {
         if ( Save == 'DATAS')  { doSaveAllFinancials(); }
         if ( Save == 'ALL')    { doSaveAll(); }
         if ( Save == 'INDIVIDUAL')
-          { 
+          {
             var Individual = sheet_sr.getRange(IND).getDisplayValue();                   // IND = INDIVIDUAL
 
             if ( Individual == 'SWING')  { doSaveSWING(); }
@@ -225,7 +225,7 @@ function copypasteSheets() {
 }
 
 function doDeleteSheets() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();  
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = [
     'Balanço Ativo',
     'Balanço Passivo',
@@ -295,7 +295,7 @@ function moveSpreadsheetToBACKUP() {
 function doDeleteSpreadsheet(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var fileId = ss.getId();
-  
+
   try {
     DriveApp.getFileById(fileId).setTrashed(true);
     Logger.log('Spreadsheet deleted successfully.');
@@ -406,9 +406,9 @@ function reverseRows() {
 function doRestoreFundExport() {
   const sheet_co = fetchSheetByName('Config');
 
-  var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';                              
+  var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';
 
-    sheet_co.getRange(EFU).setValue(Value);                                 // EFU = Export to Fund 
+    sheet_co.getRange(EFU).setValue(Value);                                 // EFU = Export to Fund
 }
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////

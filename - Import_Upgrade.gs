@@ -1,9 +1,9 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////MENU FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-function import_15x_to_163()
+function import_15x_to_16x()
 {
-  Logger.log('Import: import_15x_to_163');
+  Logger.log('Import: import_15x_to_16x');
 
   import_config();
 
