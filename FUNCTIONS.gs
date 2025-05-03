@@ -22,7 +22,6 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
   const totalSheets = SheetNames.length;
   let count = 0;
 
-  const sheet_co = fetchSheetByName('Config');                  // Config sheet
   const DEBUG    = getConfigValue(DBG, 'Config');               // DBG = Debug Mode
 
   if (DEBUG == "TRUE") {
@@ -99,10 +98,7 @@ function getConfigValue(Acronym, Source = 'Both') {
   const sheet_se = (Source !== "Config") ? fetchSheetByName('Settings') : null;
   const sheet_co = (Source !== "Settings") ? fetchSheetByName('Config') : null;
 
-  if (!sheet_se || !sheet_co){
-    Logger.log('Settings or Config sheet not found');
-    return null;
-  }
+  if (!sheet_se || !sheet_co){ Logger.log('Settings or Config sheet not found'); return null; }
 
   let Value = null;
 
@@ -151,7 +147,6 @@ function arraysAreEqual(arr1, arr2) {
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
 function doSettings() {
-  const sheet_co = fetchSheetByName('Config');
   const Class    = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
   const sheet_st = fetchSheetByName('Settings');
   const Activate = getConfigValue(ACT, 'Settings');                                     // ACT = Activate

@@ -3,8 +3,7 @@
 
 function doAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;}
-    Logger.log(`Autorizing Script`);
+  if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;} Logger.log(`Autorizing Script`);
 
   const cell = sheet_co.getRange("L2");
   cell.setBackground("#006600"); // Dark Green (#006600)
@@ -15,10 +14,7 @@ function doAutorizeScript() {
 
 function checkAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) {
-    Logger.log("Sheet 'Config' not found.");
-    return false;
-  }
+  if (!sheet_co) { Logger.log("Sheet 'Config' not found."); return false; }
 
   const cell = sheet_co.getRange("L2");
   const bgColor = cell.getBackground();  // Get background color
@@ -37,7 +33,6 @@ function checkAutorizeScript() {
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
 function doCheckTriggers() {
-  const sheet_co = fetchSheetByName('Config');
   const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
 
   var Triggers = ScriptApp.getProjectTriggers().length;
@@ -81,8 +76,6 @@ function doCheckTriggers() {
 };
 
 function doCreateTriggers() {
-  const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) return;
   const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
 
   // Check existing triggers
@@ -99,11 +92,12 @@ function doCreateTriggers() {
 
   if (Class === 'STOCK') {
     Logger.log("Creating new triggers...");
-    const Hour_1 = sheet_co.getRange(TG1).getValue();  // Basic Trigger Event
-    const Hour_2 = sheet_co.getRange(TG2).getValue();  // Financial Trigger Event
-    const Hour_3 = sheet_co.getRange(TG3).getValue();  // Extras Trigger Event
-    const Hour_4 = sheet_co.getRange(TG4).getValue();  // Settings Trigger Event
-    const Hour_5 = sheet_co.getRange(TG5).getValue();  // SaveAll Trigger Event
+
+    const Hour_1 = getConfigValue(TG1, 'Config');                                    // Basic Trigger Event
+    const Hour_2 = getConfigValue(TG2, 'Config');                                    // Financial Trigger Event
+    const Hour_3 = getConfigValue(TG3, 'Config');                                    // Extras Trigger Event
+    const Hour_4 = getConfigValue(TG4, 'Config');                                    // Settings Trigger Event
+    const Hour_5 = getConfigValue(TG5, 'Config');                                    // SaveAll Trigger Event
 
     ScriptApp.newTrigger("doSaveAllBasics")
       .timeBased().atHour(Hour_1).everyDays(1).create();

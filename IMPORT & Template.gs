@@ -2,9 +2,6 @@
 /////////////////////////////////////////////////////////////////////IMPORT/////////////////////////////////////////////////////////////////////
 
 function Import(){
-  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  if (!sheet_co) {Logger.log("ERROR: 'Config' sheet not found."); return;}
-
   // Check if L2 has the expected colors
   if (!checkAutorizeScript()) {
     Logger.log("Import aborted: L2 does not have the correct background and font colors.");
@@ -18,28 +15,7 @@ function Import(){
 
   if (Option === "AUTO")
   {
-    // Check for specific sheets
-    const hasSwing4 = fetchSheetByName(SWING_4) !== null;
-    const hasSwing12 = fetchSheetByName(SWING_12) !== null;
-    const hasSwing52 = fetchSheetByName(SWING_52) !== null;
-    const hasTrade = fetchSheetByName('Trade') !== null;                         //only present in versions < 15
-
-    if (hasSwing4 && hasSwing12 && hasSwing52)
-    {
-      import_Current();
-    }
-    else if (hasSwing12 && hasSwing52)
-    {
-      import_15x_to_161();                                                       // not in use anymore - to be deleted
-    }
-    else if (hasTrade)
-    {
-      import_14x_to_161();                                                       // not in use anymore - to be deleted
-    }
-    else
-    {
-      Logger.log(`No matching sheets found for AUTO mode.`);
-    }
+    import_Current();
   }
   else
   {
@@ -117,7 +93,6 @@ function doImportProventos() {
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
 
 function update_form() {
-  const sheet_co = fetchSheetByName('Config');                                        // Config sheet
   const Update_Form = getConfigValue(UFR, 'Config');                                  // UFR = Update Form
 
   switch (Update_Form)
@@ -140,12 +115,13 @@ function update_form() {
 /////////////////////////////////////////////////////////////////////Config/////////////////////////////////////////////////////////////////////
 
 function import_config() {
-  const sheet_co = fetchSheetByName('Config');
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');       // Source Sheet
   {
+    const sheet_co = fetchSheetByName('Config');                                      // cant be deleted because of sheet_co.getRange(COR)
+
     var Data = sheet_sr.getRange(COR).getValues();                                    // Does not use getConfigValue because it gets data from another spreadsheet
     sheet_co.getRange(COR).setValues(Data);
   }
@@ -154,7 +130,6 @@ function import_config() {
 /////////////////////////////////////////////////////////////////////SHARES and FF/////////////////////////////////////////////////////////////////////
 
 function doImportShares() {
-  const sheet_co = fetchSheetByName('Config');
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
@@ -180,7 +155,6 @@ Logger.log(`SUCCESS IMPORT: Shares and FF`);
 /////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
 
 function doImportProv(ProvName){
-  const sheet_co = fetchSheetByName('Config');
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
@@ -194,7 +168,7 @@ function doImportProv(ProvName){
 
     if( Check == "Proventos" )  // check if error
     {
-      var Data = sheet_sr.getRange(PRV).getValues();                              // PRV = Provento Range
+      var Data = sheet_sr.getRange(PRV).getValues();                                  // PRV = Provento Range
       sheet_tr.getRange(PRV).setValues(Data);
     }
     else
@@ -240,10 +214,8 @@ const basicImportMap = {
 function doImportBasic(SheetName) {
   Logger.log(`IMPORT: ${SheetName}`);
 
-  const sheet_co  = fetchSheetByName('Config');
-  const sheet_se  = fetchSheetByName('Settings');
   const Source_Id = getConfigValue(SIR, 'Config');
-  if (!sheet_co || !sheet_se || !Source_Id) { Logger.log('ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.'); return; }
+  if (!Source_Id) { Logger.log('ERROR IMPORT: Source ID. Aborting.'); return; }
 
   const cfg = basicImportMap[SheetName];
   if (!cfg) { Logger.log(`ERROR IMPORT: No import schema defined for "${SheetName}".`); return; }
@@ -264,12 +236,12 @@ function doImportBasic(SheetName) {
   const LC = sheet_sr.getLastColumn();
 
   // Copy body rows 5→LR, cols 1→LC
-  const DataBody = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
-  sheet_tr.getRange(5, 1, LR - 4, LC).setValues(DataBody);
+  const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
+  sheet_tr.getRange(5, 1, LR - 4, LC).setValues(Data_Body);
 
   // Copy header row 1, cols 1→LC
-  const DataHeader = sheet_sr.getRange(1, 1, 1, LC).getValues();
-  sheet_tr.getRange(1, 1, 1, LC).setValues(DataHeader);
+  const Data_Header = sheet_sr.getRange(1, 1, 1, LC).getValues();
+  sheet_tr.getRange(1, 1, 1, LC).setValues(Data_Header);
 
   Logger.log(`SUCCESS IMPORT for sheet ${SheetName}.`);
 }
@@ -290,10 +262,8 @@ const financialImportMap = {
 function doImportFinancial(SheetName) {                                                      // TODO improve more functions like this one
   Logger.log(`IMPORT: ${SheetName}`);
 
-  const sheet_co   = fetchSheetByName('Config');
-  const sheet_se   = fetchSheetByName('Settings');
   const Source_Id  = getConfigValue(SIR, 'Config');
-  if (!sheet_co || !sheet_se || !Source_Id) { Logger.log("ERROR IMPORT: Missing Config/Settings/Source ID. Aborting."); return; }
+  if (!Source_Id) { Logger.log("ERROR IMPORT: Missing Config/Settings/Source ID. Aborting."); return; }
 
   const cfg = financialImportMap[SheetName];
   if (!cfg) { Logger.log(`ERROR IMPORT: No import schema defined for "${SheetName}".`); return; }

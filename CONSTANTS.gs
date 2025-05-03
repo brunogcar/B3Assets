@@ -55,7 +55,7 @@
   const DIR = "D25"    // DIR = DATA Source ID             // Tab: Config
 
   const ICR = "F13"    // ICR = Sheet ID Check             // Tab: Config
-  const IER = "F16"    // ICR = ID Exported?               // Tab: Config
+  const IER = "F16"    // IER = ID Exported?               // Tab: Config
 
   const OPR = "L3"     // OPR = Option                     // Tab: Config
   const UFR = "L6"     // UFR = Update Form                // Tab: Config

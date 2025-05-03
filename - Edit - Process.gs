@@ -23,9 +23,9 @@ function processEditBasic(sheet_sr, SheetName, Edit)
       {
         if (SheetName === FUND )
         {
-          var Data = sheet_sr.getRange(2,1,1,LC).getValues();
-          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
+          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
@@ -33,9 +33,9 @@ function processEditBasic(sheet_sr, SheetName, Edit)
         }
         else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
         {
-          var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data_Header = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
+          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
@@ -81,9 +81,9 @@ function processEditExtra(sheet_sr, SheetName, Edit)
       {
         if (SheetName === FUND )
         {
-          var Data = sheet_sr.getRange(2,1,1,LC).getValues();
-          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
+          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 
@@ -91,9 +91,9 @@ function processEditExtra(sheet_sr, SheetName, Edit)
         }
         else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
         {
-          var Data = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-          sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-          sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+          var Data_Header = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
+          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
           Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
 

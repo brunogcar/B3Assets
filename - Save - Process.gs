@@ -25,8 +25,8 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit)
     }
   }
 
-  let Data;
-  let Data_Backup;
+  let Data_Header;
+  let Data_Body;
 
   if( !ErrorValues.includes(A2) )
   {
@@ -34,9 +34,9 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit)
     {
       if( A5 == "" )
       {
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+        Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
+        sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+        sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
@@ -44,12 +44,12 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit)
       }
       else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
       {
-        Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
+        Data_Body = sheet_sr.getRange(5,1,LR-4,LC).getValues();
+        Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
 
-        sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+        sheet_sr.getRange(6, 1, Data_Body.length, Data_Body[0].length).setValues(Data_Body);
+        sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+        sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
@@ -111,8 +111,8 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
     }
   }
 
-  let Data;
-  let Data_Backup;
+  let Data_Header;
+  let Data_Body;
 
   if( !ErrorValues.includes(A2) )
   {
@@ -120,9 +120,9 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
     {
       if( A5 == "" )
       {
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+        Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
+        sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+        sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 
@@ -130,12 +130,12 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit)
       }
       else if( A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf() )
       {
-        Data_Backup = sheet_sr.getRange(5,1,LR-4,LC).getValues();
-        Data = sheet_sr.getRange(2,1,1,LC).getValues();
+        Data_Body = sheet_sr.getRange(5,1,LR-4,LC).getValues();
+        Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
 
-        sheet_sr.getRange(6, 1, Data_Backup.length, Data_Backup[0].length).setValues(Data_Backup);
-        sheet_sr.getRange(5,1,Data.length,Data[0].length).setValues(Data);
-        sheet_sr.getRange(1,1,Data.length,Data[0].length).setValues(Data);
+        sheet_sr.getRange(6, 1, Data_Body.length, Data_Body[0].length).setValues(Data_Body);
+        sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
+        sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
 
         Logger.log(`SUCCESS SAVE. Sheet: ${SheetName}.`);
 

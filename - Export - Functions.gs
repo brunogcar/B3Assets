@@ -6,9 +6,6 @@ function getSheetID() {
 };
 
 function setSheetID() {
-  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
-  if (!sheet_co) return;
-
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
   const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const EXP     = getConfigValue(EXR, 'Config');                                   // EXR = Export
@@ -18,15 +15,12 @@ function setSheetID() {
 
   const Sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
 
-//  const [sheet_co, sheet_tr] = ["Config", "Relação"].map(s => ss.getSheetByName(s));
-//  const [b3, d10] = ["B3", "D10"].map(r => sheet_co.getRange(r).getValue());
-
   var ss_tr = SpreadsheetApp.openById(Data_Id);                                    // Target spreadsheet
-  var sheet_tr = ss_tr.getSheetByName('Relação');                                    // Target sheet
+  var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
   if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
 
-  var bgcolor = sheet_co.getRange(IDR).getBackground();
-  var colour = '#d9ead3';
+  const bgcolor = getConfigValue(IDR, 'Config');                                   // IDR = ID Sheet
+  var colour    = '#d9ead3';
 
   const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
   if (!search) return;
@@ -43,10 +37,7 @@ function setSheetID() {
 };
 
 function doIsIdExported() {
-  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
-  if (!sheet_co) return;
-
-  var IEP = sheet_co.getRange(IER).getDisplayValue();                              // EXR = Export Range
+  const IEP     = getConfigValue(IER, 'Config');                                   // IER = ID Exported?
 
   if( IEP === "FALSE" )
   {
@@ -55,9 +46,6 @@ function doIsIdExported() {
 };
 
 function doClearSheetID() {
-  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
-  if (!sheet_co) return;
-
   const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
   if (!Data_Id) { Logger.log("ERROR EXPORT: DATA ID is empty."); return; }
@@ -78,9 +66,6 @@ function doClearSheetID() {
 /////////////////////////////////////////////////////////////////////EXPORT CHECKS/////////////////////////////////////////////////////////////////////
 
 function doIsFormula() {
-  const sheet_co = fetchSheetByName('Config');                                     // Config sheet
-  if (!sheet_co) return;
-
   const Formula  = getConfigValue(FOR, 'Config');                                  // FOR = Formula Range
   const Sheet_Id = getConfigValue(ICR, 'Config');                                  // ICR = Sheet ID Check Range
 
@@ -95,9 +80,6 @@ function doIsFormula() {
 };
 
 function doIsExportable() {
-  const sheet_co = fetchSheetByName('Config');                                    // Config sheet
-  if (!sheet_co) return;
-
   const EPD = getConfigValue(EPR, 'Config');                                      // EPR = Exportable? Check Range
 
   if( EPD === "TRUE" )
@@ -107,20 +89,19 @@ function doIsExportable() {
 };
 
 function doIsInfoExported() {
-  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  if (!sheet_co) return;
-
-  const EXP = getConfigValue(EXR, 'Config');                                     // EXR = Export
+  const EXP = getConfigValue(EXR, 'Config');                                       // EXR = Exported?
 
   if( EXP === "TRUE" )
   {
     const sheet_in = fetchSheetByName('Info');
+    if (!sheet_in) { Logger.log(`ERROR: Sheet 'Info' does not exist.`); return; }
 
-    const Data = sheet_in.getRange(TIR).getValues();                             // TIR = Tab Info Range
-    sheet_in.getRange(TIR).setValues(Data);                                      // Copy Paste Info
+    const Range = sheet_in.getRange(TIR).getValues();                              // TIR = Tab Info Range
+    sheet_in.getRange(TIR).setValues(Range);                                       // Copy Paste Info
 
-    const Data_2 = sheet_co.getRange(EXR).getValues();                           // TIR = Tab Info Range
-    sheet_co.getRange(EXR).setValues(Data_2);                                    // Set Formula to TRUE // EXP === "TRUE"
+    const sheet_co = fetchSheetByName('Config');                                   // cant be deleted because of sheet_co.getRange(EXR)
+    if (!sheet_co) return;
+    sheet_co.getRange(EXR).setValues(EXP);                                         // Set Formula to TRUE // EXP === "TRUE"
 
     setSheetID()
   }
@@ -139,9 +120,6 @@ function doClearExportAll() {
 }
 
 function doClearExport(SheetName) {
-  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  if (!sheet_co) return;
-
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }

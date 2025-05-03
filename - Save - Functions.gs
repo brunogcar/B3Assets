@@ -85,10 +85,6 @@ function doFinancialDateHelper(dateStrings) {
 
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
 
-/**
- * Iterates through all data-related sheets and runs doCheckDATA on each.
- * Errors are caught per sheet to prevent one failure from stopping the loop.
- */
 function doCheckDATAS() {
   const SheetNames = [
     SWING_4, SWING_12, SWING_52,
@@ -172,7 +168,6 @@ function doCheckDATA(SheetName) {
 
   // 2) classSheet case (SWING_x)
   } else if (cfg.classSheet) {
-    const sheet_co = fetchSheetByName('Config');
     const Class   = getConfigValue(IST, 'Config');
     Check = (Class === 'STOCK')
       ? sheet_d.getRange(cfg.cell).getValue()
@@ -272,7 +267,7 @@ function doTrimSheet(SheetName) {
 
 /////////////////////////////////////////////////////////////////////Hide and Show Sheets/////////////////////////////////////////////////////////////////////
 /**
- * Hides or deletes specific sheets based on the asset class defined in the Config sheet.
+ * Hides or deletes specific sheets based on the asset class defined in the Config!IST.
  *
  * This function needs direct access to the `SpreadsheetApp.getActiveSpreadsheet()` object
  * because it performs actions that require the spreadsheet context itself — such as:
@@ -282,17 +277,10 @@ function doTrimSheet(SheetName) {
  * These operations go beyond simply fetching a sheet by name (which `fetchSheetByName()` handles),
  * so we must declare `const ss = SpreadsheetApp.getActiveSpreadsheet();` here directly.
  *
+ * - STOCK: hides specific sheets listed in `Hidden`.
+ * - ADR/BDR/ETF: deletes all sheets *not* in the `Keep` set.
+ *
  * @returns {void}
- */
-
-/**
- * Hides or deletes sheets based on the asset class in Config!IST.
- *
- * - STOCK: hides specific sheets listed in `stockHidden`.
- * - ADR: deletes all sheets *not* in the `adrKeep` set.
- * - BDR/ETF: deletes all sheets *not* in the `bdrKeep` set.
- *
- * Always keeps Config and Settings visible via hideConfig() at end.
  */
 function doDisableSheets() {
   const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove
@@ -305,49 +293,49 @@ function doDisableSheets() {
 
   switch (Class) {
     case 'STOCK': {
-      const stockHidden = [
+      var Hidden = [
         'DATA','Prov_','FIBO','Cotações','UPDATE','Balanço',
         'Balanço Ativo','Balanço Passivo','Resultado','Demonstração',
         'Fluxo','Fluxo de Caixa','Valor','Demonstração do Valor Adicionado'
       ];
       for (let i = 0; i < sheets.length; i++) {
-        const sh = sheets[i];
-        const name = sh.getName();
-        if (!sh.isSheetHidden() && stockHidden.indexOf(name) !== -1) {
-          sh.hideSheet();
-          Logger.log(`Sheet hidden: ${name}`);
+        const sheet = sheets[i];
+        const SheetName = sheet.getName();
+        if (!sheet.isSheetHidden() && Hidden.indexOf(SheetName) !== -1) {
+          sheet.hideSheet();
+          Logger.log(`Sheet hidden: ${SheetName}`);
         }
       }
       break;
     }
     case 'ADR': {
-      const adrKeep = new Set([
+      var Keep = new Set([
         'Config','Settings','Index','Preço','FIBO',
         SWING_4, SWING_12, SWING_52,'Cotações'
       ]);
       // reverse order to safely delete
       for (let i = sheets.length - 1; i >= 0; i--) {
-        const sh = sheets[i];
-        const name = sh.getName();
-        if (!adrKeep.has(name)) {
-          ss.deleteSheet(sh);
-          Logger.log(`Sheet deleted: ${name}`);
+        const sheet = sheets[i];
+        const SheetName = sheet.getName();
+        if (!Keep.has(SheetName)) {
+          ss.deleteSheet(sheet);
+          Logger.log(`Sheet deleted: ${SheetName}`);
         }
       }
       break;
     }
     case 'BDR':
     case 'ETF': {
-      const bdrKeep = new Set([
+      var Keep = new Set([
         'Config','Settings','Index','Prov','Prov_','Preço','FIBO',
         SWING_4, SWING_12, SWING_52,'Cotações','DATA','OPT','Opções','BTC','Termo'
       ]);
       for (let i = sheets.length - 1; i >= 0; i--) {
-        const sh = sheets[i];
-        const name = sh.getName();
-        if (!bdrKeep.has(name)) {
-          ss.deleteSheet(sh);
-          Logger.log(`Sheet deleted: ${name}`);
+        const sheet = sheets[i];
+        const SheetName = sheet.getName();
+        if (!Keep.has(SheetName)) {
+          ss.deleteSheet(sheet);
+          Logger.log(`Sheet deleted: ${SheetName}`);
         }
       }
       break;

@@ -139,10 +139,8 @@ function doRecycleTrade() {
     var LR = sheet_sr.getLastRow();
     var LC = sheet_sr.getLastColumn();
 
-  const sheet_co = fetchSheetByName('Config');
-
-    var AX = sheet_co.getRange(PDT).getDisplayValue();                                              // PDT = Periodo de Trade
-    var AX_ = sheet_sr.getRange("A" + AX ).getValue();
+  const AX = getConfigValue(PDT, 'Config');                                                               // PDT = Periodo de Trade
+  const AX_ = sheet_sr.getRange("A" + AX ).getValue();
 
 //  Logger.log(AX_);
 

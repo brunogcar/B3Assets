@@ -58,7 +58,6 @@ function import_15x_to_16x()
 function doImport_SWING_12_to_SWING_4()
 {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet_co = fetchSheetByName('Config');
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }

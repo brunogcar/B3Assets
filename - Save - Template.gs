@@ -9,10 +9,6 @@ function doSaveBasic(SheetName) {
     return;
   }
 
-  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
-  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
-  if (!sheet_co || !sheet_se) return;
-
   Utilities.sleep(2500); // 2.5 secs pause
 
   let Save, Edit;
@@ -194,10 +190,8 @@ function doSaveBasic(SheetName) {
 
 function doSaveFinancial(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
-  const sheet_co = fetchSheetByName('Config');     // Config sheet
-  const sheet_se = fetchSheetByName('Settings');
   const sheet_up = fetchSheetByName('UPDATE');
-  if (!sheet_co || !sheet_se || !sheet_up) return;
+  if (!sheet_up){ Logger.log('UPDATE sheet not found'); return; }
 
   let Save, Edit;
   let sheet_tr, sheet_sr;
@@ -495,10 +489,8 @@ function doSaveProv(Prov_Values) {
 }
 
 function doGetProventos() {
-  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
   const sheet_tr = fetchSheetByName('Prov_');
-
-  if (!sheet_tr)  { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
+  if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
 
   const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
@@ -599,8 +591,7 @@ function doGetCodeCVM() {
 
   if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
 
-  const sheet_co = fetchSheetByName('Config');                                   // Config sheet
-  const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
+  const TKT      = getConfigValue(TKR, 'Config');                                // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 

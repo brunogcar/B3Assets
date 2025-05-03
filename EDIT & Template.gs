@@ -42,11 +42,6 @@ function doEditBasic(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName); // Source sheet
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
 
-
-  const sheet_co = fetchSheetByName('Config');                                    // Config sheet
-  const sheet_se = fetchSheetByName('Settings');
-  if (!sheet_co || !sheet_se) return;
-
   Utilities.sleep(2500); // 2.5 secs pause
 
   let Edit;
@@ -216,12 +211,8 @@ function doEditBasic(SheetName) {
 
 function doEditFinancial(SheetName) {
     Logger.log(`EDIT: ${SheetName}`);
-  const sheet_sr = fetchSheetByName(SheetName);                        // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
-
-  const sheet_co = fetchSheetByName('Config');                         // Config sheet
-  const sheet_se = fetchSheetByName('Settings');
-  if (!sheet_co || !sheet_se) return;
 
   Utilities.sleep(2500); // 2,5 secs
 

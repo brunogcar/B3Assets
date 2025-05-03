@@ -39,17 +39,13 @@ function doExportFinancials() {
 function doExportBasic(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
   const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
-  if (!sheet_co || !sheet_se) return;
+  if (!sheet_se) return;
 
   const Class     = getConfigValue(IST, 'Config');                                   // IST = Is Stock?
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) {
-    Logger.log("ERROR EXPORT: Target ID is empty.");
-  return;
-  }
+  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   var Minimum = sheet_se.getRange(MIN).getValue();                                   // -1000 - Default
   var Maximum = sheet_se.getRange(MAX).getValue();                                   //  1000 - Default
@@ -65,23 +61,14 @@ function doExportBasic(SheetName) {
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: Target sheet ${SheetName} - Target sheet does not exist on doExportBasic from sheet_tr`);
-    return;
-  }
+  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet ${SheetName} - Target sheet does not exist on doExportBasic from sheet_tr`); return; }
 
   let ShouldExport = false;
   let Export;                                                                          // Declare Export without an initial value
 
-  if (ErrorValues.includes(A2) && A5 == "") {
-    Logger.log(`ERROR EXPORT: ${SheetName} - ErrorValues in A2 or A5_ = "" on doExportBasic`);
-    return;
-  }
+  if (ErrorValues.includes(A2) && A5 == "") { Logger.log(`ERROR EXPORT: ${SheetName} - ErrorValues in A2 or A5_ = "" on doExportBasic`); return; }
 
-  if (Class !== 'STOCK') {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportBasic`);
-    return;
-  }
+  if (Class !== 'STOCK') { Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportBasic`); return; }
 
   // Export logic specific to each sheet
   switch (SheetName) {
@@ -196,10 +183,7 @@ function doExportBasic(SheetName) {
 function doExportExtra(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
-  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
-  if (!sheet_co || !sheet_se) return;
-  const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);
 
   if (!sheet_sr) {
     Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportExtra from sheet_sr`);
@@ -287,25 +271,16 @@ function doExportExtra(SheetName) {
 function doExportFinancial(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const sheet_co = fetchSheetByName('Config');                                       // Config sheet
-  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
-  if (!sheet_co || !sheet_se) return;
-
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
-  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
+  const Target_Id = getConfigValue(TDR, 'Config');
   if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
-  const sheet_sr = fetchSheetByName('Index');                                         // Source sheet
-  if (!sheet_sr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_sr`);
-    return;
-  }
+  const sheet_sr = fetchSheetByName('Index');
+  if (!sheet_sr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_sr`); return; }
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`);
-    return; }
+  if (!sheet_tr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`); return; }
 
   // Mapping export config settings
   const target_co = {
@@ -406,10 +381,8 @@ processExport(TKT, Data, sheet_tr, SheetName);
 /////////////////////////////////////////////////////////////////////INFO/////////////////////////////////////////////////////////////////////
 
 function doExportInfo() {
-  const sheet_co = fetchSheetByName('Config');                      // Config sheet
-  const sheet_in = fetchSheetByName('Info');                        // Info sheet
-
-  if (!sheet_co || !sheet_in) return;
+  const sheet_in = fetchSheetByName('Info');
+  if (!sheet_in){ Logger.log('Info sheet not found'); return; }
 
   var SheetName = sheet_in.getName();
   Logger.log(`Exporting: ${SheetName}`);
@@ -453,9 +426,11 @@ function doExportInfo() {
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
 function doExportProventos() {
-  const sheet_co = fetchSheetByName('Config');
   const sheet_pv = fetchSheetByName(PROV);
+  if (!sheet_pv){ Logger.log('PROV sheet not found'); return; }
+
   const sheet_ix = fetchSheetByName('Index');
+  if (!sheet_ix){ Logger.log('Index sheet not found'); return; }
 
   if (!sheet_co || !sheet_ix || !sheet_pv) return;
 
