@@ -181,34 +181,34 @@ function doImportProv(ProvName){
 /////////////////////////////////////////////////////////////////////BASIC/////////////////////////////////////////////////////////////////////
 
 const basicImportMap = {
-  [SWING_4]:   { flag: ITR },
-  [SWING_12]:  { flag: ITR },
-  [SWING_52]:  { flag: ITR },
+  [SWING_4]:    { flag: ITR },              // ITR = Import to SWING
+  [SWING_12]:   { flag: ITR },              // ITR = Import to SWING
+  [SWING_52]:   { flag: ITR },              // ITR = Import to SWING
 
-  [OPCOES]:    { flag: IOP },
+  [OPCOES]:     { flag: IOP },              // IOP = Import to OPCOES (Options)
 
-  [BTC]:       { flag: IBT },
+  [BTC]:        { flag: IBT },              // IBT = Import to BTC
 
-  [TERMO]:     { flag: ITE },
+  [TERMO]:      { flag: ITE },              // ITE = Import to TERMO
 
-  [FUTURE]:    { flag: IFT },
-  [FUTURE_1]:  { flag: IFT },
-  [FUTURE_2]:  { flag: IFT },
-  [FUTURE_3]:  { flag: IFT },
+  [FUTURE]:     { flag: IFT },              // IFT = Import to FUTURE
+  [FUTURE_1]:   { flag: IFT },              // IFT = Import to FUTURE
+  [FUTURE_2]:   { flag: IFT },              // IFT = Import to FUTURE
+  [FUTURE_3]:   { flag: IFT },              // IFT = Import to FUTURE
 
-  [FUND]:      { flag: IFU },
+  [FUND]:       { flag: IFU },              // IFU = Import to FUND
 
-  [RIGHT_1]:   { flag: IRT },
-  [RIGHT_2]:   { flag: IRT },
+  [RIGHT_1]:    { flag: IRT },              // IRT = Import to RIGHT
+  [RIGHT_2]:    { flag: IRT },              // IRT = Import to RIGHT
 
-  [RECEIPT_9]:  { flag: IRC },
-  [RECEIPT_10]: { flag: IRC },
+  [RECEIPT_9]:  { flag: IRC },              // IRC = Import to RECEIPT
+  [RECEIPT_10]: { flag: IRC },              // IRC = Import to RECEIPT
 
-  [WARRANT_11]: { flag: IWT },
-  [WARRANT_12]: { flag: IWT },
-  [WARRANT_13]: { flag: IWT },
+  [WARRANT_11]: { flag: IWT },              // IWT = Import to WARRANT
+  [WARRANT_12]: { flag: IWT },              // IWT = Import to WARRANT
+  [WARRANT_13]: { flag: IWT },              // IWT = Import to WARRANT
 
-  [BLOCK]:     { flag: IBK },
+  [BLOCK]:      { flag: IBK },              // IBK = Import to BLOCK
 };
 
 function doImportBasic(SheetName) {
@@ -249,15 +249,19 @@ function doImportBasic(SheetName) {
 /////////////////////////////////////////////////////////////////////FINANCIAL////////////////////////////////////////////////////////////////////
 
 const financialImportMap = {
-  [BLC]:      { flag: IBL, checkCell: "B1", dataOffset: { colStart: 2,   colTrim: 1   } },
-  [Balanco]:  { flag: IBL, checkCell: "C1", dataOffset: { colStart: 3,   colTrim: 2   } },
-  [DRE]:      { flag: IDE, checkCell: "B1", dataOffset: { colStart: 2,   colTrim: 1   } },
-  [Resultado]:{ flag: IDE, checkCell: "D1", dataOffset: { colStart: 4,   colTrim: 3   } },
-  [FLC]:      { flag: IFL, checkCell: "B1", dataOffset: { colStart: 2,   colTrim: 1   } },
-  [Fluxo]:    { flag: IFL, checkCell: "D1", dataOffset: { colStart: 4,   colTrim: 3   } },
-  [DVA]:      { flag: IDV, checkCell: "B1", dataOffset: { colStart: 2,   colTrim: 1   } },
-  [Valor]:    { flag: IDV, checkCell: "D1", dataOffset: { colStart: 4,   colTrim: 3   } },
+  [BLC]:       { flag: IBL, checkCell: "B1", dataOffset: { colStart: 2, colTrim: 1 } },               // IBL = Import to BALANCO
+  [Balanco]:   { flag: IBL, checkCell: "C1", dataOffset: { colStart: 3, colTrim: 2 } },               // IBL = Import to BALANCO
+
+  [DRE]:       { flag: IDE, checkCell: "B1", dataOffset: { colStart: 2, colTrim: 1 } },               // IDE = Import to DRE
+  [Resultado]: { flag: IDE, checkCell: "D1", dataOffset: { colStart: 4, colTrim: 3 } },               // IDE = Import to DRE
+
+  [FLC]:       { flag: IFL, checkCell: "B1", dataOffset: { colStart: 2, colTrim: 1 } },               // IFL = Import to FLC (Cash Flow)
+  [Fluxo]:     { flag: IFL, checkCell: "D1", dataOffset: { colStart: 4, colTrim: 3 } },               // IFL = Import to FLC (Cash Flow)
+
+  [DVA]:       { flag: IDV, checkCell: "B1", dataOffset: { colStart: 2, colTrim: 1 } },               // IDV = Import to DVA
+  [Valor]:     { flag: IDV, checkCell: "D1", dataOffset: { colStart: 4, colTrim: 3 } },               // IDV = Import to DVA
 };
+
 
 function doImportFinancial(SheetName) {                                                      // TODO improve more functions like this one
   Logger.log(`IMPORT: ${SheetName}`);
