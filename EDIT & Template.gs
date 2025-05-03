@@ -39,170 +39,102 @@ function doEditFinancials() {
 
 function doEditBasic(SheetName) {
   Logger.log(`EDIT: ${SheetName}`);
-  const sheet_sr = fetchSheetByName(SheetName); // Source sheet
+  const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
+  Utilities.sleep(2500);
 
-  Utilities.sleep(2500); // 2.5 secs pause
+  const editTable = [
+    {
+      names: [SWING_4, SWING_12, SWING_52],
+      editKey: DTR,                                          // DTR = Edit to Swing
+      cells: ['C2'],
+      test: ([c2]) => {
+        const cls = getConfigValue(IST, 'Config');       // IST = Is Stock?
+        return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(cls);
+      },
+      handler: processEditBasic
+    },
+    {
+      names: [OPCOES],
+      editKey: DOP,                                          // DOP = Edit to Option
+      cells: ['C2','E2'],
+      test: ([call, put]) => (call != 0 && put != 0 && call !== '' && put !== ''),
+      handler: processEditBasic
+    },
+    {
+      names: [BTC],
+      editKey: DBT,                                          // DBT = Edit to BTC
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditBasic
+    },
+    {
+      names: [TERMO],
+      editKey: DTE,                                          // DTE = Edit to Termo
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditBasic
+    },
+    {
+      names: [FUND],
+      editKey: DFU,                                          // DFU = Edit to Fund
+      cells: ['B2'],
+      test: ([b2]) => !ErrorValues.includes(b2),
+      handler: processEditBasic
+    },
+    {
+      names: [FUTURE],
+      editKey: DFT,                                          // DFT = Edit to Future
+      cells: ['C2','E2','G2'],
+      test: vals => vals.some(v => !ErrorValues.includes(v)),
+      handler: processEditBasic
+    },
+    {
+      names: [FUTURE_1, FUTURE_2, FUTURE_3],
+      editKey: DFT,                                          // DFT = Edit to Future
+      cells: ['C2'],
+      test: ([c2]) => !ErrorValues.includes(c2),
+      handler: processEditExtra
+    },
+    {
+      names: [RIGHT_1, RIGHT_2],
+      editKey: DRT,                                          // DRT = Edit to Right
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditExtra
+    },
+    {
+      names: [RECEIPT_9, RECEIPT_10],
+      editKey: DRC,                                          // DRC = Edit to Receipt
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditExtra
+    },
+    {
+      names: [WARRANT_11, WARRANT_12, WARRANT_13],
+      editKey: DWT,                                          // DWT = Edit to Warrant
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditExtra
+    },
+    {
+      names: [BLOCK],
+      editKey: DBK,                                          // DBK = Edit to Block
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditExtra
+    }
+  ];
 
-  let Edit;
+  const config = editTable.find(cfg => cfg.names.includes(SheetName));
+  if (!config) { Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditSheet`); return; }
 
-  switch (SheetName) {
-//-------------------------------------------------------------------Swing-------------------------------------------------------------------//
-    case SWING_4:
-    case SWING_12:
-    case SWING_52:
-      Edit        = getConfigValue(DTR);                                          // DTR = Edit to Swing
-      const Class = getConfigValue(IST, 'Config');                                // IST = Is Stock?
+  const editValue = getConfigValue(config.editKey);
+  const values = config.cells.map(a1 => sheet_sr.getRange(a1).getValue());
 
-      var C2 = sheet_sr.getRange("C2").getValue();
-      if (Class == 'STOCK') {
-        if (C2 > 0) {
-          processEditBasic(sheet_sr, SheetName, Edit);
-        }
-      }
-      if (Class == 'BDR' || Class == 'ETF' || Class == 'ADR') {
-        if (C2 > 0) {
-          processEditBasic(sheet_sr, SheetName, Edit);
-        } else {
-          Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-        }
-      }
-      break;
-
-//-------------------------------------------------------------------Opções-------------------------------------------------------------------//
-    case OPCOES:
-      Edit = getConfigValue(DOP);                                                 // DOP = Edit to Option
-
-      var Call = sheet_sr.getRange("C2").getValue();
-      var Put = sheet_sr.getRange("E2").getValue();
-      if ((Call != 0 && Put != 0) &&
-          (Call != "" && Put != "")) {
-        processEditBasic(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-    case BTC:
-      Edit = getConfigValue(DBT);                                                 // DBT = Edit to BTC
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditBasic(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Termo-------------------------------------------------------------------//
-    case TERMO:
-      Edit = getConfigValue(DTE);                                                 // DTE = Edit to Termo
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditBasic(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Fund-------------------------------------------------------------------//
-    case FUND:
-      Edit = getConfigValue(DFU);                                                 // DFU = Edit to Fund
-
-      var B2 = sheet_sr.getRange("B2").getValue();
-      if (!ErrorValues.includes(B2)) {
-        processEditBasic(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Future-------------------------------------------------------------------//
-    case FUTURE:
-      Edit = getConfigValue(DFT);                                                 // DFT = Edit to Future
-
-      var C2 = sheet_sr.getRange("C2").getValue();
-      var E2 = sheet_sr.getRange("E2").getValue();
-      var G2 = sheet_sr.getRange("G2").getValue();
-      if ((!ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2))) {
-        processEditBasic(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-    // -------------------- Future variants -------------------- //
-    case FUTURE_1:
-    case FUTURE_2:
-    case FUTURE_3:
-      Edit = getConfigValue(DFT);                                                 // DFT = Edit to Future
-
-      var C2 = sheet_sr.getRange("C2").getValue();
-      if (!ErrorValues.includes(C2)) {
-        processEditExtra(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Right-------------------------------------------------------------------//
-    case RIGHT_1:
-    case RIGHT_2:
-      Edit = getConfigValue(DRT);                                                 // DRT = Edit to Right
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditExtra(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Receipt-------------------------------------------------------------------//
-    case RECEIPT_9:
-    case RECEIPT_10:
-      Edit = getConfigValue(DRC);                                                 // DRC = Edit to Receipt
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditExtra(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Warrant-------------------------------------------------------------------//
-    case WARRANT_11:
-    case WARRANT_12:
-    case WARRANT_13:
-      Edit = getConfigValue(DWT);                                                 // DWT = Edit to Warrant
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditExtra(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-//-------------------------------------------------------------------Block-------------------------------------------------------------------//
-    case BLOCK:
-      Edit = getConfigValue(DBK);                                                 // DBK = Edit to Block
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processEditExtra(sheet_sr, SheetName, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditSheet`);
-      }
-      break;
-
-    default:
-      Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditSheet`);
-      break;
-  }
+  if (config.test(values)) {
+    config.handler(sheet_sr, SheetName, editValue);
+  } else { Logger.log(`ERROR EDIT: ${SheetName} - Conditions aren’t met in doEditSheet`); }
 }
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////

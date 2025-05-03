@@ -2,187 +2,121 @@
 
 function doSaveBasic(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
+  const sheet_sr = fetchSheetByName(SheetName);
+  if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveBasic from sheet_sr`); return; }
+  Utilities.sleep(2500); // 2.5 secs
 
-  const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
-  if (!sheet_sr) {
-    Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveBasic from sheet_sr`);
-    return;
-  }
+  const saveTable = [
+    {
+      names: [SWING_4, SWING_12, SWING_52],
+      saveKey: STR,             // STR = Save to Swing
+      editKey: DTR,             // DTR = Edit to Swing
+      cells: ['B2','C2'],
+      test: ([b2, c2]) => {
+        const cls = getConfigValue(IST, 'Config'); // IST = Is Stock?
+        if (cls === 'STOCK')     return b2 != 0 && c2 > 0;
+        return cls.match(/BDR|ETF|ADR/) && c2 > 0;
+      },
+      handler: processSaveBasic
+    },
+    {
+      names: [OPCOES],
+      saveKey: SOP,             // SOP = Save to Option
+      editKey: DOP,             // DOP = Edit to Option
+      cells: ['C2','E2','C3','E3','D2','F2','D3','F3','K3','N3'],
+      test: ([call, put, call_, put_, callPM, putPM, callPM_, putPM_, diff, diff2]) =>
+        call && put &&
+        (callPM || putPM) &&
+        (diff || diff2),
+      handler: processSaveBasic
+    },
+    {
+      names: [BTC],
+      saveKey: SBT,             // SBT = Save to BTC
+      editKey: DBT,             // DBT = Edit to BTC
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveBasic
+    },
+    {
+      names: [TERMO],
+      saveKey: STE,             // STE = Save to Termo
+      editKey: DTE,             // DTE = Edit to Termo
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveBasic
+    },
+    {
+      names: [FUND],
+      saveKey: SFU,             // SFU = Save to Fund
+      editKey: DFU,             // DFU = Edit to Fund
+      cells: ['B2'],
+      test: ([b2]) => !ErrorValues.includes(b2),
+      handler: processSaveBasic
+    },
+    {
+      names: [FUTURE],
+      saveKey: SFT,             // SFT = Save to Future
+      editKey: DFT,             // DFT = Edit to Future
+      cells: ['C2','E2','G2'],
+      test: vals => vals.some(v => !ErrorValues.includes(v)),
+      handler: processSaveBasic
+    },
+    {
+      names: [FUTURE_1, FUTURE_2, FUTURE_3],
+      saveKey: SFT,             // SFT = Save to Future
+      editKey: DFT,             // DFT = Edit to Future
+      cells: ['C2'],
+      test: ([c2]) => !ErrorValues.includes(c2),
+      handler: processSaveExtra
+    },
+    {
+      names: [RIGHT_1, RIGHT_2],
+      saveKey: SRT,             // SRT = Save to Right
+      editKey: DRT,             // DRT = Edit to Right
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveExtra
+    },
+    {
+      names: [RECEIPT_9, RECEIPT_10],
+      saveKey: SRC,             // SRC = Save to Receipt
+      editKey: DRC,             // DRC = Edit to Receipt
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveExtra
+    },
+    {
+      names: [WARRANT_11, WARRANT_12, WARRANT_13],
+      saveKey: SWT,             // SWT = Save to Warrant
+      editKey: DWT,             // DWT = Edit to Warrant
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveExtra
+    },
+    {
+      names: [BLOCK],
+      saveKey: SBK,             // SBK = Save to Block
+      editKey: DBK,             // DBK = Edit to Block
+      cells: ['D2'],
+      test: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveExtra
+    }
+  ];
 
-  Utilities.sleep(2500); // 2.5 secs pause
+  const cfg = saveTable.find(e => e.names.includes(SheetName));
+  if (!cfg) { Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`); return; }
 
-  let Save, Edit;
+  // grab the Save/Edit modes
+  const Save = getConfigValue(cfg.saveKey);
+  const Edit = getConfigValue(cfg.editKey);
 
-  switch (SheetName) {
-//-------------------------------------------------------------------Swing-------------------------------------------------------------------//
-    case SWING_4:
-    case SWING_12:
-    case SWING_52:
-      Save = getConfigValue(STR)                                                     // STR = Save to Swing
-      Edit = getConfigValue(DTR)                                                     // DTR = Edit to Swing
+  // read all cells in one go
+  const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
 
-     const Class = getConfigValue(IST, 'Config');                                    // IST = Is Stock?
-
-      var B2 = sheet_sr.getRange("B2").getValue();
-      var C2 = sheet_sr.getRange("C2").getValue();
-
-      if (Class == 'STOCK') {
-        if (B2 != 0 && C2 > 0) {
-          processSaveBasic(sheet_sr, SheetName, Save, Edit);
-          doTrimSheet(SheetName);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-        }
-      }
-      if (Class == 'BDR' || Class == 'ETF' || Class == 'ADR') {
-        if (C2 > 0) {
-          processSaveBasic(sheet_sr, SheetName, Save, Edit);
-          doTrimSheet(SheetName);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-        }
-      }
-      break;
-//-------------------------------------------------------------------Opções-------------------------------------------------------------------//
-    case OPCOES:
-      Save = getConfigValue(SOP)                                                     // SOP = Save to Option
-      Edit = getConfigValue(DOP)                                                     // DOP = Edit to Option
-
-      var [Call, Call_, Call_PM, Call_PM_, Put, Put_, Put_PM, Put_PM_, Diff, Diff_2] =
-        ["C2", "C3", "D2", "D3", "E2", "E3", "F2", "F3", "K3", "N3"].map(r => sheet_sr.getRange(r).getValue());
-
-      if ((Call != 0 && Put != 0) &&
-          (Call != '' && Put != '') &&
-          (Call_PM != 0 || Put_PM != 0) &&
-          (Call_PM != '' || Put_PM != '') &&
-          (Diff != 0 || Diff_2 != 0)) {
-        processSaveBasic(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-    case BTC:
-      Save = getConfigValue(SBT)                                                     // SBT = Save to BTC
-      Edit = getConfigValue(DBT)                                                     // DBT = Edit to BTC
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveBasic(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Termo-------------------------------------------------------------------//
-    case TERMO:
-      Save = getConfigValue(STE)                                                     // STE = Save to Termo
-      Edit = getConfigValue(DTE)                                                     // DTE = Edit to Termo
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveBasic(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Fund-------------------------------------------------------------------//
-    case FUND:
-      Save = getConfigValue(SFU)                                                     // SFU = Save to Fund
-      Edit = getConfigValue(DFU)                                                     // DFU = Edit to Fund
-
-      var B2 = sheet_sr.getRange("B2").getValue();
-      if (!ErrorValues.includes(B2)) {
-        processSaveBasic(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------FUTURE-------------------------------------------------------------------//
-    case FUTURE:
-      Save = getConfigValue(SFT)                                                     // SFT = Save to Future
-      Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
-
-      var C2 = sheet_sr.getRange("C2").getValue();
-      var E2 = sheet_sr.getRange("E2").getValue();
-      var G2 = sheet_sr.getRange("G2").getValue();
-      // You mentioned possibly && instead of ||. Keep as needed.
-      if ((!ErrorValues.includes(C2) || !ErrorValues.includes(E2) || !ErrorValues.includes(G2))) {
-        processSaveBasic(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-    // ----- Future variants: FUTURE_1, FUTURE_2, FUTURE_3 -----
-    case FUTURE_1:
-    case FUTURE_2:
-    case FUTURE_3:
-      Save = getConfigValue(SFT)                                                     // SFT = Save to Future
-      Edit = getConfigValue(DFT)                                                     // DFT = Edit to Future
-
-      var C2 = sheet_sr.getRange("C2").getValue();
-      if (!ErrorValues.includes(C2)) {
-        processSaveExtra(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Right-------------------------------------------------------------------//
-    case RIGHT_1:
-    case RIGHT_2:
-      Save = getConfigValue(SRT)                                                     // SRT = Save to Right
-      Edit = getConfigValue(DRT)                                                     // DRT = Edit to Right
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveExtra(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Receipt-------------------------------------------------------------------//
-    case RECEIPT_9:
-    case RECEIPT_10:
-      Save = getConfigValue(SRC)                                                     // SRC = Save to Receipt
-      Edit = getConfigValue(DRC)                                                     // DRC = Edit to Receipt
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveExtra(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Warrant-------------------------------------------------------------------//
-    case WARRANT_11:
-    case WARRANT_12:
-    case WARRANT_13:
-      Save = getConfigValue(SWT)                                                     // SWT = Save to Warrant
-      Edit = getConfigValue(DWT)                                                     // DWT = Edit to Warrant
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveExtra(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-//-------------------------------------------------------------------Block-------------------------------------------------------------------//
-    case BLOCK:
-      Save = getConfigValue(SBK)                                                     // SBK = Save to Block
-      Edit = getConfigValue(DBK)                                                     // DBK = Edit to Block
-
-      var D2 = sheet_sr.getRange("D2").getValue();
-      if (!ErrorValues.includes(D2)) {
-        processSaveExtra(sheet_sr, SheetName, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`);
-      }
-      break;
-
-    default:
-      Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`);
-      break;
-  }
+  if (cfg.test(vals)) {
+    cfg.handler(sheet_sr, SheetName, Save, Edit);
+  } else { Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`); }
 }
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////

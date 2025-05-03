@@ -39,22 +39,16 @@ function doExportFinancials() {
 function doExportBasic(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
-  const sheet_se = fetchSheetByName('Settings');                                     // Settings sheet
-  if (!sheet_se) return;
-
   const Class     = getConfigValue(IST, 'Config');                                   // IST = Is Stock?
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
-  var Minimum = sheet_se.getRange(MIN).getValue();                                   // -1000 - Default
-  var Maximum = sheet_se.getRange(MAX).getValue();                                   //  1000 - Default
+  const Minimum = getConfigValue(MIN, 'Settings');                                   // SAV = SAVE
+  const Maximum = getConfigValue(MAX, 'Settings');                                   // SAV = SAVE
 
   const sheet_sr = fetchSheetByName(SheetName);                                      // Source sheet
-  if (!sheet_sr) {
-    Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportBasic from sheet_sr`);
-    return;
-  }
+  if (!sheet_sr) { Logger.log(`ERROR EXPORT: Source sheet ${SheetName} - Source sheet does not exist on doExportBasic from sheet_sr`); return; }
 
   var [A2, A5] = sheet_sr.getRange("A2:A5").getValues().flat();
   var LC = sheet_sr.getLastColumn();
