@@ -50,7 +50,7 @@ function doExportBasic(SheetName) {
   if (Class !== 'STOCK') { Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}) on doExportBasic`); return; }
 
   const sheet_sr = fetchSheetByName(SheetName);
-  if (!sheet_sr) { Logger.log(`ERROR EXPORT: Source sheet ${SheetName} does not exist on doExportBasic from sheet_sr`); return; }
+  if (!sheet_sr) return;
 
   const exportTable = [
     {
@@ -100,15 +100,22 @@ function doExportBasic(SheetName) {
   const cfg = exportTable.find(e => e.names.includes(SheetName));
   if (!cfg) { Logger.log(`ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`); return; }
 
+  const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
+  if (!sheet_tr) return;
+
   const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
-  if (!cfg.test(vals)) { Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`); return; }
+  if (!cfg.test(vals)) {
+    Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
+
+    if (SheetName === OPCOES) {
+     tryCleanOpcaoExportRow(sheet_tr, TKT);
+    }
+    return;
+  }
 
   const Export = getConfigValue(cfg.exportKey);
   if (Export !== 'TRUE') { Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportBasic.`); return; }
-
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
-  const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet ${SheetName} does not exist on doExportBasic from sheet_tr`); return; }
 
   const LC = sheet_sr.getLastColumn();
   let filtered;
@@ -133,11 +140,7 @@ function doExportExtra(SheetName) {
   Logger.log(`EXPORT: ${SheetName}`);
 
   const sheet_sr = fetchSheetByName(SheetName);
-
-  if (!sheet_sr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportExtra from sheet_sr`);
-    return;
-  }
+  if (!sheet_sr) return;
 
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
@@ -225,7 +228,7 @@ function doExportFinancial(SheetName) {
   if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
   const sheet_sr = fetchSheetByName('Index');
-  if (!sheet_sr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_sr`); return; }
+  if (!sheet_sr) return;
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
@@ -331,7 +334,7 @@ processExport(TKT, Data, sheet_tr, SheetName);
 
 function doExportInfo() {
   const sheet_in = fetchSheetByName('Info');
-  if (!sheet_in){ Logger.log('Info sheet not found'); return; }
+  if (!sheet_in) return;
 
   var SheetName = sheet_in.getName();
   Logger.log(`Exporting: ${SheetName}`);
@@ -376,10 +379,10 @@ function doExportInfo() {
 
 function doExportProventos() {
   const sheet_pv = fetchSheetByName(PROV);
-  if (!sheet_pv){ Logger.log('PROV sheet not found'); return; }
+  if (!sheet_pv) return;
 
   const sheet_ix = fetchSheetByName('Index');
-  if (!sheet_ix){ Logger.log('Index sheet not found'); return; }
+  if (!sheet_ix) return;
 
   if (!sheet_co || !sheet_ix || !sheet_pv) return;
 

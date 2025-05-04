@@ -94,7 +94,7 @@ function doIsInfoExported() {
   if( EXP === "TRUE" )
   {
     const sheet_in = fetchSheetByName('Info');
-    if (!sheet_in) { Logger.log(`ERROR: Sheet 'Info' does not exist.`); return; }
+    if (!sheet_in) return;
 
     const Range = sheet_in.getRange(TIR).getValues();                              // TIR = Tab Info Range
     sheet_in.getRange(TIR).setValues(Range);                                       // Copy Paste Info

@@ -3,7 +3,7 @@
 function doSaveBasic(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
   const sheet_sr = fetchSheetByName(SheetName);
-  if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveBasic from sheet_sr`); return; }
+  if (!sheet_sr) return;
   Utilities.sleep(2500); // 2.5 secs
 
   const saveTable = [
@@ -125,7 +125,7 @@ function doSaveBasic(SheetName) {
 function doSaveFinancial(SheetName) {
   Logger.log(`SAVE: ${SheetName}`);
   const sheet_up = fetchSheetByName('UPDATE');
-  if (!sheet_up){ Logger.log('UPDATE sheet not found'); return; }
+  if (!sheet_up) return;
 
   let Save, Edit;
   let sheet_tr, sheet_sr;
@@ -137,13 +137,13 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
       sheet_tr = fetchSheetByName(BLC);
-      if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
       var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -173,7 +173,7 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
 
       sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
       var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -194,13 +194,13 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
       sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) {Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -227,7 +227,7 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
 
       sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -251,13 +251,13 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
       sheet_tr = fetchSheetByName(FLC);
-      if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -283,7 +283,7 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
 
       sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -303,13 +303,13 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
       sheet_tr = fetchSheetByName(DVA);
-      if (!sheet_tr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -335,7 +335,7 @@ function doSaveFinancial(SheetName) {
       Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
 
       sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) { Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -389,10 +389,11 @@ function doSaveProventos() {
 
 function doSaveProv(Prov_Values) {
   const sheet_sr = fetchSheetByName('Prov_');                                    // Source Sheet
-  if (!sheet_sr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
+  if (!sheet_sr) return;
 
   const sheet_tr = fetchSheetByName('Prov');                                     // Target Sheet
-  if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov" does not exist. Skipping operation.`); return; }
+  if (!sheet_tr) return;
+
   const checkValue = sheet_sr.getRange(Prov_Values.checkCell).getDisplayValue().trim();
 
   if (checkValue === Prov_Values.expectedValue) {
@@ -424,7 +425,7 @@ function doSaveProv(Prov_Values) {
 
 function doGetProventos() {
   const sheet_tr = fetchSheetByName('Prov_');
-  if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Prov_" does not exist. Skipping operation.`); return; }
+  if (!sheet_tr) return;
 
   const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
@@ -522,8 +523,7 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 
 function doGetCodeCVM() {
   const sheet_tr = fetchSheetByName('Info');                                    // Target sheet
-
-  if (!sheet_tr) { Logger.log(`ERROR: Target sheet "Info" does not exist. Skipping operation.`); return; }
+  if (!sheet_tr) return;
 
   const TKT      = getConfigValue(TKR, 'Config');                                // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
@@ -570,8 +570,7 @@ function doGetCodeCVM() {
 
 function doSaveShares() {
   const sheet_sr = fetchSheetByName('DATA');
-
-  if (!sheet_sr) { Logger.log(`ERROR: DATA sheet not found. Skipping shares save.`); return; }
+  if (!sheet_sr) return;
 
   try {
     var M1 = sheet_sr.getRange("M1").getValue();

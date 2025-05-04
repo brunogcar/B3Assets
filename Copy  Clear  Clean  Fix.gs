@@ -12,7 +12,7 @@ function doClearAll() {
 
 function doCopyBasic(SheetName) {
   const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR CLEAN: ${SheetName} does not exist`); return; }
+  if (!sheet) return;
 
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
@@ -61,7 +61,7 @@ function doClearBasics() {
 
 function doClearBasic(SheetName) {
   const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR CLEAN: ${SheetName} does not exist`); return; }
+  if (!sheet) return;
 
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
@@ -83,7 +83,7 @@ function doClearFinancials() {
 
 function doClearFinancial(SheetName) {
   const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR CLEAN: ${SheetName} does not exist`); return; }
+  if (!sheet) return;
 
   Logger.log(`Clear: ${SheetName}`);
 
@@ -123,30 +123,32 @@ function doClearFinancial(SheetName) {
 
 
 function doClearProventos() {
-  const sheet_sr = fetchSheetByName(PROV);
+  const sheet = fetchSheetByName(PROV);
+  if (!sheet) return;
 
-  var LR = sheet_sr.getLastRow();
-  var LC = sheet_sr.getLastColumn();
+  var LR = sheet.getLastRow();
+  var LC = sheet.getLastColumn();
 
-  sheet_sr.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
+  sheet.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
 };
 
 /////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
 
 function doRecycleTrade() {
-  const sheet_sr = fetchSheetByName(TRADE);
+  const sheet = fetchSheetByName(TRADE);
+  if (!sheet) return;
 
-    var LR = sheet_sr.getLastRow();
-    var LC = sheet_sr.getLastColumn();
+    var LR = sheet.getLastRow();
+    var LC = sheet.getLastColumn();
 
   const AX = getConfigValue(PDT, 'Config');                                                               // PDT = Periodo de Trade
-  const AX_ = sheet_sr.getRange("A" + AX ).getValue();
+  const AX_ = sheet.getRange("A" + AX ).getValue();
 
 //  Logger.log(AX_);
 
   if( AX_ !== "" )
   {
-    sheet_sr.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
+    sheet.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
   }
 };
 
@@ -160,7 +162,7 @@ function doCleanBasics() {
 
 function doCleanBasic(SheetName) {
   const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR CLEAN: ${SheetName} does not exist`); return; }
+  if (!sheet) return;
 
   Logger.log(`CLEAN: ${SheetName}`);
 
@@ -204,7 +206,7 @@ function fixSplit() {
  */
 function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
   const sheet = fetchSheetByName(SheetName);
-  if (!sheet) { Logger.log(`ERROR FIX: sheet "${SheetName}" not found.`); return;}
+  if (!sheet) return;
 
   const M  = sheet.getRange(multiplierA1).getValue();
   const SR = sheet.getRange(startRowA1).getValue();

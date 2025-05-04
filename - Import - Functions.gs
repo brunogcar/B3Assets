@@ -144,11 +144,7 @@ function getSheetTriggersHandle() {
 
 function writeTriggersToSheet() {
   const sheet = fetchSheetByName("Config");
-
-  if (!sheet) {
-    Logger.log("Sheet 'Config' not found.");
-    return;
-  }
+  if (!sheet) return;
 
   const triggers = getSheetTriggersHandle();
   const startRow = 24; // L24

@@ -20,7 +20,8 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   for (let i = 0; i < SheetNames.length; i++) {
     const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
-    if (!sheet) { Logger.log(`ERROR SAVE: ${Name} - Does not exist`); continue; }
+    if (!sheet) return;
+
     if (checkCallback(Name) === "TRUE") {
       SheetNamesToSave.push(Name);
     }
@@ -234,9 +235,10 @@ function doTrim() {
 }
 
 function doTrimSheet(SheetName) {
-  const sheet_sr = fetchSheetByName(SheetName);
   Logger.log(`TRIM: ${SheetName}`);
-  if (!sheet_sr) { Logger.log(`Sheet ${SheetName} not found.`); return; }
+
+  const sheet_sr = fetchSheetByName(SheetName);
+  if (!sheet_sr) return;
 
   const LR = sheet_sr.getLastRow();
   const LC = sheet_sr.getLastColumn();

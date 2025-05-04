@@ -40,7 +40,7 @@ function doEditFinancials() {
 function doEditBasic(SheetName) {
   Logger.log(`EDIT: ${SheetName}`);
   const sheet_sr = fetchSheetByName(SheetName);
-  if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditSheet from sheet_sr`); return; }
+  if (!sheet_sr) return;
   Utilities.sleep(2500);
 
   const editTable = [
@@ -144,7 +144,7 @@ function doEditBasic(SheetName) {
 function doEditFinancial(SheetName) {
     Logger.log(`EDIT: ${SheetName}`);
   const sheet_sr = fetchSheetByName(SheetName);
-  if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+  if (!sheet_sr) return;
 
   Utilities.sleep(2500); // 2,5 secs
 
@@ -156,13 +156,13 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DBL);                                                     // DBL = Edit to BLC
 
       const sheet_tr = fetchSheetByName(BLC);
-      if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
       var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -187,7 +187,7 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DBL);                                                     // DBL = Edit to BLC
 
       const sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
       var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -211,13 +211,13 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DDE);                                                     // DDE = Edit to DRE
 
       const sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -242,7 +242,7 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DDE);                                                     // DDE = Edit to DRE
 
       const sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -266,13 +266,13 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DFL);                                                     // DFL = Edit to FLC
 
       const sheet_tr = fetchSheetByName(FLC);
-      if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -296,7 +296,7 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DFL);                                                     // DFL = Edit to FLC
 
       const sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -319,13 +319,13 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DDV);                                                     // DDV = Edit to DVA
 
       const sheet_tr = fetchSheetByName(DVA);
-      if (!sheet_tr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_tr`); return; }
+      if (!sheet_tr) return;
 
       var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
       var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
 
       const sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
@@ -346,7 +346,7 @@ function doEditFinancial(SheetName) {
       Edit = getConfigValue(DDV);                                                     // DDV = Edit to DVA
 
       const sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) { Logger.log(`ERROR EDIT: ${SheetName} - Does not exist on doEditFinancial from sheet_sr`); return; }
+      if (!sheet_sr) return;
 
       Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
       var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);

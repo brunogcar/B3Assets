@@ -148,14 +148,16 @@ function arraysAreEqual(arr1, arr2) {
 
 function doSettings() {
   const Class    = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
-  const sheet_st = fetchSheetByName('Settings');
+  const sheet = fetchSheetByName('Settings');
+  if (!sheet) return;
+
   const Activate = getConfigValue(ACT, 'Settings');                                     // ACT = Activate
 
   if (Class == 'STOCK')
   {
     if ( Activate == "TRUE")                                              // TRUE
     {
-      var True = sheet_st.getRange(TRU).getDisplayValue();                               // TRU = True
+      const True = getConfigValue(TRU, 'Settings');                                     // TRU = True
 
       if ( True == 'SAVE')                                                // SAVE
       {
@@ -217,6 +219,7 @@ function copypasteSheets() {
     const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
     if (!sheet) continue;
+
     const range = sheet.getDataRange();
     range.copyTo(range, { contentsOnly: true });
   }
@@ -236,6 +239,7 @@ function doDeleteSheets() {
     const Name = SheetNames[i];
     const sheet = fetchSheetByName(Name);
     if (!sheet) continue;
+
     try {
       ss.deleteSheet(sheet);
       Logger.log(`Sheet deleted: ${Name}`);
@@ -364,11 +368,10 @@ function doCleanZeros() {
 }
 
 function doDeleteZeroOptions() {
-  const sheet   = fetchSheetByName(OPCOES);
-  if (!sheet) {
-    Logger.log(`ERROR: Sheet "${OPCOES}" not found. Aborting.`);
-    return;
-  }
+  Logger.log(`DELETE: 0 values from call put / blank values from ratios on Sheet ${OPCOES}`);
+
+  const sheet = fetchSheetByName(OPCOES);
+  if (!sheet) return;
 
   const DEBUG   = getConfigValue(DBG, 'Config') === "TRUE";
   const lastRow = sheet.getLastRow();
@@ -392,24 +395,67 @@ function doDeleteZeroOptions() {
         } else {
           reason = `blank H/I/J (H='${H}', I='${I}', J='${J}')`;
         }
-
-        if (DEBUG) {
-          Logger.log(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`);
-        }
+        if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`); }
         sheet.deleteRow(row);
       }
-
     } catch (err) {
-      if (DEBUG) {
-        Logger.log(`[doDeleteZeroOptions] Error on row ${row}: ${err}`);
-      }
+      if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Error on row ${row}: ${err}`); }
     }
   }
-  if (DEBUG) {
-    Logger.log(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`);
+  if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`); }
+}
+
+function tryCleanOpcaoExportRow(sheet_tr, TKT) {
+  Logger.log(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet on Sheet ${sheet_tr}`);
+
+  const colA = sheet_tr.getRange(2, 1, sheet_tr.getLastRow() - 1).getValues();     // only column A, skip header
+  const rowIndex = colA.findIndex(row => row[0] === TKT);
+
+  const DEBUG = getConfigValue(DBG, 'Config') === "TRUE";
+
+  if (rowIndex > -1) {
+    const rowNum = rowIndex + 2;                                                   // +2 because we started from row 2
+    const colCount = sheet_tr.getLastColumn();
+    sheet_tr.getRange(rowNum, 1, 1, colCount).clearContent();
+    if (DEBUG) Logger.log(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from export sheet.`);
+  } else {
+    if (DEBUG) Logger.log(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found on export sheet.`);
   }
 }
 
+function normalizeFund() {
+  const sheet = fetchSheetByName(FUND);
+  if (!sheet) return;
+
+  const MINIMUM = getConfigValue(MIN, 'Settings');
+  const MAXIMUM = getConfigValue(MAX, 'Settings');
+
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+  const rowStart = 3;
+  const colStart = 4;  // D
+  const colEnd   = 61; // BI
+
+  // Read the Block once
+  const Block = sheet.getRange(rowStart, colStart, lastRow - rowStart + 1, colEnd - colStart + 1).getValues();
+
+  // Clamp in-place in the 2D array
+  for (let r = 0; r < Block.length; r++) {
+    for (let c = 0; c < Block[0].length; c++) {
+      const v = Block[r][c];
+      if (typeof v === 'number') {
+        if (v < MINIMUM)      Block[r][c] = MINIMUM;
+        else if (v > MAXIMUM) Block[r][c] = MAXIMUM;
+      }
+    }
+  }
+
+  // Write back the adjusted Block
+  sheet.getRange(rowStart, colStart, Block.length, Block[0].length)
+       .setValues(Block);
+
+  Logger.log(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`);
+}
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
@@ -449,6 +495,7 @@ function reverseRows() {
 
 function doRestoreFundExport() {
   const sheet_co = fetchSheetByName('Config');
+  if (!sheet_co) return;
 
   var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';
 

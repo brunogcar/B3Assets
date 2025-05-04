@@ -121,6 +121,7 @@ function import_config() {
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');       // Source Sheet
   {
     const sheet_co = fetchSheetByName('Config');                                      // cant be deleted because of sheet_co.getRange(COR)
+    if (!sheet_co) return;
 
     var Data = sheet_sr.getRange(COR).getValues();                                    // Does not use getConfigValue because it gets data from another spreadsheet
     sheet_co.getRange(COR).setValues(Data);
@@ -136,6 +137,8 @@ function doImportShares() {
     var L1 = sheet_sr.getRange("L1").getValue();
     var L2 = sheet_sr.getRange("L2").getValue();
   const sheet_tr = fetchSheetByName('DATA');                                          // Target Sheet
+  if (!sheet_tr) return;
+
     var SheetName = sheet_tr.getName()
 
   Logger.log(`IMPORT: Shares and FF`);
@@ -159,6 +162,7 @@ function doImportProv(ProvName){
   if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
   const sheet_tr = fetchSheetByName('Prov');
+  if (!sheet_tr) return;
 
   Logger.log(`IMPORT: ${ProvName}`);
 
@@ -224,7 +228,7 @@ function doImportBasic(SheetName) {
   if (!sheet_sr) { Logger.log(`ERROR IMPORT: Source sheet ${SheetName} not found in ${Source_Id}.`); return; }
 
   const sheet_tr = fetchSheetByName(SheetName);
-  if (!sheet_tr) { Logger.log(`ERROR IMPORT: Target sheet ${SheetName} not found. Skipping.`); return; }
+  if (!sheet_tr) return;
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") { Logger.log(`ERROR IMPORT: ${SheetName} - IMPORT on config is set to FALSE.`); return; }
@@ -276,7 +280,7 @@ function doImportFinancial(SheetName) {                                         
   if (!sheet_sr) { Logger.log(`ERROR IMPORT: "${SheetName}" not found in source ${Source_Id}.`); return; }
 
   const sheet_tr = fetchSheetByName(SheetName);
-  if (!sheet_tr) { Logger.log(`ERROR IMPORT: Target sheet "${SheetName}" does not exist. Skipping.`); return; }
+  if (!sheet_tr) return;
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") { Logger.log(`ERROR IMPORT: ${SheetName} - IMPORT on config is set to FALSE.`); return; }
