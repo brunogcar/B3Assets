@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////SAVE BASICS/////////////////////////////////////////////////////////////////////
 
 function doSaveBasic(SheetName) {
-  Logger.log(`SAVE: ${SheetName}`);
+  LogDebug(`SAVE: ${SheetName}`, 'MIN');
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
   Utilities.sleep(2500); // 2.5 secs
@@ -9,11 +9,11 @@ function doSaveBasic(SheetName) {
   const saveTable = [
     {
       names: [SWING_4, SWING_12, SWING_52],
-      saveKey: STR,             // STR = Save to Swing
-      editKey: DTR,             // DTR = Edit to Swing
+      saveKey: STR,
+      editKey: DTR,
       cells: ['B2','C2'],
       test: ([b2, c2]) => {
-        const cls = getConfigValue(IST, 'Config'); // IST = Is Stock?
+        const cls = getConfigValue(IST, 'Config');
         if (cls === 'STOCK')     return b2 != 0 && c2 > 0;
         return cls.match(/BDR|ETF|ADR/) && c2 > 0;
       },
@@ -21,8 +21,8 @@ function doSaveBasic(SheetName) {
     },
     {
       names: [OPCOES],
-      saveKey: SOP,             // SOP = Save to Option
-      editKey: DOP,             // DOP = Edit to Option
+      saveKey: SOP,
+      editKey: DOP,
       cells: ['C2','E2','C3','E3','D2','F2','D3','F3','K3','N3'],
       test: ([call, put, call_, put_, callPM, putPM, callPM_, putPM_, diff, diff2]) =>
         call && put &&
@@ -32,72 +32,72 @@ function doSaveBasic(SheetName) {
     },
     {
       names: [BTC],
-      saveKey: SBT,             // SBT = Save to BTC
-      editKey: DBT,             // DBT = Edit to BTC
+      saveKey: SBT,
+      editKey: DBT,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveBasic
     },
     {
       names: [TERMO],
-      saveKey: STE,             // STE = Save to Termo
-      editKey: DTE,             // DTE = Edit to Termo
+      saveKey: STE,
+      editKey: DTE,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveBasic
     },
     {
       names: [FUND],
-      saveKey: SFU,             // SFU = Save to Fund
-      editKey: DFU,             // DFU = Edit to Fund
+      saveKey: SFU,
+      editKey: DFU,
       cells: ['B2'],
       test: ([b2]) => !ErrorValues.includes(b2),
       handler: processSaveBasic
     },
     {
       names: [FUTURE],
-      saveKey: SFT,             // SFT = Save to Future
-      editKey: DFT,             // DFT = Edit to Future
+      saveKey: SFT,
+      editKey: DFT,
       cells: ['C2','E2','G2'],
       test: vals => vals.some(v => !ErrorValues.includes(v)),
       handler: processSaveBasic
     },
     {
       names: [FUTURE_1, FUTURE_2, FUTURE_3],
-      saveKey: SFT,             // SFT = Save to Future
-      editKey: DFT,             // DFT = Edit to Future
+      saveKey: SFT,
+      editKey: DFT,
       cells: ['C2'],
       test: ([c2]) => !ErrorValues.includes(c2),
       handler: processSaveExtra
     },
     {
       names: [RIGHT_1, RIGHT_2],
-      saveKey: SRT,             // SRT = Save to Right
-      editKey: DRT,             // DRT = Edit to Right
+      saveKey: SRT,
+      editKey: DRT,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [RECEIPT_9, RECEIPT_10],
-      saveKey: SRC,             // SRC = Save to Receipt
-      editKey: DRC,             // DRC = Edit to Receipt
+      saveKey: SRC,
+      editKey: DRC,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [WARRANT_11, WARRANT_12, WARRANT_13],
-      saveKey: SWT,             // SWT = Save to Warrant
-      editKey: DWT,             // DWT = Edit to Warrant
+      saveKey: SWT,
+      editKey: DWT,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [BLOCK],
-      saveKey: SBK,             // SBK = Save to Block
-      editKey: DBK,             // DBK = Edit to Block
+      saveKey: SBK,
+      editKey: DBK,
       cells: ['D2'],
       test: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
@@ -105,253 +105,157 @@ function doSaveBasic(SheetName) {
   ];
 
   const cfg = saveTable.find(e => e.names.includes(SheetName));
-  if (!cfg) { Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`); return; }
+  if (!cfg) {
+    LogDebug(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`, 'MIN');
+    return;
+  }
 
-  // grab the Save/Edit modes
   const Save = getConfigValue(cfg.saveKey);
   const Edit = getConfigValue(cfg.editKey);
-
-  // read all cells in one go
   const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
 
   if (cfg.test(vals)) {
     cfg.handler(sheet_sr, SheetName, Save, Edit);
-  } else { Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`); }
+  } else {
+    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`, 'MIN');
+  }
 }
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
-// sheet_sr and sheet_tr are checked  inside the blocks
 
 function doSaveFinancial(SheetName) {
-  Logger.log(`SAVE: ${SheetName}`);
+  LogDebug(`SAVE: ${SheetName}`, 'MIN');
+
   const sheet_up = fetchSheetByName('UPDATE');
   if (!sheet_up) return;
 
-  let Save, Edit;
-  let sheet_tr, sheet_sr;
-
-  switch (SheetName) {
-    // -------------------------------------------------------------------BLC -------------------------------------------------------------------//
-    case BLC:
-      Save = getConfigValue(SBL)                                                     // SBL = Save to BLC
-      Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
-
-      sheet_tr = fetchSheetByName(BLC);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      var CHECK1 = sheet_up.getRange("K3").getValue();
-      var CHECK2 = sheet_up.getRange("K4").getValue();
-
-      if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) &&
-          ((CHECK2 >= 90 && CHECK2 <= 92) || (CHECK2 == 0 || CHECK1 > 40000))) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (B2_sr != 0 && B2_sr != "") &&
-            (B27_sr != 0 && B27_sr != "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Balanco);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-        }
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`);
+  const configs = {
+    [BLC]: {
+      saveKey: SBL,
+      editKey: DBL,
+      targetSheet: BLC,
+      sourceSheet: Balanco,
+      targetRange: "B1:C1",
+      sourceRange: "B1:C1",
+      checks: ["K3", "K4"],
+      conditions: (sheet) => {
+        const [B2, B27] = ["B2", "B27"].map(r => sheet.getRange(r).getDisplayValue());
+        return B2 != 0 && B2 !== "" && B27 != 0 && B27 !== "";
+      },
+      recurse: Balanco
+    },
+    [Balanco]: {
+      saveKey: SBL,
+      editKey: DBL,
+      targetSheet: Balanco,
+      sourceSheet: Balanco,
+      sourceRange: "B1:C1",
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 != 0 && C4 !== "" && C27 != 0 && C27 !== "";
       }
-      break;
-    // -------------------------------------------------------------------Balanço -------------------------------------------------------------------//
-    case Balanco:
-      Save = getConfigValue(SBL)                                                     // SBL = Save to BLC
-      Edit = getConfigValue(DBL)                                                     // DBL = Edit to BLC
-
-      sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C4_sr != 0 && C4_sr != "") &&
-          (C27_sr != 0 && C27_sr != "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
+    },
+    [DRE]: {
+      saveKey: SDE,
+      editKey: DDE,
+      targetSheet: DRE,
+      sourceSheet: Resultado,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      checks: ["K5"],
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 != 0 && C4 !== "" && C27 != 0 && C27 !== "";
+      },
+      recurse: Resultado
+    },
+    [Resultado]: {
+      saveKey: SDE,
+      editKey: DDE,
+      targetSheet: Resultado,
+      sourceSheet: Resultado,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 !== "" && C27 != 0 && C27 !== "";
       }
-      break;
-    // -------------------------------------------------------------------DRE -------------------------------------------------------------------//
-    case DRE:
-      Save = getConfigValue(SDE)                                                     // SDE = Save to DRE
-      Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
+    },
+    [FLC]: {
+      saveKey: SFL,
+      editKey: DFL,
+      targetSheet: FLC,
+      sourceSheet: Fluxo,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      checks: ["K6"],
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== "",
+      recurse: Fluxo
+    },
+    [Fluxo]: {
+      saveKey: SFL,
+      editKey: DFL,
+      targetSheet: Fluxo,
+      sourceSheet: Fluxo,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== ""
+    },
+    [DVA]: {
+      saveKey: SDV,
+      editKey: DDV,
+      targetSheet: DVA,
+      sourceSheet: Valor,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      checks: ["K7"],
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== "",
+      recurse: Valor
+    },
+    [Valor]: {
+      saveKey: SDV,
+      editKey: DDV,
+      targetSheet: Valor,
+      sourceSheet: Valor,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== ""
+    }
+  };
 
-      sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) return;
+  const cfg = configs[SheetName];
+  if (!cfg) return;
 
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
+  const Save = getConfigValue(cfg.saveKey);
+  const Edit = getConfigValue(cfg.editKey);
 
-      sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
+  const sheet_sr = fetchSheetByName(cfg.sourceSheet);
+  if (!sheet_sr) return;
 
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+  const sheet_tr = cfg.targetSheet === cfg.sourceSheet ? sheet_sr : fetchSheetByName(cfg.targetSheet);
+  if (!sheet_tr) return;
 
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K5").getValue();
+  const Values_sr = sheet_sr.getRange(cfg.sourceRange).getValues()[0];
+  const [New_sr, , Old_sr] = doFinancialDateHelper(Values_sr);
 
-      if (((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000))) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C4_sr != 0 && C4_sr != "") &&
-            (C27_sr != 0 && C27_sr != "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Resultado);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-        }
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`);
-      }
-      break;
-    // -------------------------------------------------------------------Resultado -------------------------------------------------------------------//
-    case Resultado:
-      Save = getConfigValue(SDE)                                                     // SDE = Save to DRE
-      Edit = getConfigValue(DDE)                                                     // DDE = Edit to DRE
+  let New_tr = '', Old_tr = '';
+  if (cfg.targetRange) {
+    const Values_tr = sheet_tr.getRange(cfg.targetRange).getValues()[0];
+    [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
+  }
 
-      sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
+  const validNewDate = New_sr.valueOf() !== "-" && New_sr.valueOf() !== "";
 
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+  let checksValid = true;
+  if (cfg.checks) {
+    checksValid = cfg.checks.every(c => {
+      const v = sheet_up.getRange(c).getValue();
+      return (v >= 90 && v <= 92) || v === 0 || v > 40000;
+    });
+  }
 
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      if (sheet_sr) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C4_sr != "") &&
-            (C27_sr != 0 && C27_sr != "")) {
-          processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-        }
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`);
-      }
-      break;
-    // -------------------------------------------------------------------FLC -------------------------------------------------------------------//
-    case FLC:
-      Save = getConfigValue(SFL)                                                     // SFL = Save to FLC
-      Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
-
-      sheet_tr = fetchSheetByName(FLC);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K6").getValue();
-
-      if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C2_sr != 0 && C2_sr !== "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Fluxo);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-        }
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`);
-      }
-      break;
-    // -------------------------------------------------------------------Fluxo -------------------------------------------------------------------//
-    case Fluxo:
-      Save = getConfigValue(SFL)                                                     // SFL = Save to FLC
-      Edit = getConfigValue(DFL)                                                     // DFL = Edit to FLC
-
-      sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C2_sr != 0 && C2_sr !== "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-      }
-      break;
-    // -------------------------------------------------------------------DVA -------------------------------------------------------------------//
-    case DVA:
-      Save = getConfigValue(SDV)                                                     // SDV = Save to DVA
-      Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
-
-      sheet_tr = fetchSheetByName(DVA);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K7").getValue();
-
-      if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C2_sr != 0 && C2_sr !== "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Valor);
-        } else {
-          Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-        }
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`);
-      }
-      break;
-    // -------------------------------------------------------------------Valor -------------------------------------------------------------------//
-    case Valor:
-      Save = getConfigValue(SDV)                                                     // SDV = Save to DVA
-      Edit = getConfigValue(DDV)                                                     // DDV = Edit to DVA
-
-      sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C2_sr != 0 && C2_sr !== "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        Logger.log(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`);
-      }
-      break;
-    default:
-      Logger.log(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveFinancial`);
-      break;
+  if (validNewDate && cfg.conditions(sheet_sr) && checksValid) {
+    processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
+    if (cfg.recurse) doSaveFinancial(cfg.recurse);
+  } else {
+    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
   }
 }
 
@@ -388,10 +292,10 @@ function doSaveProventos() {
 }
 
 function doSaveProv(Prov_Values) {
-  const sheet_sr = fetchSheetByName('Prov_');                                    // Source Sheet
+  const sheet_sr = fetchSheetByName('Prov_');
   if (!sheet_sr) return;
 
-  const sheet_tr = fetchSheetByName('Prov');                                     // Target Sheet
+  const sheet_tr = fetchSheetByName('Prov');
   if (!sheet_tr) return;
 
   const checkValue = sheet_sr.getRange(Prov_Values.checkCell).getDisplayValue().trim();
@@ -400,26 +304,26 @@ function doSaveProv(Prov_Values) {
     let Data;
 
     if (Prov_Values.dynamicRange) {
-      const lr = sheet_sr.getLastRow();
-      const lc = sheet_sr.getLastColumn();
-      const sourceRange = sheet_sr.getRange(64, 12, lr - 63, lc - 11);
-      const targetRange = sheet_tr.getRange(64, 12, lr - 63, lc - 11);
+      const LR = sheet_sr.getLastRow();
+      const LC = sheet_sr.getLastColumn();
+      const sourceRange = sheet_sr.getRange(64, 12, LR - 63, LC - 11);
+      const targetRange = sheet_tr.getRange(64, 12, LR - 63, LC - 11);
 
       Data = sourceRange.getValues();
-      targetRange.clearContent(); // Clear target range before writing data
+      targetRange.clearContent();
       targetRange.setValues(Data);
     } else {
       const sourceRange = sheet_sr.getRange(Prov_Values.sourceRange);
       const targetRange = sheet_tr.getRange(Prov_Values.targetRange);
 
       Data = sourceRange.getValues();
-      targetRange.clearContent(); // Clear target range before writing data
+      targetRange.clearContent();
       targetRange.setValues(Data);
     }
 
-    Logger.log(`SUCCESS SAVE: ${Prov_Values.name}.`);
+    LogDebug(`SUCCESS SAVE: ${Prov_Values.name}.`, 'MIN');
   } else {
-    Logger.log(`ERROR SAVE: ${Prov_Values.name}, ${Prov_Values.checkCell} != ${Prov_Values.expectedValue}`);
+    LogDebug(`ERROR SAVE: ${Prov_Values.name}, ${Prov_Values.checkCell} != ${Prov_Values.expectedValue}`, 'MIN');
   }
 }
 
@@ -427,42 +331,49 @@ function doGetProventos() {
   const sheet_tr = fetchSheetByName('Prov_');
   if (!sheet_tr) return;
 
-  const TKT      = getConfigValue(TKR, 'Config');                                     // TKR = Ticket Range
+  const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 
-  const data = JSON.stringify({
-    issuingCompany: ticker,
-    language: language
-  });
-
+  const data = JSON.stringify({ issuingCompany: ticker, language });
   const base64Params = Utilities.base64Encode(data);
-
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  Logger.log(`URL: ${url}`);
+
+  LogDebug(`URL: ${url}`, 'MIN');
 
   let responseText;
   try {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    Logger.log(`API Response: ${responseText}`);
+    LogDebug(`API Response: ${responseText}`, 'MIN');
   } catch (error) {
-    Logger.log(`ERROR: Failed to fetch API response. ${error}`);
-    return; // Exit if the API request fails
+    LogDebug(`ERROR: Failed to fetch API response. ${error}`, 'MIN');
+    return;
   }
 
-  if (!responseText) { Logger.log("ERROR: Empty response from API."); }
+  if (!responseText) {
+    LogDebug("ERROR: Empty response from API.", 'MIN');
+    return;
+  }
 
   let content;
-  try { content = JSON.parse(responseText); }
-  catch (error) { Logger.log(`ERROR: Failed to parse JSON response. ${error}`); }
+  try {
+    content = JSON.parse(responseText);
+  } catch (error) {
+    LogDebug(`ERROR: Failed to parse JSON response. ${error}`, 'MIN');
+    return;
+  }
 
-  if (!content || !content[0]) { Logger.log("ERROR: No data returned from API."); }
+  if (!content || !content[0]) {
+    LogDebug("ERROR: No data returned from API.", 'MIN');
+    return;
+  }
 
   fillCashDividends(sheet_tr, content[0]?.cashDividends || []);
   fillStockDividends(sheet_tr, content[0]?.stockDividends || []);
   fillSubscriptions(sheet_tr, content[0]?.subscriptions || []);
 }
+
 
 /**
  * Generic function to fill a titled table section with header and data rows.
@@ -525,10 +436,8 @@ function fillSection(
     LogDebug(`${titleText}: Writing ${rows.length} rows`, 'MIN');
     sheet.getRange(startRow, colStart, rows.length, colCount).setValues(rows);
   } else {
-    LogDebug(`${titleText}: No valid rows — header not written`, 'MID');
+    LogDebug(`${titleText}: No valid rows — header not written`, 'MIN');
   }
-
-  LogDebug(`${titleText}: Finished`, 'MIN');
   return rows.length;
 }
 
@@ -610,47 +519,47 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 /////////////////////////////////////////////////////////////////////CodeCVM/////////////////////////////////////////////////////////////////////
 
 function doGetCodeCVM() {
-  const sheet_tr = fetchSheetByName('Info');                                    // Target sheet
+  const sheet_tr = fetchSheetByName('Info');
   if (!sheet_tr) return;
 
-  const TKT      = getConfigValue(TKR, 'Config');                                // TKR = Ticket Range
+  const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
   const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 
-  const data = JSON.stringify({
-    issuingCompany: ticker,
-    language: language
-  });
-
+  const data = JSON.stringify({ issuingCompany: ticker, language });
   const base64Params = Utilities.base64Encode(data);
 
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  Logger.log("URL:", url);
+  LogDebug(`URL: ${url}`, 'MIN');
 
   let responseText;
   try {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    Logger.log("API Response:", responseText);
-  }
-  catch (error) {
-    Logger.log(`ERROR: Failed to fetch API response. ${error}`);
-
-    return; // Exit if the API request fails
+    LogDebug(`API Response: ${responseText}`, 'MIN');
+  } catch (error) {
+    LogDebug(`ERROR: Failed to fetch API response. ${error}`, 'MIN');
+    return;
   }
 
-  if (!responseText) { Logger.log("ERROR: Empty response from API."); }
+  if (!responseText) {
+    LogDebug("ERROR: Empty response from API.", 'MIN');
+  }
 
   let content;
-  try { content = JSON.parse(responseText); }
-  catch (error) { Logger.log(`ERROR: Failed to parse JSON response. ${error}`); }
+  try {
+    content = JSON.parse(responseText);
+  } catch (error) {
+    LogDebug(`ERROR: Failed to parse JSON response. ${error}`, 'MIN');
+  }
 
-  if (!content || !content[0]) { Logger.log(`ERROR: No data returned from API.`); }
+  if (!content || !content[0]) {
+    LogDebug("ERROR: No data returned from API.", 'MIN');
+  }
 
-  const codeCVM = content[0]?.codeCVM || 'N/A';                                     // Default to 'N/A' if codeCVM is missing
-  Logger.log(`Extracted codeCVM: ${codeCVM}`);
+  const codeCVM = content[0]?.codeCVM || 'N/A';
+  LogDebug(`Extracted codeCVM: ${codeCVM}`, 'MIN');
 
-  // Write to the Info sheet
   sheet_tr.getRange("C3").setValue(codeCVM);
 }
 
@@ -661,21 +570,25 @@ function doSaveShares() {
   if (!sheet_sr) return;
 
   try {
-    var M1 = sheet_sr.getRange("M1").getValue();
-    var M2 = sheet_sr.getRange("M2").getValue();
+    let M1 = sheet_sr.getRange("M1").getValue();
+    let M2 = sheet_sr.getRange("M2").getValue();
 
-    Logger.log(`SAVE: Shares and FF`);
+    LogDebug(`SAVE: Shares and FF`, 'MIN');
 
     if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) {
-      M1 = Number(M1); // Convert to number if not already
+      M1 = Number(M1);
       M2 = Number(M2);
 
-      var Data = sheet_sr.getRange("M1:M2").getValues();
+      const Data = sheet_sr.getRange("M1:M2").getValues();
       sheet_sr.getRange("L1:L2").setValues(Data);
-      Logger.log(`SUCCESS SAVE: Shares and FF`);
-    } else { Logger.log(`ERROR SAVE: Invalid values in M1/M2`); }
+
+      LogDebug(`SUCCESS SAVE: Shares and FF`, 'MIN');
+    } else {
+      LogDebug(`ERROR SAVE: Invalid values in M1/M2`, 'MIN');
+    }
+  } catch (error) {
+    LogDebug(`ERROR in doSaveShares: ${error.message}`, 'MIN');
   }
-  catch (error) { Logger.log(`ERROR in doSaveShares:`, error.message); }
 }
 
 /////////////////////////////////////////////////////////////////////SAVE TEMPLATE/////////////////////////////////////////////////////////////////////

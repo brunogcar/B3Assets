@@ -38,7 +38,8 @@ function doEditFinancials() {
 /////////////////////////////////////////////////////////////////////BASIC TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doEditBasic(SheetName) {
-  Logger.log(`EDIT: ${SheetName}`);
+  LogDebug(`EDIT: ${SheetName}`, 'MIN');
+
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
   Utilities.sleep(2500);
@@ -126,245 +127,135 @@ function doEditBasic(SheetName) {
     }
   ];
 
-  const config = editTable.find(cfg => cfg.names.includes(SheetName));
-  if (!config) { Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditSheet`); return; }
+  const cfg = editTable.find(e => e.names.includes(SheetName));
+  if (!cfg) {
+    LogDebug(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditBasic`, 'MIN');
+    return;
+  }
 
-  const editValue = getConfigValue(config.editKey);
-  const values = config.cells.map(a1 => sheet_sr.getRange(a1).getValue());
+  const Edit = getConfigValue(cfg.editKey);
+  const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
 
-  if (config.test(values)) {
-    config.handler(sheet_sr, SheetName, editValue);
-  } else { Logger.log(`ERROR EDIT: ${SheetName} - Conditions aren’t met in doEditSheet`); }
+  if (cfg.test(vals)) {
+    cfg.handler(sheet_sr, SheetName, Edit);
+  } else {
+    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditBasic`, 'MIN');
+  }
 }
+
+
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
-// sheet_sr and sheet_tr are checked  inside the blocks
-
 function doEditFinancial(SheetName) {
-    Logger.log(`EDIT: ${SheetName}`);
-  const sheet_sr = fetchSheetByName(SheetName);
+  LogDebug(`EDIT: ${SheetName}`, 'MIN');
+
+  const configs = {
+    [BLC]: {
+      editKey: DBL,
+      targetSheet: BLC,
+      sourceSheet: Balanco,
+      targetRange: "B1:C1",
+      sourceRange: "B1:C1",
+      conditions: (sheet) => {
+        const [B2, B27] = ["B2", "B27"].map(r => sheet.getRange(r).getDisplayValue());
+        return B2 != 0 && B2 !== "" && B27 != 0 && B27 !== "";
+      },
+      recurse: Balanco
+    },
+    [Balanco]: {
+      editKey: DBL,
+      targetSheet: Balanco,
+      sourceSheet: Balanco,
+      sourceRange: "B1:C1",
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 != 0 && C4 !== "" && C27 != 0 && C27 !== "";
+      }
+    },
+    [DRE]: {
+      editKey: DDE,
+      targetSheet: DRE,
+      sourceSheet: Resultado,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 != 0 && C4 !== "" && C27 != 0 && C27 !== "";
+      },
+      recurse: Resultado
+    },
+    [Resultado]: {
+      editKey: DDE,
+      targetSheet: Resultado,
+      sourceSheet: Resultado,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => {
+        const [C4, C27] = ["C4", "C27"].map(r => sheet.getRange(r).getDisplayValue());
+        return C4 !== "" && C27 != 0 && C27 !== "";
+      }
+    },
+    [FLC]: {
+      editKey: DFL,
+      targetSheet: FLC,
+      sourceSheet: Fluxo,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== "",
+      recurse: Fluxo
+    },
+    [Fluxo]: {
+      editKey: DFL,
+      targetSheet: Fluxo,
+      sourceSheet: Fluxo,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== ""
+    },
+    [DVA]: {
+      editKey: DDV,
+      targetSheet: DVA,
+      sourceSheet: Valor,
+      targetRange: "B1:C1",
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== "",
+      recurse: Valor
+    },
+    [Valor]: {
+      editKey: DDV,
+      targetSheet: Valor,
+      sourceSheet: Valor,
+      sourceRange: "B1:D1",
+      conditions: (sheet) => sheet.getRange("C2").getDisplayValue() != 0 && sheet.getRange("C2").getDisplayValue() !== ""
+    }
+  };
+
+  const cfg = configs[SheetName];
+  if (!cfg) return;
+
+  const Edit = getConfigValue(cfg.editKey);
+
+  const sheet_sr = fetchSheetByName(cfg.sourceSheet);
   if (!sheet_sr) return;
 
-  Utilities.sleep(2500); // 2,5 secs
+  const sheet_tr = cfg.targetSheet === cfg.sourceSheet ? sheet_sr : fetchSheetByName(cfg.targetSheet);
+  if (!sheet_tr) return;
 
-  let Edit, Values_sr;
+  const Values_sr = sheet_sr.getRange(cfg.sourceRange).getValues()[0];
+  const [New_sr, , Old_sr] = doFinancialDateHelper(Values_sr);
 
-  switch (SheetName) {
-//-------------------------------------------------------------------BLC-------------------------------------------------------------------//
-    case BLC: {
-      Edit = getConfigValue(DBL);                                                     // DBL = Edit to BLC
+  let New_tr = '', Old_tr = '';
+  if (cfg.targetRange) {
+    const Values_tr = sheet_tr.getRange(cfg.targetRange).getValues()[0];
+    [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
+  }
 
-      const sheet_tr = fetchSheetByName(BLC);
-      if (!sheet_tr) return;
+  const validNewDate = New_sr.valueOf() !== "-" && New_sr.valueOf() !== "";
 
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      const sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( B2_sr != 0 && B2_sr != "" ) &&
-          ( B27_sr != 0 && B27_sr != "" ) )
-      {
-        processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
-        doEditFinancial(Balanco);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------Balanço-------------------------------------------------------------------//
-    case Balanco: {
-      Edit = getConfigValue(DBL);                                                     // DBL = Edit to BLC
-
-      const sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( B2_sr != 0 && B2_sr != "" ) &&
-          ( B27_sr != 0 && B27_sr != "" ) )
-      {
-        processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------DRE-------------------------------------------------------------------//
-    case DRE: {
-      Edit = getConfigValue(DDE);                                                     // DDE = Edit to DRE
-
-      const sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      const sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( C4_sr != 0 && C4_sr != "" ) &&
-          ( C27_sr != 0 && C27_sr != "" ) )
-      {
-        processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
-        doEditFinancial(Resultado);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------Resultado-------------------------------------------------------------------//
-    case Resultado: {
-      Edit = getConfigValue(DDE);                                                     // DDE = Edit to DRE
-
-      const sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( C4_sr != "" ) &&
-          ( C27_sr != 0 && C27_sr != "" ) )
-      {
-        processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------FLC-------------------------------------------------------------------//
-    case FLC: {
-      Edit = getConfigValue(DFL);                                                     // DFL = Edit to FLC
-
-      const sheet_tr = fetchSheetByName(FLC);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      const sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( B2_sr != 0 && B2_sr != "" ) )
-      {
-        processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
-        doEditFinancial(Fluxo);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------Fluxo-------------------------------------------------------------------//
-    case Fluxo: {
-      Edit = getConfigValue(DFL);                                                     // DFL = Edit to FLC
-
-      const sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [B2_sr] = ["B2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( B2_sr != 0 && B2_sr != "" ) )
-      {
-        processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------DVA-------------------------------------------------------------------//
-    case DVA: {
-      Edit = getConfigValue(DDV);                                                     // DDV = Edit to DVA
-
-      const sheet_tr = fetchSheetByName(DVA);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr]  = doFinancialDateHelper(Values_tr);
-
-      const sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( B2_sr != "" ) ) {
-        processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
-        doEditFinancial(Valor);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-//-------------------------------------------------------------------Valor-------------------------------------------------------------------//
-    case Valor: {
-      Edit = getConfigValue(DDV);                                                     // DDV = Edit to DVA
-
-      const sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) return;
-
-      Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if( ( New_sr.valueOf() != "-" && New_sr.valueOf() != "" ) &&
-          ( C2_sr != "" ) ) {
-        processEditFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Edit);
-      } else {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`);
-      }
-    }
-      break;
-
-    default:
-      Logger.log(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditFinancial`);
-      break;
+  if (validNewDate && cfg.conditions(sheet_sr)) {
+    processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit);
+    if (cfg.recurse) doEditFinancial(cfg.recurse);
+  } else {
+    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`, 'MIN');
   }
 }
 
