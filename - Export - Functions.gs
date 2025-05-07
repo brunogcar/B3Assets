@@ -2,7 +2,7 @@
 
 function getSheetID() {
   const sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
-  Logger.log(`Sheet ID not found: ${sheet_Id}`)
+  LogDebug(`Sheet ID not found: ${sheet_Id}`, 'MIN');
   return sheet_Id;
 };
 
@@ -22,10 +22,10 @@ function setSheetID() {
   const ss_tr    = SpreadsheetApp.openById(Data_Id);
   const sheet_tr = ss_tr.getSheetByName('Relação');
   if (!sheet_tr) {
-    Logger.log('Target sheet not found: Relação');
+    LogDebug('Target sheet not found: Relação', 'MIN');
     return;
   }
-  Logger.log('Found Relação sheet, searching for ticket...');
+  LogDebug('Found Relação sheet, searching for ticket...', 'MIN');
 
   // 4) Find your ticket in column A
   const search = sheet_tr
@@ -34,27 +34,25 @@ function setSheetID() {
     .findNext();
 
   if (!search) {
-    Logger.log(`Ticket "${TKT}" not found in Relação sheet`);
+    LogDebug(`Ticket "${TKT}" not found in Relação sheet`, 'MIN');
     return;
   }
-  Logger.log(`Ticket "${TKT}" found at row ${search.getRow()}`);
+  LogDebug(`Ticket "${TKT}" found at row ${search.getRow()}`, 'MIN');
 
   // 5) Check your combined condition
   if (bgcolor == colour) {
-    Logger.log('bgcolor matches expected colour');
+    LogDebug('bgcolor matches expected colour', 'MIN');
   } else {
-    Logger.log(`bgcolor "${bgcolor}" does NOT match "${colour}"`);
+    LogDebug(`bgcolor "${bgcolor}" does NOT match "${colour}"`, 'MIN');
   }
 
   if (EXP == "TRUE" && SHI != "TRUE") {
-    Logger.log('Conditions met: EXP is TRUE and SHI is not TRUE — setting Sheet ID');
+    LogDebug('Conditions met: EXP is TRUE and SHI is not TRUE — setting Sheet ID', 'MIN');
     search.offset(0, 11).setValue(Sheet_Id);
     search.offset(0, 12).setValue(SNAME(3));
-    Logger.log(`Sheet ID ${Sheet_Id} written to Relação!`);
+    LogDebug(`Sheet ID ${Sheet_Id} written to Relação!`, 'MIN');
   } else {
-    Logger.log(
-      `Skipping write: EXP="${EXP}", SHI="${SHI}" — need EXP=="TRUE" && SHI!="TRUE"`
-    );
+    LogDebug(`Skipping write: EXP="${EXP}", SHI="${SHI}" — need EXP=="TRUE" && SHI!="TRUE"`, 'MIN');
   }
 }
 
@@ -70,18 +68,24 @@ function doIsIdExported() {
 function doClearSheetID() {
   const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
-  if (!Data_Id) { Logger.log("ERROR EXPORT: DATA ID is empty."); return; }
+  if (!Data_Id) {
+    LogDebug("ERROR EXPORT: DATA ID is empty.", 'MIN');
+    return;
+  }
 
   var ss_tr = SpreadsheetApp.openById(Data_Id);                                    // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
-  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
+  if (!sheet_tr) {
+    LogDebug(`Target sheet not found: ${SheetName}`, 'MIN');
+    return;
+  }
 
   const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
   if (!search) return;
   {
     search.offset(0, 11, 1, 2).clearContent();
 
-    Logger.log('Sheet ID Cleared');
+    LogDebug('Sheet ID Cleared', 'MIN');
   }
 };
 
@@ -146,19 +150,25 @@ function doClearExportAll() {
 }
 
 function doClearExport(SheetName) {
-  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
-  const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  const TKT       = getConfigValue(TKR, 'Config');                                // TKR = Ticket Range
+  const Target_Id = getConfigValue(TDR, 'Config');                                // Target sheet ID
+  if (!Target_Id) {
+    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    return;
+  }
 
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                              // Target spreadsheet
-  const sheet_tr = ss_tr.getSheetByName(SheetName);                              // Target sheet
-  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
+  const ss_tr = SpreadsheetApp.openById(Target_Id);                               // Target spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(SheetName);                               // Target sheet
+  if (!sheet_tr) {
+    LogDebug(`Target sheet not found: ${SheetName}`, 'MIN');
+    return;
+  }
 
-  let success = false;                                                           // Initialize success flag to false
+  let success = false;                                                            // Initialize success flag to false
 
   var search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
 
-  Logger.log('Clear Export:', SheetName);
+  LogDebug('Clear Export: ' + SheetName, 'MIN');
 
   if (search)
   {
@@ -168,11 +178,11 @@ function doClearExport(SheetName) {
   }
   if (success)
   {
-    Logger.log(`Exported data cleared successfully. Sheet: ${SheetName}.`);
+    LogDebug(`Exported data cleared successfully. Sheet: ${SheetName}.`, 'MIN');
   }
   else
   {
-    Logger.log(`Clear EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`);
+    LogDebug(`Clear EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`, 'MIN');
   }
 }
 

@@ -1,154 +1,81 @@
-/////////////////////////////////////////////////////////////////////PROCESS BASICS/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
+
+function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
+  const LR = sheet_sr.getLastRow();
+  const LC = sheet_sr.getLastColumn();
+
+  const A1 = sheet_sr.getRange("A1").getValue();
+  const A2 = sheet_sr.getRange("A2").getValue();
+  const A5 = sheet_sr.getRange("A5").getValue();
+
+  const Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0];
+  const Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0];
+  const Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0];
+
+  // Handle SAVE = FALSE early
+  if (Save !== "TRUE") {
+    LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+    return;
+  }
+
+  // Handle invalid A2 early
+  if (ErrorValues.includes(A2)) {
+    LogDebug(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSave`, 'MIN');
+    return;
+  }
+
+  const IsEqual = Row2.some((val, i) => val === Row1[i] || val === Row5[i]);
+
+  if (A5 === "") {
+    // Save only header
+    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
+    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
+    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
+    LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
+    exportFn(SheetName);
+    return;
+  }
+
+  if (A2 > A1 || A2 > A5) {
+    // Save header and body
+    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
+    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
+    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
+
+    const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
+    sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
+
+    LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
+    exportFn(SheetName);
+    return;
+  }
+
+  if (
+    ((A2 === A5 || A2 === A1) && IsEqual) ||
+    ErrorValues.includes(A1) || ErrorValues.includes(A5)
+  ) {
+    if (Edit === "TRUE") {
+      doEditBasic(SheetName);
+    } else {
+      LogDebug(`ERROR SAVE: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
+    }
+    return;
+  }
+
+  LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren't met on processSave`, 'MIN');
+}
+
+/////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
 
 function processSaveBasic(sheet_sr, SheetName, Save, Edit) {
-  const LR = sheet_sr.getLastRow();
-  const LC = sheet_sr.getLastColumn();
-
-  const A1 = sheet_sr.getRange("A1").getValue();
-  const A2 = sheet_sr.getRange("A2").getValue();
-  const A5 = sheet_sr.getRange("A5").getValue();
-
-  const Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0];
-  const Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0];
-  const Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0];
-
-  let IsEqual = false;
-  for (let i = 0; i < Row2.length; i++) {
-    if (Row2[i] == Row1[i] || Row2[i] == Row5[i]) {
-      IsEqual = true;
-      break;
-    }
-  }
-
-  let Data_Header;
-  let Data_Body;
-
-  if (!ErrorValues.includes(A2)) {
-    if (Save === "TRUE") {
-      if (A5 === "") {
-        Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-        sheet_sr.getRange(5, 1, Data_Header.length, Data_Header[0].length).setValues(Data_Header);
-        sheet_sr.getRange(1, 1, Data_Header.length, Data_Header[0].length).setValues(Data_Header);
-
-        LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
-        doExportBasic(SheetName);
-
-      } else if (A2.valueOf() > A1.valueOf() || A2.valueOf() > A5.valueOf()) {
-        Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
-        Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-
-        sheet_sr.getRange(6, 1, Data_Body.length, Data_Body[0].length).setValues(Data_Body);
-        sheet_sr.getRange(5, 1, Data_Header.length, Data_Header[0].length).setValues(Data_Header);
-        sheet_sr.getRange(1, 1, Data_Header.length, Data_Header[0].length).setValues(Data_Header);
-
-        LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
-        doExportBasic(SheetName);
-
-      } else if (
-        ((A2.valueOf() == A5.valueOf() || A2.valueOf() == A1.valueOf()) && IsEqual) ||
-        ErrorValues.includes(A1) || ErrorValues.includes(A5)
-      ) {
-        if (Edit === "TRUE") {
-          doEditBasic(SheetName);
-        } else {
-          LogDebug(`ERROR SAVE: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-        }
-
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren't met on processSaveBasic`, 'MIN');
-      }
-
-    } else {
-      LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
-    }
-
-  } else {
-    LogDebug(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSaveBasic`, 'MIN');
-  }
+  processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportBasic);
 }
 
-/////////////////////////////////////////////////////////////////////PROCESS EXTRA/////////////////////////////////////////////////////////////////////
-
-function processSaveExtra(sheet_sr, SheetName, Save, Edit)
-{
-  const LR = sheet_sr.getLastRow();
-  const LC = sheet_sr.getLastColumn();
-
-  const A1 = sheet_sr.getRange("A1").getValue();
-  const A2 = sheet_sr.getRange("A2").getValue();
-  const A5 = sheet_sr.getRange("A5").getValue();
-
-  const Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0];
-  const Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0];
-  const Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0];
-
-  let IsEqual = false;
-  for (let i = 0; i < Row2.length; i++)
-  {
-    if (Row2[i] == Row1[i] || Row2[i] == Row5[i])
-    {
-      IsEqual = true;
-      break;
-    }
-  }
-
-  let Data_Header;
-  let Data_Body;
-
-  if (!ErrorValues.includes(A2))
-  {
-    if (Save === "TRUE")
-    {
-      if (A5 === "")
-      {
-        Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-        sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
-        sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
-
-        LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
-        doExportExtra(SheetName);
-      }
-      else if (A2 > A1 || A2 > A5)
-      {
-        Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
-        Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-
-        sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
-        sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
-        sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
-
-        LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
-        doExportExtra(SheetName);
-      }
-      else if (
-        ((A2 === A5 || A2 === A1) && IsEqual) ||
-        ErrorValues.includes(A1) || ErrorValues.includes(A5)
-      )
-      {
-        if (Edit === "TRUE")
-        {
-          doEditBasic(SheetName);
-        }
-        else
-        {
-          LogDebug(`ERROR SAVE: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-        }
-      }
-      else
-      {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren't met on processSaveExtra`, 'MIN');
-      }
-    }
-    else
-    {
-      LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
-    }
-  }
-  else
-  {
-    LogDebug(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSaveExtra`, 'MIN');
-  }
+function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
+  processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportExtra);
 }
+
+
 
 /////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 

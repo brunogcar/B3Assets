@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////SAVE FUNCTIONS/////////////////////////////////////////////////////////////////////
 /**
  * Processes a batch “save” operation over a list of sheet names.
  *
@@ -15,7 +15,6 @@
  * @param {function(string):void}    saveFunction      The function to perform the actual save on a sheet name.
  */
 function doSaveGroup(SheetNames, checkCallback, saveFunction) {
-
   const SheetNamesToSave = [];
   for (let i = 0; i < SheetNames.length; i++) {
     const Name = SheetNames[i];
@@ -28,12 +27,17 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   }
 
   const totalSheets = SheetNamesToSave.length;
-  if (totalSheets === 0) { Logger.log(`No valid data found. Skipping save operation.`); return; }
+  if (totalSheets === 0) {
+    LogDebug(`No valid data found. Skipping save operation.`, 'MIN');
+    return;
+  }
 
   SpreadsheetApp.flush();
 
   _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
 }
+
+
 
 /**
  * Converts an array of date strings into timestamps (milliseconds since epoch),
@@ -102,7 +106,7 @@ function doCheckDATAS() {
     try {
       doCheckDATA(SheetName);
     } catch (error) {
-      Logger.log(`Error checking DATA for sheet ${SheetName}: ${error}`);
+      LogDebug(`Error checking DATA for sheet ${SheetName}: ${error}`, 'MIN');
     }
   }
 }
@@ -120,7 +124,7 @@ function doCheckDATA(SheetName) {
   const sheet_f  = fetchSheetByName(Fluxo);        // Fluxo sheet
   const sheet_v  = fetchSheetByName(Valor);        // Valor sheet
 
-  Logger.log(`CHECK Sheet: ${SheetName}`);
+  LogDebug(`CHECK Sheet: ${SheetName}`, 'MIN');
 
   const cfg = {
     [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, cells: null },
@@ -150,7 +154,7 @@ function doCheckDATA(SheetName) {
   }[SheetName];
 
   if (!cfg) {
-    Logger.log(`Sheet Name "${SheetName}" not recognized.`);
+    LogDebug(`Sheet Name "${SheetName}" not recognized.`, 'MIN');
     return processCheckDATA(sheet_sr, SheetName, 'FALSE');
   }
 
@@ -161,10 +165,10 @@ function doCheckDATA(SheetName) {
     Check = cfg.sheetVar.getRange(cfg.cell).getValue();
     if (Check === '') {
       sheet_o.hideSheet();
-      Logger.log(`HIDDEN: OPT`);
+      LogDebug(`HIDDEN: OPT`, 'MIN');
     } else if (sheet_o.isSheetHidden()) {
       sheet_o.showSheet();
-      Logger.log(`DISPLAYED: ${SheetName}`);
+      LogDebug(`DISPLAYED: ${SheetName}`, 'MIN');
     }
 
   // 2) classSheet case (SWING_x)
@@ -199,23 +203,23 @@ function processCheckDATA(sheet_sr, SheetName, Check) {
 
   if (ErrorValues.includes(Check)) {
     if (fixedSheets.includes(SheetName)) {
-      Logger.log(`DATA Check: FALSE for ${SheetName}`);
+      LogDebug(`DATA Check: FALSE for ${SheetName}`, 'MIN');
       return "FALSE";
     }
     if (!sheet_sr.isSheetHidden()) {
       sheet_sr.hideSheet();
-      Logger.log(`Sheet ${SheetName} HIDDEN`);
+      LogDebug(`Sheet ${SheetName} HIDDEN`, 'MIN');
     }
-    Logger.log(`DATA Check: FALSE for ${SheetName}`);
+    LogDebug(`DATA Check: FALSE for ${SheetName}`, 'MIN');
     return "FALSE";
   }
 
   if (sheet_sr.isSheetHidden()) {
     sheet_sr.showSheet();
-    Logger.log(`Sheet ${SheetName} DISPLAYED`);
+    LogDebug(`Sheet ${SheetName} DISPLAYED`, 'MIN');
   }
 
-  Logger.log(`DATA Check: TRUE for ${SheetName}`);
+  LogDebug(`DATA Check: TRUE for ${SheetName}`, 'MIN');
   return "TRUE";
 }
 
@@ -229,13 +233,13 @@ function doTrim() {
     try {
       doTrimSheet(SheetName);
     } catch (error) {
-      Logger.log(`Error trimming sheet ${SheetName}: ${error}`);
+      LogDebug(`Error trimming sheet ${SheetName}: ${error}`, 'MIN');
     }
   }
 }
 
 function doTrimSheet(SheetName) {
-  Logger.log(`TRIM: ${SheetName}`);
+  LogDebug(`TRIM: ${SheetName}`, 'MIN');
 
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
@@ -247,23 +251,23 @@ function doTrimSheet(SheetName) {
     case SWING_4:
       if (LR > 126) {
         sheet_sr.getRange(127, 1, LR - 126, LC).clearContent();
-        Logger.log(`SUCCESS TRIM. Cleared rows 127→${LR} in ${SheetName}.`);
+        LogDebug(`SUCCESS TRIM. Cleared rows 127→${LR} in ${SheetName}.`, 'MIN');
       }
       break;
 
     case SWING_12:
       if (LR > 366) {
         sheet_sr.getRange(367, 1, LR - 366, LC).clearContent();
-        Logger.log(`SUCCESS TRIM. Cleared rows 367→${LR} in ${SheetName}.`);
+        LogDebug(`SUCCESS TRIM. Cleared rows 367→${LR} in ${SheetName}.`, 'MIN');
       }
       break;
 
     case SWING_52:
-      Logger.log(`NOTHING TO TRIM. ${SheetName} stays at ${LR} rows.`);
+      LogDebug(`NOTHING TO TRIM. ${SheetName} stays at ${LR} rows.`, 'MIN');
       break;
 
     default:
-      Logger.log(`No trim logic defined for ${SheetName}.`);
+      LogDebug(`No trim logic defined for ${SheetName}.`, 'MIN');
   }
 }
 
@@ -305,7 +309,7 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!sheet.isSheetHidden() && Hidden.indexOf(SheetName) !== -1) {
           sheet.hideSheet();
-          Logger.log(`Sheet hidden: ${SheetName}`);
+          LogDebug(`Sheet hidden: ${SheetName}`, 'MIN');
         }
       }
       break;
@@ -321,7 +325,7 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
-          Logger.log(`Sheet deleted: ${SheetName}`);
+          LogDebug(`Sheet deleted: ${SheetName}`, 'MIN');
         }
       }
       break;
@@ -337,13 +341,13 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
-          Logger.log(`Sheet deleted: ${SheetName}`);
+          LogDebug(`Sheet deleted: ${SheetName}`, 'MIN');
         }
       }
       break;
     }
     default:
-      Logger.log(`Class "${Class}" not recognized. No sheets modified.`);
+      LogDebug(`Class "${Class}" not recognized. No sheets modified.`, 'MIN');
   }
 
   // Always run hideConfig() to re‐hide Config/Settings if needed
@@ -361,11 +365,11 @@ function hideConfig() {
   if (Hide_Config == "TRUE") {
     if (sheet_sr && !sheet_sr.isSheetHidden()) {
       sheet_sr.hideSheet();
-      Logger.log(`HIDDEN: ${sheet_sr.getName()}`);
+      LogDebug(`HIDDEN: ${sheet_sr.getName()}`, 'MIN');
     }
     if (sheet_co && !sheet_co.isSheetHidden()) {
       sheet_co.hideSheet();
-      Logger.log(`HIDDEN: ${sheet_co.getName()}`);
+      LogDebug(`HIDDEN: ${sheet_co.getName()}`, 'MIN');
     }
   }
 };

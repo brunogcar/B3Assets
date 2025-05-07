@@ -23,30 +23,22 @@ function doCopyBasic(SheetName) {
 function doCopyFinancial(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
-  if (!sheet)
-  {
-    Logger.log(`ERROR COPY: ${SheetName} Does not exist`);
+  if (!sheet) {
+    LogDebug(`ERROR COPY: ${SheetName} Does not exist`, 'MIN');
     return;
   }
 
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
 
-  if (SheetName === BLC||SheetName === DRE || SheetName === FLC || SheetName === DVA)
-  {
+  if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA) {
     sheet.getRange(1, 2, LR, LC - 1).activate();
-  }
-  else if (SheetName === Balanco)
-  {
+  } else if (SheetName === Balanco) {
     sheet.getRange(1, 3, LR, LC - 2).activate();
-  }
-  else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
-  {
+  } else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo) {
     sheet.getRange(1, 4, LR, LC - 3).activate();
-  }
-  else
-  {
-    Logger.log(`Unsupported sheet name: ${SheetName}`);
+  } else {
+    LogDebug(`Unsupported sheet name: ${SheetName}`, 'MIN');
   }
 }
 
@@ -66,13 +58,12 @@ function doClearBasic(SheetName) {
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
 
-  Logger.log(`Clear: ${SheetName}`);
+  LogDebug(`Clear: ${SheetName}`, 'MIN');
 
   sheet.getRange(5, 1, LR, LC).clear({ contentsOnly: true, skipFilteredRows: false });
   sheet.getRange(1, 1, 1, LC).clear({ contentsOnly: true, skipFilteredRows: false });
 
-  Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-
+  LogDebug(`Data Cleared successfully. Sheet: ${SheetName}.`, 'MIN');
 }
 
 function doClearFinancials() {
@@ -85,7 +76,7 @@ function doClearFinancial(SheetName) {
   const sheet = fetchSheetByName(SheetName);
   if (!sheet) return;
 
-  Logger.log(`Clear: ${SheetName}`);
+  LogDebug(`Clear: ${SheetName}`, 'MIN');
 
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
@@ -94,25 +85,25 @@ function doClearFinancial(SheetName) {
   {
     sheet.getRange(1, 2, LR, LC - 1).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    LogDebug(`Data Cleared successfully. Sheet: ${SheetName}.`, 'MIN');
   }
   else if
   (SheetName === Balanco)
   {
     sheet.getRange(1, 3, LR, LC - 2).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    LogDebug(`Data Cleared successfully. Sheet: ${SheetName}.`, 'MIN');
   }
   else if
   (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
   {
     sheet.getRange(1, 4, LR, LC - 3).clear({ contentsOnly: true, skipFilteredRows: false });
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+    LogDebug(`Data Cleared successfully. Sheet: ${SheetName}.`, 'MIN');
   }
   else
   {
-    Logger.log(`Unsupported sheet name: ${SheetName}`);
+    LogDebug(`Unsupported sheet name: ${SheetName}`, 'MIN');
   }
 
   if      (SheetName === BLC) {doClearFinancial(Balanco);}
@@ -164,7 +155,7 @@ function doCleanBasic(SheetName) {
   const sheet = fetchSheetByName(SheetName);
   if (!sheet) return;
 
-  Logger.log(`CLEAN: ${SheetName}`);
+  LogDebug(`CLEAN: ${SheetName}`, 'MIN');
 
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
@@ -175,7 +166,7 @@ function doCleanBasic(SheetName) {
   sheet.createTextFinder("0,00").matchEntireCell(true).replaceAllWith("");
   sheet.createTextFinder("0,0000").matchEntireCell(true).replaceAllWith("");
 
-  Logger.log(`SUCESS CLEAN. Sheet: ${SheetName}.`);
+  LogDebug(`SUCESS CLEAN. Sheet: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////SPLIT/////////////////////////////////////////////////////////////////////
@@ -211,7 +202,7 @@ function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
   const M  = sheet.getRange(multiplierA1).getValue();
   const SR = sheet.getRange(startRowA1).getValue();
   const LR = sheet.getLastRow();
-  Logger.log(`FIX: ${SheetName} starting at row ${SR} with multiplier ${M}`);
+  LogDebug(`FIX: ${SheetName} starting at row ${SR} with multiplier ${M}`, 'MIN');
 
   blocks.forEach(({from, to = from, op = 'mul'}) => {
     const RangeA1 = `${from}${SR}:${to}${LR}`;
@@ -228,7 +219,7 @@ function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
     sheet.getRange(RangeA1).setValues(Values);
   });
 
-  Logger.log(`SUCCESS FIX: ${SheetName}`);
+  LogDebug(`SUCCESS FIX: ${SheetName}`, 'MIN');
 }
 
 // Generic split-processor has been defined separately as processSplitBlocks

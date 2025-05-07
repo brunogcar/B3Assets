@@ -1,194 +1,105 @@
-/////////////////////////////////////////////////////////////////////PROCESS BASIC/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS EDIT/////////////////////////////////////////////////////////////////////
 
-function processEditBasic(sheet_sr, SheetName, Edit)
-{
-    var LC = sheet_sr.getLastColumn();
+function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
+  const LC = sheet_sr.getLastColumn();
 
-    var A1 = sheet_sr.getRange("A1").getValue();
-    var A2 = sheet_sr.getRange("A2").getValue();
-    var A5 = sheet_sr.getRange("A5").getValue();
+  const A1 = sheet_sr.getRange("A1").getValue();
+  const A2 = sheet_sr.getRange("A2").getValue();
+  const A5 = sheet_sr.getRange("A5").getValue();
 
-
-
-  if( !ErrorValues.includes(A2) )
-  {
-    if ( Edit == "TRUE" )
-    {
-      if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
-      {
-        doSaveBasic(SheetName);
-      }
-      else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
-               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
-      {
-        if (SheetName === FUND )
-        {
-          var Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
-          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-
-          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-          doExportBasic(SheetName);
-        }
-        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
-        {
-          var Data_Header = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-
-          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-          doExportBasic(SheetName);
-        }
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditSheet`);
-      }
-    }
-    if ( Edit != "TRUE" )
-    {
-      Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
-    }
+  if (Edit !== "TRUE") {
+    LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
+    return;
   }
-  else
-  {
-    Logger.log(`ERROR EDIT: ${SheetName} - ErrorValues in A2 on processEditSheet`);
+
+  if (ErrorValues.includes(A2)) {
+    LogDebug(`ERROR EDIT: ${SheetName} - ErrorValues in A2 on processEdit`, 'MIN');
+    return;
   }
+
+  if (A5 === "" || A2 > A5 || A2 > A1) {
+    doSaveBasic(SheetName);
+    return;
+  }
+
+  if (
+    A2 >= A5 || A2 >= A1 ||
+    ErrorValues.includes(A1) || ErrorValues.includes(A5)
+  ) {
+    const condition = (SheetName === FUND);
+    const columnCount = condition ? LC : LC - 4;
+
+    const Data_Header = sheet_sr.getRange(2, 1, 1, columnCount).getValues();
+    sheet_sr.getRange(5, 1, 1, columnCount).setValues(Data_Header);
+    sheet_sr.getRange(1, 1, 1, columnCount).setValues(Data_Header);
+
+    LogDebug(`SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
+    exportFn(SheetName);
+    return;
+  }
+
+  // Final fallback
+  LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren't met on processEdit`, 'MIN');
 }
 
-/////////////////////////////////////////////////////////////////////PROCESS EXTRA/////////////////////////////////////////////////////////////////////
 
-function processEditExtra(sheet_sr, SheetName, Edit)
-{
-    var LC = sheet_sr.getLastColumn();
+/////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
 
-    var A1 = sheet_sr.getRange("A1").getValue();
-    var A2 = sheet_sr.getRange("A2").getValue();
-    var A5 = sheet_sr.getRange("A5").getValue();
+function processEditBasic(sheet_sr, SheetName, Edit) {
+  processEditGeneric(sheet_sr, SheetName, Edit, doExportBasic);
+}
 
-  if( !ErrorValues.includes(A2) )
-  {
-    if ( Edit == "TRUE" )
-    {
-      if( A5 == "" || A2.valueOf() > A5.valueOf() || A2.valueOf() > A1.valueOf() )
-      {
-        doSaveBasic(SheetName);
-      }
-      else if( ( A2.valueOf() >= A5.valueOf() || A2.valueOf() >= A1.valueOf()) ||
-               ( ErrorValues.includes(A1) || ErrorValues.includes(A5) ) )
-      {
-        if (SheetName === FUND )
-        {
-          var Data_Header = sheet_sr.getRange(2,1,1,LC).getValues();
-          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-
-          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-          doExportExtra(SheetName);
-        }
-        else                                                                     // SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE
-        {
-          var Data_Header = sheet_sr.getRange(2,1,1,LC-4).getValues();                   // LC-4 to not overwrite Média data
-          sheet_sr.getRange(5,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-          sheet_sr.getRange(1,1,Data_Header.length,Data_Header[0].length).setValues(Data_Header);
-
-          Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
-
-          doExportExtra(SheetName);
-        }
-      }
-      else
-      {
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditExtra`);
-      }
-    }
-    if ( Edit != "TRUE" )
-    {
-      Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
-    }
-  }
-  else
-  {
-    Logger.log(`ERROR EDIT: ${SheetName} - ErrorValues in A2 on processEditExtra`);
-  }
+function processEditExtra(sheet_sr, SheetName, Edit) {
+  processEditGeneric(sheet_sr, SheetName, Edit, doExportExtra);
 }
 
 /////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
-
   const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
   const LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
 
-  let range_sr, range_tr, mappingFunc;
-
-  if ( Edit == "TRUE" ) {
-    switch (SheetName) {
-//-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-      case BLC:
-      case DRE:
-      case FLC:
-      case DVA:
-        if (New_sr.valueOf() > New_tr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() == New_tr.valueOf()) {
-          // For these sheets, the mapping is applied on the target values.
-          range_sr = sheet_sr.getRange("B1:B" + LR);
-          range_tr = sheet_tr.getRange("B1:B" + LR);
-          mappingFunc = (source, target) =>
-            target.map((row, index) => [row[0] !== source[index][0] ? source[index][0] : row[0]]);
-        }
-        break;
-//-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
-      case Balanco:
-        if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() == Old_sr.valueOf()) {
-          range_sr = sheet_sr.getRange("B1:B" + LR);
-          range_tr = sheet_sr.getRange("C1:C" + LR);
-          mappingFunc = (source, target) =>
-            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-        }
-        break;
-//-------------------------------------------------------------------Resultado / Valor  / Fluxo-------------------------------------------------------------------//
-      case Resultado:
-      case Valor:
-      case Fluxo:
-        if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() == Old_sr.valueOf()) {
-          range_sr = sheet_sr.getRange("C1:C" + LR);
-          range_tr = sheet_sr.getRange("D1:D" + LR);
-          mappingFunc = (source, target) =>
-            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-        }
-        break;
-
-      default:
-        Logger.log(`ERROR EDIT: ${SheetName} - Conditions arent met on processEditSheet`);
-        return;
-    }
-//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
-  }
-  if ( Edit != "TRUE" ) {
+  if (Edit !== "TRUE") {
     Logger.log(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`);
+    return;
   }
 
-  /////////////////////////////////////////////////////////////////////PROCESS -  END/////////////////////////////////////////////////////////////////////
-  // Common code block: update the values based on the mapping function
-  if (range_sr && range_tr && mappingFunc) {
+  const financialMap = {
+    [BLC]:       { col_sr: 2, col_tr: 2,     compareTo: 'New_tr',   mode: 'target' },
+    [DRE]:       { col_sr: 2, col_tr: 2,     compareTo: 'New_tr',   mode: 'target' },
+    [FLC]:       { col_sr: 2, col_tr: 2,     compareTo: 'New_tr',   mode: 'target' },
+    [DVA]:       { col_sr: 2, col_tr: 2,     compareTo: 'New_tr',   mode: 'target' },
+
+    [Balanco]:   { col_sr: 2, col_tr: 3,     compareTo: 'Old_sr',   mode: 'source' },
+    [Resultado]: { col_sr: 3, col_tr: 4,     compareTo: 'Old_sr',   mode: 'source' },
+    [Valor]:     { col_sr: 3, col_tr: 4,     compareTo: 'Old_sr',   mode: 'source' },
+    [Fluxo]:     { col_sr: 3, col_tr: 4,     compareTo: 'Old_sr',   mode: 'source' }
+  };
+
+  const cfg = financialMap[SheetName];
+  if (!cfg) {
+    Logger.log(`ERROR EDIT: ${SheetName} - Conditions aren't met on processEditFinancial`);
+    return;
+  }
+
+  const valRef = cfg.compareTo === 'New_tr' ? New_tr : Old_sr;
+
+  if (New_sr.valueOf() > valRef.valueOf()) {
+    doSaveFinancial(SheetName);
+    return;
+  }
+
+  if (New_sr.valueOf() === valRef.valueOf()) {
+    const range_sr = sheet_sr.getRange(1, cfg.col_sr, LR, 1);
+    const range_tr = (sheet_tr || sheet_sr).getRange(1, cfg.col_tr, LR, 1);
+
     const values_sr = range_sr.getValues();
     const values_tr = range_tr.getValues();
-    const updatedValues = mappingFunc(values_sr, values_tr);
+
+    const updatedValues = cfg.mode === 'target'
+      ? values_tr.map((row, i) => [row[0] !== values_sr[i][0] ? values_sr[i][0] : row[0]])
+      : values_sr.map((row, i) => [row[0] !== values_tr[i][0] ? row[0] : values_tr[i][0]]);
+
     range_tr.setValues(updatedValues);
     Logger.log(`SUCCESS EDIT. Sheet: ${SheetName}.`);
     doExportFinancial(SheetName);

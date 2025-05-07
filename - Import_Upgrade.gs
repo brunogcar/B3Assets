@@ -60,15 +60,19 @@ function doImport_SWING_12_to_SWING_4()
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
+  if (!Source_Id) {
+    LogDebug(`ERROR IMPORT: Source ID is empty.`, 'MIN');
+    return;
+  }
+
   const ss_sr = SpreadsheetApp.openById(Source_Id);
   const sheet_sr = ss_sr.getSheetByName(SWING_12);                                    // Source Sheet (Trade)
 
-  Logger.log('Import: Trade to Swing Sheets');
+  LogDebug(`Import: Trade to Swing Sheets`, 'MIN');
 
   // Check if the source sheet exists
   if (!sheet_sr) {
-    Logger.log('ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.');
+    LogDebug(`ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.`, 'MIN');
     return;
   }
 
@@ -85,7 +89,7 @@ function doImport_SWING_12_to_SWING_4()
     let targetSheet = ss.getSheetByName(config.name);
 
     if (!targetSheet) {
-      Logger.log(`${config.name} sheet does not exist.`);
+      LogDebug(`${config.name} sheet does not exist.`, 'MIN');
     }
 
     // Loop through source and target ranges
@@ -99,7 +103,7 @@ function doImport_SWING_12_to_SWING_4()
       targetSheet.getRange(targetRange).clearContent();
       targetSheet.getRange(targetRange).setValues(data);
 
-      Logger.log(`SUCCESS IMPORT. Data from 'Trade' (${sourceRange}) copied to '${config.name}' (${targetRange}).`);
+      LogDebug(`SUCCESS IMPORT. Data from 'Trade' (${sourceRange}) copied to '${config.name}' (${targetRange}).`, 'MIN');
     });
   });
 }

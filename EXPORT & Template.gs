@@ -37,17 +37,20 @@ function doExportFinancials() {
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doExportBasic(SheetName) {
-  Logger.log(`EXPORT: ${SheetName}`);
+  LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
   const Class     = getConfigValue(IST, 'Config');                                   // IST = Is Stock?
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  if (!Target_Id) { LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN'); return; }
 
   const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
   const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
 
-  if (Class !== 'STOCK') { Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}) on doExportBasic`); return; }
+  if (Class !== 'STOCK') {
+    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}) on doExportBasic`, 'MIN');
+    return;
+  }
 
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
@@ -98,7 +101,10 @@ function doExportBasic(SheetName) {
   ];
 
   const cfg = exportTable.find(e => e.names.includes(SheetName));
-  if (!cfg) { Logger.log(`ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`); return; }
+  if (!cfg) {
+    LogDebug(`ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`, 'MIN');
+    return;
+  }
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
@@ -106,7 +112,7 @@ function doExportBasic(SheetName) {
 
   const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.test(vals)) {
-    Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
+    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
 
     if (SheetName === OPCOES) {
      tryCleanOpcaoExportRow(sheet_tr, TKT);
@@ -115,7 +121,10 @@ function doExportBasic(SheetName) {
   }
 
   const Export = getConfigValue(cfg.exportKey);
-  if (Export !== 'TRUE') { Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportBasic.`); return; }
+  if (Export !== 'TRUE') {
+    LogDebug(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportBasic.`);
+    return;
+  }
 
   const LC = sheet_sr.getLastColumn();
   let filtered;
@@ -129,24 +138,24 @@ function doExportBasic(SheetName) {
   } else {
     filtered = sheet_sr.getRange(2, 1, 1, LC).getValues()[0];
   }
-
-  // Final export
   processExport(TKT, [filtered], sheet_tr, SheetName);
 }
 
 /////////////////////////////////////////////////////////////////////EXTRA TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doExportExtra(SheetName) {
-  Logger.log(`EXPORT: ${SheetName}`);
+  LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
 
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  if (!Target_Id) {
+    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    return;
+  }
 
-  // Mapping export config settings
   const target_co = {
     [RIGHT_1]: ERT,  [RIGHT_2]: ERT,
     [RECEIPT_9]: ERC, [RECEIPT_10]: ERC,
@@ -187,21 +196,20 @@ function doExportExtra(SheetName) {
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
   if (ErrorValues.includes(A)) {
-    Logger.log(`EXPORT Skipped: ${SheetName} - Data (A) failed ErrorValues on doExportExtra.`);
+    LogDebug(`EXPORT Skipped: ${SheetName} - Data (A) failed ErrorValues on doExportExtra.`, 'MIN');
     return;
   }
 
   if (ShouldExport != true) {
-    Logger.log(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportExtra.`);
+    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportExtra.`, 'MIN');
     return;
   }
 
   if (Export != "TRUE") {
-        Logger.log(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportExtra.`);
+        LogDebug(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportExtra.`, 'MIN');
     return;
   }
 
-  // Determine target sheet
   const target_sh = {
     [RIGHT_1]: 'Right', [RIGHT_2]: 'Right',
     [RECEIPT_9]: 'Receipt', [RECEIPT_10]: 'Receipt',
@@ -212,7 +220,7 @@ function doExportExtra(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(target_sh[SheetName] || SheetName);           // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`);
+    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`, 'MIN');
     return;
   }
   processExport(TKT, Data, sheet_tr, SheetName);
@@ -221,26 +229,34 @@ function doExportExtra(SheetName) {
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doExportFinancial(SheetName) {
-  Logger.log(`EXPORT: ${SheetName}`);
+  LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');
-  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  if (!Target_Id) {
+    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    return;
+  }
 
   const sheet_sr = fetchSheetByName('Index');
   if (!sheet_sr) return;
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
-  if (!sheet_tr) { Logger.log(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`); return; }
+  if (!sheet_tr) {
+    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`, 'MIN');
+    return;
+  }
 
-  // Mapping export config settings
   const target_co = {
     [BLC]: EBL, [DRE]: EDR, [FLC]: EFL, [DVA]: EDV
   };
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
-  if (Export !== "TRUE") { Logger.log(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`); return; }
+  if (Export !== "TRUE") {
+    LogDebug(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`, 'MIN');
+    return;
+  }
 
   let Data = [];
 
@@ -323,10 +339,9 @@ function doExportFinancial(SheetName) {
     break;
 
     default:
-      Logger.log(`ERROR EXPORT: ${SheetName} - Invalid sheet name`);
+      LogDebug(`ERROR EXPORT: ${SheetName} - Invalid sheet name`, 'MIN');
       return;
   }
-//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
 processExport(TKT, Data, sheet_tr, SheetName);
 }
 
@@ -337,13 +352,19 @@ function doExportInfo() {
   if (!sheet_in) return;
 
   var SheetName = sheet_in.getName();
-  Logger.log(`Exporting: ${SheetName}`);
+  LogDebug(`Exporting: ${SheetName}`, 'MIN');
 
   const Data_Id = getConfigValue(DIR, 'Config');                     // DIR = DATA Source ID
-  if (!Data_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  if (!Data_Id) {
+    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    return;
+  }
 
   const Exported = getConfigValue(EXR, 'Config');                   // EXR = Exported?
-  if (Exported === "TRUE") { Logger.log("ERROR EXPORT: already exported."); return;  }
+  if (Exported === "TRUE") {
+    LogDebug("ERROR EXPORT: already exported.", 'MIN');
+    return;
+  }
 
   var A = sheet_in.getRange("C11").getValue();                      // Ticket
   var B = sheet_in.getRange("C3").getValue();                       // Código CVM
@@ -360,10 +381,13 @@ function doExportInfo() {
   // Convert 0 values to blank ("")
   var Data = [[A, B, C, D, E, F, G, H, I, J, K]].map(row => row.map(value => value === 0 ? "" : value));
 
-  var ss_tr = SpreadsheetApp.openById(Data_Id);                    // Target spreadsheet
+  var ss_tr = SpreadsheetApp.openById(Data_Id);                     // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                   // Target sheet
 
-  if (!sheet_tr) { Logger.log(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Data_Id}`); return; }
+  if (!sheet_tr) {
+    LogDebug(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Data_Id}`, 'MIN');
+    return;
+  }
 
   var LR = sheet_tr.getLastRow();
 
@@ -372,7 +396,7 @@ function doExportInfo() {
 
   setSheetID();                                                     // Mark as exported
 
-  Logger.log(`SUCCESS EXPORT. Sheet: ${SheetName}.`);
+  LogDebug(`SUCCESS EXPORT. Sheet: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
@@ -388,10 +412,13 @@ function doExportProventos() {
 
   const Class     = getConfigValue(IST, 'Config');                  // IST = Is Stock?
   const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
-  if (!Target_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
+  if (!Target_Id) {
+    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    return;
+  }
 
   var SheetName = sheet_pv.getName();
-  Logger.log(`Export Proventos: ${SheetName}`);
+  LogDebug(`Export Proventos: ${SheetName}`, 'MIN');
 
   var ISIN  = sheet_pv.getRange("C61").getDisplayValue().trim();    // Código ISIN
   const TKT = getConfigValue(TKR, 'Config');                        // TKR = Ticket Range
@@ -415,7 +442,7 @@ function doExportProventos() {
   var Q = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
 
   if (ErrorValues.includes(B) || ErrorValues.includes(ISIN)) {
-    Logger.log(`ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`);
+    LogDebug(`ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`, 'MIN');
     return;
   }
 
@@ -434,18 +461,18 @@ function doExportProventos() {
   var sheet_tr = ss_tr.getSheetByName('Poventos');
 
   if (!sheet_tr) {
-    Logger.log(`ERROR EXPORT: Target sheet 'Poventos' not found in spreadsheet ID ${Target_Id}`);
+    LogDebug(`ERROR EXPORT: Target sheet 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
     return;
   }
 
   var LR = sheet_tr.getLastRow();
 
   if (Class !== 'STOCK') {
-    Logger.log(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportProventos`);
+    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportProventos`, 'MIN');
     return;
   }
 
-  var nonExportValues = Data[0].slice(3, 13);                                             // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
+  var nonExportValues = Data[0].slice(3, 9);                                              // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
   var isBlankOrZero = nonExportValues.some(value => value === "" || value === 0);         // nonExportValues.every to select ALL
 
   if (isBlankOrZero) {
@@ -455,21 +482,21 @@ function doExportProventos() {
       // Clear the entire row (including TKT)
       var rowToClear = Search.getRow();
       sheet_tr.getRange(rowToClear, 1, 1, Data[0].length + 1).clearContent();
-      Logger.log(`CLEARED EXPORT: Entire row for ${TKT} cleared due to all values being blank/zero.`);
+      LogDebug(`CLEARED EXPORT: Entire row for ${TKT} cleared due to values being blank/zero.`, 'MIN');
     } else {
-      Logger.log(`NO ACTION: No existing row found for ${TKT}, and all values are blank/zero.`);
+      LogDebug(`NO ACTION: No existing row found for ${TKT}, and values are blank/zero.`, 'MIN');
     }
     return; // Stop processing further for this ticker
   } else {
     processExport(TKT, Data, sheet_tr, SheetName);
   }
-};
+}
 
 /////////////////////////////////////////////////////////////////////PROCESS EXPORT/////////////////////////////////////////////////////////////////////
 
 function processExport(TKT, Data, sheet_tr, SheetName) {
   if (!Data || Data.length <= 0) {
-    Logger.log(`EXPORT: Skipped ${SheetName} - No valid data to export.`);
+    LogDebug(`EXPORT: Skipped ${SheetName} - No valid data to export.`, 'MIN');
     return;
   }
 
@@ -482,14 +509,14 @@ function processExport(TKT, Data, sheet_tr, SheetName) {
   if (Search) {
     // Update adjacent columns with Data
     Search.offset(0, 1, 1, Data[0].length).setValues(Data);
-    Logger.log(`SUCCESS EXPORT. Data for ${TKT} updated on Sheet: ${SheetName}.`);
+    LogDebug(`SUCCESS EXPORT. Data for ${TKT} updated on Sheet: ${SheetName}.`, 'MIN');
   } else {
     // Ticker not found; add a new row with the ticker in column A...
     sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
-    Logger.log(`SUCCESS EXPORT. Ticker: ${TKT} added to ${SheetName}.`);
+    LogDebug(`SUCCESS EXPORT. Ticker: ${TKT} added to ${SheetName}.`, 'MIN');
     // ...and then write Data to the adjacent columns.
     sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
-    Logger.log(`SUCCESS EXPORT. Data for ${TKT} exported on Sheet: ${SheetName}.`);
+    LogDebug(`SUCCESS EXPORT. Data for ${TKT} exported on Sheet: ${SheetName}.`, 'MIN');
   }
 }
 

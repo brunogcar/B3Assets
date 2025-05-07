@@ -3,33 +3,41 @@
 
 function doAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) {Logger.log("Sheet 'Config' not found."); return;} Logger.log(`Autorizing Script`);
+  if (!sheet_co) {
+    LogDebug("Sheet 'Config' not found.", 'MIN');
+    return;
+  }
+  LogDebug(`Autorizing Script`, 'MIN');
 
   const cell = sheet_co.getRange("L2");
-  cell.setBackground("#006600"); // Dark Green (#006600)
-  cell.setFontColor("#FFFFFF"); // White Font (#FFFFFF)
+  cell.setBackground("#006600");                             // Dark Green (#006600)
+  cell.setFontColor("#FFFFFF");                              // White Font (#FFFFFF)
 
-  Logger.log("L2 cell color updated to dark green with white font.");
+  LogDebug("L2 cell color updated to dark green with white font.", 'MIN');
 }
 
 function checkAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) { Logger.log("Sheet 'Config' not found."); return false; }
+  if (!sheet_co) {
+    LogDebug("Sheet 'Config' not found.", 'MIN');
+    return false;
+  }
 
   const cell = sheet_co.getRange("L2");
-  const bgColor = cell.getBackground();  // Get background color
-  const fontColor = cell.getFontColor(); // Get font color
+  const bgColor = cell.getBackground();                     // Get background color
+  const fontColor = cell.getFontColor();                    // Get font color
 
   const expectedBgColor = "#006600";
-  const expectedFontColor = "#ffffff"; // Note: Google Sheets may return lowercase
+  const expectedFontColor = "#ffffff";                      // Note: Google Sheets may return lowercase
 
   const isMatch = (bgColor.toLowerCase() === expectedBgColor && fontColor.toLowerCase() === expectedFontColor);
 
-  Logger.log(`L2 Background: ${bgColor}, Font: ${fontColor}`);
-  Logger.log(`Match: ${isMatch ? "✅ Colors are correct" : "❌ Colors are incorrect"}`);
+  LogDebug(`L2 Background: ${bgColor}, Font: ${fontColor}`, 'MIN');
+  LogDebug(`Match: ${isMatch ? "✅ Colors are correct" : "❌ Colors are incorrect"}`, 'MIN');
 
   return isMatch;
 }
+
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
 function doCheckTriggers() {
@@ -37,24 +45,24 @@ function doCheckTriggers() {
 
   var Triggers = ScriptApp.getProjectTriggers().length;
 
-  Logger.log(`Number of existing triggers: ${Triggers}`);
+  LogDebug(`Number of existing triggers: ${Triggers}`, 'MIN');
 
   if (Class == 'STOCK')
   {
     if (Triggers == 0)
     {
-      Logger.log("No triggers found. Creating new triggers...");
+      LogDebug("No triggers found. Creating new triggers...", 'MIN');
       doCreateTriggers();
     }
     else if (Triggers > 0 && Triggers < 5)
     {
-      Logger.log("Found 1-4 triggers. Deleting and creating new triggers...");
+      LogDebug("Found 1-4 triggers. Deleting and creating new triggers...", 'MIN');
       doDeleteTriggers();
       doCreateTriggers();
     }
     else if (Triggers > 5)
     {
-      Logger.log("Found more than 5 triggers. Deleting and creating new triggers...");
+      LogDebug("Found more than 5 triggers. Deleting and creating new triggers...", 'MIN');
       doDeleteTriggers();
       doCreateTriggers();
     }
@@ -63,12 +71,12 @@ function doCheckTriggers() {
   {
     if (Triggers == 0)
     {
-      Logger.log("No triggers found. Creating new triggers...");
+      LogDebug("No triggers found. Creating new triggers...", 'MIN');
       doCreateTriggers();
     }
     else if (Triggers > 1)
     {
-      Logger.log("Found more than 1 triggers. Deleting and creating new triggers...");
+      LogDebug("Found more than 1 triggers. Deleting and creating new triggers...", 'MIN');
       doDeleteTriggers();
       doCreateTriggers();
     }
@@ -91,7 +99,7 @@ function doCreateTriggers() {
   if (!shouldCreateTrigger) return;
 
   if (Class === 'STOCK') {
-    Logger.log("Creating new triggers...");
+    LogDebug("Creating new triggers...", 'MIN');
 
     const Hour_1 = getConfigValue(TG1, 'Config');                                    // Basic Trigger Event
     const Hour_2 = getConfigValue(TG2, 'Config');                                    // Financial Trigger Event
@@ -162,24 +170,22 @@ function writeTriggersToSheet() {
   } else {
     sheet.getRange(startRow, startColumn).setValue("No active triggers");
   }
-
-  Logger.log(`Wrote ${triggers.length} triggers to Config`);
+  LogDebug(`Wrote ${triggers.length} triggers to Config`, 'MIN');
 }
 
 function doDeleteTriggers() {
   const triggers = ScriptApp.getProjectTriggers();
 
   if (triggers.length === 0) {
-    Logger.log("No triggers found to delete.");
+    LogDebug(`No triggers found to delete.`, 'MIN');
   }
 
   for (const trigger of triggers) {
-    Logger.log(`Deleting trigger: ${trigger.getHandlerFunction()} (ID: ${trigger.getUniqueId()})`);
+    LogDebug(`Deleting trigger: ${trigger.getHandlerFunction()} (ID: ${trigger.getUniqueId()})`, 'MIN');
     ScriptApp.deleteTrigger(trigger);
   }
 
-  Logger.log("All triggers deleted.");
+  LogDebug(`All triggers deleted.`, 'MIN');
 }
-
 
 /////////////////////////////////////////////////////////////////////IMPORT FUNCTIONS/////////////////////////////////////////////////////////////////////
