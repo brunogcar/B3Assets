@@ -1,331 +1,162 @@
-/////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////ERROR/////////////////////////////////////////////////////////////////////
 
-function doClearAll() {
-  doClearProventos();
-  doClearBasics();
-  doClearFinancials();
-};
+  const ErrorValues = ['#NULL!', '#DIV/0!', '#VALUE!', '#REF!', '#NAME?', '#NUM!', '#N/A', '#ERROR!', 'Loading!', '', '-', null];
 
-/////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////sheetName/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
+  const PROV       = 'Prov';
 
-function doCopyBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) return;
+  const SWING_4    = 'Swing_4';
+  const SWING_12   = 'Swing_12';
+  const SWING_52   = 'Swing_52';
 
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
+  const OPCOES     = 'Opções';
+  const BTC        = 'BTC';
+  const TERMO      = 'Termo';
+  const FUND       = 'Fund';
 
-  sheet.getRange(5, 1, LR - 4, LC).activate();
-}
+  const FUTURE     = 'Future';
+  const FUTURE_1   = 'FUT+1';
+  const FUTURE_2   = 'FUT+2';
+  const FUTURE_3   = 'FUT+3';
 
-function doCopyFinancial(SheetName) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
+  const RIGHT_1    = 'DRT_1';
+  const RIGHT_2    = 'DRT_2';
+  const RECEIPT_9  = 'RCB_9';
+  const RECEIPT_10 = 'RCB_10';
+  const WARRANT_11 = 'GAR_11';
+  const WARRANT_12 = 'GAR_12';
+  const WARRANT_13 = 'GAR_13';
+  const BLOCK      = 'BLOCK';
 
-  if (!sheet)
-  {
-    Logger.log(`ERROR COPY: ${SheetName} Does not exist`);
-    return;
-  }
+  const BLC        = 'BLC';
+  const Balanco    = 'Balanço';
+  const DRE        = 'DRE';
+  const Resultado  = 'Resultado';
+  const FLC        = 'FLC';
+  const Fluxo      = 'Fluxo';
+  const DVA        = 'DVA';
+  const Valor      = 'Valor';
 
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
+/////////////////////////////////////////////////////////////////////Ranges/////////////////////////////////////////////////////////////////////
 
-  if (SheetName === BLC||SheetName === DRE || SheetName === FLC || SheetName === DVA)
-  {
-    sheet.getRange(1, 2, LR, LC - 1).activate();
-  }
-  else if (SheetName === Balanco)
-  {
-    sheet.getRange(1, 3, LR, LC - 2).activate();
-  }
-  else if (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
-  {
-    sheet.getRange(1, 4, LR, LC - 3).activate();
-  }
-  else
-  {
-    Logger.log(`Unsupported sheet name: ${SheetName}`);
-  }
-}
+  const TKR = "B3"     // TKR = Ticker                     // Tab: Config
 
-/////////////////////////////////////////////////////////////////////CLEAR/////////////////////////////////////////////////////////////////////
+  const PRV = "B3:H60" // PRV = Provento Range             // Tab: Prov
 
+  const TIR = "C3:D4"  // TIR = Tab Info Range             // Tab: Info
 
-function doClearBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
+  const SIR = "D3"     // SIR = Source ID                  // Tab: Config
+  const IDR = "D10"    // IDR = ID Sheet                   // Tab: Config
+  const EPR = "D13"    // EPR = Exportable?                // Tab: Config
+  const EXR = "D16"    // EXR = Exported?                  // Tab: Config
+  const FOR = "D19"    // FOR = Formula?                   // Tab: Config
+  const TDR = "D22"    // TDR = Target ID                  // Tab: Config
+  const DIR = "D25"    // DIR = DATA Source ID             // Tab: Config
 
-  _doGroup(SheetNames, doClearBasic, "Clearing", "cleared", "basic");
-}
+  const ICR = "F13"    // ICR = Sheet ID Check             // Tab: Config
+  const IER = "F16"    // IER = ID Exported?               // Tab: Config
 
-function doClearBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) return;
+  const OPR = "L3"     // OPR = Option                     // Tab: Config
+  const UFR = "L6"     // UFR = Update Form                // Tab: Config
+  const HCR = "L9"     // HCR = Hide Config                // Tab: Config
+  const DBG = "L12"    // DBG = Debug Mode                 // Tab: Config
+  const IST = "L18"    // IST = Is Stock?                  // Tab: Config
+  const TGR = "L21"    // TGR = Number of Triggers         // Tab: Config
 
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
+  const TG1 = "N21"    // TG1 = Sheet Trigger Event        // Tab: Config
+  const TG2 = "N24"    // TG2 = Data Trigger Event         // Tab: Config
+  const TG3 = "N27"    // TG3 = Extra Trigger Event        // Tab: Config
+  const TG4 = "N30"    // TG4 = Settings Trigger Event     // Tab: Config
+  const TG5 = "N33"    // TG5 = SaveAll Trigger Event      // Tab: Config
 
-  Logger.log(`Clear: ${SheetName}`);
+  const COR = "I4:J7"  // COR = Config Options Range       // Tab: Config
 
-  sheet.getRange(5, 1, LR, LC).clear({ contentsOnly: true, skipFilteredRows: false });
-  sheet.getRange(1, 1, 1, LC).clear({ contentsOnly: true, skipFilteredRows: false });
+/////////////////////////////////////////////////////////////////////Export/////////////////////////////////////////////////////////////////////
 
-  Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
+  const ETR = "P4"     // ETR = Export to Swing            // Tab: Config
+  const EOP = "P6"     // EOP = Export to Option           // Tab: Config
+  const EBT = "P8"     // EBT = Export to BTC              // Tab: Config
+  const ETE = "P10"    // ETE = Export to Termo            // Tab: Config
+  const EFU = "P12"    // EFU = Export to Fund             // Tab: Config
 
-}
+  const EBL = "P15"    // EBL = Export to BLC              // Tab: Config
+  const EDR = "P17"    // EDR = Export to DRE              // Tab: Config
+  const EFL = "P19"    // EFL = Export to FLC              // Tab: Config
+  const EDV = "P21"    // EDV = Export to DVA              // Tab: Config
 
-function doClearFinancials() {
-  const SheetNames = [BLC, DRE, FLC, DVA];
+  const ETF = "P24"    // ETF = Export to Future           // Tab: Config
+  const ERT = "P26"    // ERT = Export to Right            // Tab: Config
+  const EWT = "P28"    // EWT = Export to Warrant          // Tab: Config
+  const ERC = "P30"    // ERC = Export to Receipt          // Tab: Config
+  const EBK = "P32"    // EBK = Export to Block            // Tab: Config
 
-  _doGroup(SheetNames, doClearFinancial, "Clearing", "cleared", "financial");
-}
+/////////////////////////////////////////////////////////////////////Import/////////////////////////////////////////////////////////////////////
 
-function doClearFinancial(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) return;
+  const ITR = "R4"     // ITR = Import to Swing            // Tab: Config, Settings
+  const IOP = "R6"     // IOP = Import to Option           // Tab: Config, Settings
+  const IBT = "R8"     // IBT = Import to BTC              // Tab: Config, Settings
+  const ITE = "R10"    // ITE = Import to Termo            // Tab: Config, Settings
+  const IFU = "R12"    // IFU = Import to Fund             // Tab: Config, Settings
 
-  Logger.log(`Clear: ${SheetName}`);
+  const IBL = "R15"    // IBL = Import to BLC / Balanco    // Tab: Config, Settings
+  const IDE = "R17"    // IDE = Import to DRE / Resultado  // Tab: Config, Settings
+  const IFL = "R19"    // IFL = Import to FLC / Fluxo      // Tab: Config, Settings
+  const IDV = "R21"    // IDV = Import to DVA / Valor      // Tab: Config, Settings
 
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
+  const IFT = "R24"    // IFT = Import to Future           // Tab: Config, Settings
+  const IRT = "R26"    // IRT = Import to Right            // Tab: Config, Settings
+  const IWT = "R28"    // IWT = Import to Warrant          // Tab: Config, Settings
+  const IRC = "R30"    // IRC = Import to Receipt          // Tab: Config, Settings
+  const IBK = "R32"    // IBK = Import to Block            // Tab: Config, Settings
 
-  if (SheetName === BLC || SheetName === DRE || SheetName === FLC || SheetName === DVA)
-  {
-    sheet.getRange(1, 2, LR, LC - 1).clear({ contentsOnly: true, skipFilteredRows: false });
+/////////////////////////////////////////////////////////////////////Save/////////////////////////////////////////////////////////////////////
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  }
-  else if
-  (SheetName === Balanco)
-  {
-    sheet.getRange(1, 3, LR, LC - 2).clear({ contentsOnly: true, skipFilteredRows: false });
+  const STR = "T4"     // STR = Save to Swing              // Tab: Config, Settings
+  const SOP = "T6"     // SOP = Save to Option             // Tab: Config, Settings
+  const SBT = "T8"     // SBT = Save to BTC                // Tab: Config, Settings
+  const STE = "T10"    // STE = Save to Termo              // Tab: Config, Settings
+  const SFU = "T12"    // SFU = Save to Fund               // Tab: Config, Settings
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  }
-  else if
-  (SheetName === Resultado || SheetName === Valor || SheetName === Fluxo)
-  {
-    sheet.getRange(1, 4, LR, LC - 3).clear({ contentsOnly: true, skipFilteredRows: false });
+  const SBL = "T15"    // SBL = Save to BLC                // Tab: Config, Settings
+  const SDE = "T17"    // SDE = Save to DRE                // Tab: Config, Settings
+  const SFL = "T19"    // SFL = Save to FLC                // Tab: Config, Settings
+  const SDV = "T21"    // SDV = Save to DVA                // Tab: Config, Settings
 
-    Logger.log(`Data Cleared successfully. Sheet: ${SheetName}.`);
-  }
-  else
-  {
-    Logger.log(`Unsupported sheet name: ${SheetName}`);
-  }
+  const SFT = "T24"    // SFT = Save to Future             // Tab: Config, Settings
+  const SRT = "T26"    // SRT = Save to Right              // Tab: Config, Settings
+  const SWT = "T28"    // SWT = Save to Warrant            // Tab: Config, Settings
+  const SRC = "T30"    // SRC = Save to Receipt            // Tab: Config, Settings
+  const SBK = "T32"    // SBK = Save to Block              // Tab: Config, Settings
 
-  if      (SheetName === BLC) {doClearFinancial(Balanco);}
-  else if (SheetName === DRE) {doClearFinancial(Resultado );}
-  else if (SheetName === FLC) {doClearFinancial(Fluxo);}
-  else if (SheetName === DVA) {doClearFinancial(Valor);}
-}
+/////////////////////////////////////////////////////////////////////Edit/////////////////////////////////////////////////////////////////////
 
+  const DTR = "V4"     // DTR = Edit to Swing              // Tab: Config, Settings
+  const DOP = "V6"     // DOP = Edit to Option             // Tab: Config, Settings
+  const DBT = "V8"     // DBT = Edit to BTC                // Tab: Config, Settings
+  const DTE = "V10"    // DTE = Edit to Termo              // Tab: Config, Settings
+  const DFU = "V12"    // DFU = Edit to Fund               // Tab: Config, Settings
 
-function doClearProventos() {
-  const sheet = fetchSheetByName(PROV);
-  if (!sheet) return;
+  const DBL = "V15"    // DBL = Edit to BLC                // Tab: Config, Settings
+  const DDE = "V17"    // DDE = Edit to DRE                // Tab: Config, Settings
+  const DFL = "V19"    // DFL = Edit to FLC                // Tab: Config, Settings
+  const DDV = "V21"    // DDV = Edit to DVA                // Tab: Config, Settings
 
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
+  const DFT = "V24"    // DFT = Edit to Future             // Tab: Config, Settings
+  const DRT = "V26"    // DRT = Edit to Right              // Tab: Config, Settings
+  const DWT = "V28"    // DWT = Edit to Warrant            // Tab: Config, Settings
+  const DRC = "V30"    // DRC = Edit to Receipt            // Tab: Config, Settings
+  const DBK = "V32"    // DBK = Edit to Block              // Tab: Config, Settings
 
-  sheet.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
-};
+/////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
+  const ACT = "B3"     // SET = Settings                   // Tab: Settings
+  const TRU = "F3"     // TRU = True                       // Tab: Settings
+  const SAV = "K3"     // SAV = Save                       // Tab: Settings
+  const IND = "K10"    // IND = Individual                 // Tab: Settings
+  const EXT = "F10"    // EXT = Extra                      // Tab: Settings
 
-function doRecycleTrade() {
-  const sheet = fetchSheetByName(TRADE);
-  if (!sheet) return;
+  const MIN = "B10"    // MIN = Min Value To Exp           // Tab: Settings
+  const MAX = "B12"    // MAX = Max Value To Exp           // Tab: Settings
 
-    var LR = sheet.getLastRow();
-    var LC = sheet.getLastColumn();
-
-  const AX = getConfigValue(PDT, 'Config');                                                               // PDT = Periodo de Trade
-  const AX_ = sheet.getRange("A" + AX ).getValue();
-
-//  Logger.log(AX_);
-
-  if( AX_ !== "" )
-  {
-    sheet.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
-  }
-};
-
-/////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
-
-function doCleanBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
-
-  _doGroup(SheetNames, doCleanBasic, "Cleaning", "cleaned", "basic");
-}
-
-function doCleanBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) return;
-
-  Logger.log(`CLEAN: ${SheetName}`);
-
-  var LR = sheet.getLastRow();
-  var LC = sheet.getLastColumn();
-
-  sheet.getRange(5, 1, LR, LC).setValue('');
-  sheet.createTextFinder("-").matchEntireCell(true).replaceAllWith("");
-  sheet.createTextFinder("0").matchEntireCell(true).replaceAllWith("");
-  sheet.createTextFinder("0,00").matchEntireCell(true).replaceAllWith("");
-  sheet.createTextFinder("0,0000").matchEntireCell(true).replaceAllWith("");
-
-  Logger.log(`SUCESS CLEAN. Sheet: ${SheetName}.`);
-}
-
-/////////////////////////////////////////////////////////////////////SPLIT/////////////////////////////////////////////////////////////////////
-
-function fixSplit() {
-  fixSWING_4Split();
-  fixSWING_12Split();
-  fixSWING_52Split();
-  fixOptionsSplit();
-  fixBTCSplit();
-  fixTermoSplit();
-  fixFundSplit();
-  fixFUTPlusSplits();
-  fixEXTRASplits();
-};
-
-/**
- * Applies a multiply/divide “split” to one or more column blocks in a sheet.
- *
- * @param {string} SheetName        The sheet to process.
- * @param {string} multiplierA1     A1-notation cell containing the multiplier.
- * @param {string} startRowA1       A1-notation cell containing the start row.
- * @param {Array<{from: string, to?: string, op?: string}>} blocks
- *   - from: column letter for the first column in the block (e.g. "B")
- *   - to:   column letter for the last column (e.g. "Y").
- *            If omitted, only “from” is processed.
- *   - op:   `"mul"` (default) or `"div"`
- */
-function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
-  const sheet = fetchSheetByName(SheetName);
-  if (!sheet) return;
-
-  const M  = sheet.getRange(multiplierA1).getValue();
-  const SR = sheet.getRange(startRowA1).getValue();
-  const LR = sheet.getLastRow();
-  Logger.log(`FIX: ${SheetName} starting at row ${SR} with multiplier ${M}`);
-
-  blocks.forEach(({from, to = from, op = 'mul'}) => {
-    const RangeA1 = `${from}${SR}:${to}${LR}`;
-    const Values = sheet.getRange(RangeA1).getValues();
-
-    for (let i = 0; i < Values.length; i++) {
-      for (let j = 0; j < Values[i].length; j++) {
-        const v = Values[i][j];
-        if (v !== '' && v !== 0) {
-          Values[i][j] = (op === 'div') ? v / M : v * M;
-        }
-      }
-    }
-    sheet.getRange(RangeA1).setValues(Values);
-  });
-
-  Logger.log(`SUCCESS FIX: ${SheetName}`);
-}
-
-// Generic split-processor has been defined separately as processSplitBlocks
-//-------------------------------------------------------------------Swing-------------------------------------------------------------------//
-function fixSWING_4Split() {
-  processSplitBlocks(SWING_4, 'AB4', 'AA4', [
-    { from: 'B', to: 'Y', op: 'mul' }
-  ]);
-}
-
-function fixSWING_12Split() {
-  processSplitBlocks(SWING_12, 'AB4', 'AA4', [
-    { from: 'B', to: 'Y', op: 'mul' }
-  ]);
-}
-
-function fixSWING_52Split() {
-  processSplitBlocks(SWING_52, 'AB4', 'AA4', [
-    { from: 'B', to: 'Y', op: 'mul' }
-  ]);
-}
-//-------------------------------------------------------------------Opçoes-------------------------------------------------------------------//
-function fixOptionsSplit() {
-  processSplitBlocks(OPCOES, 'Z4', 'Y4', [
-    { from: 'B',           op: 'mul' },
-    { from: 'D',           op: 'mul' },
-    { from: 'F',           op: 'mul' },
-    { from: 'K', to: 'N',  op: 'mul' },
-    { from: 'T', to: 'W',  op: 'mul' }
-  ]);
-}
-//-------------------------------------------------------------------BTC-------------------------------------------------------------------//
-function fixBTCSplit() {
-  processSplitBlocks(BTC, 'Z4', 'Y4', [
-    { from: 'B', to: 'C',  op: 'mul' },
-    { from: 'P', to: 'S',  op: 'mul' },
-    { from: 'D',           op: 'div' }
-  ]);
-}
-//-------------------------------------------------------------------Termo-------------------------------------------------------------------//
-function fixTermoSplit() {
-  processSplitBlocks(TERMO, 'Z4', 'Y4', [
-    { from: 'B', to: 'C',  op: 'mul' },
-    { from: 'P', to: 'S',  op: 'mul' },
-    { from: 'D',           op: 'div' },
-    { from: 'I',           op: 'div' }
-  ]);
-}
-//-------------------------------------------------------------------Future-------------------------------------------------------------------//
-
-function fixFutureSplit() {
-  processSplitBlocks(FUTURE, 'Z4', 'Y4', [
-    { from: 'B', to: 'C',  op: 'mul' },
-    { from: 'P', to: 'S',  op: 'mul' },
-    { from: 'E',           op: 'mul' },
-    { from: 'G',           op: 'mul' }
-  ]);
-}
-//......................................................................................................................................//
-function fixFUTPlusSplits() {
-  const SheetNames = [FUTURE_1, FUTURE_2, FUTURE_3];
-  SheetNames.forEach(name => {
-    processSplitBlocks(name, 'Z4', 'Y4', [
-      { from: 'B', to: 'C', op: 'mul' },
-      { from: 'P', to: 'S', op: 'mul' },
-      { from: 'H',        op: 'div' }
-    ]);
-  });
-}
-//-------------------------------------------------------------------Extra-------------------------------------------------------------------//
-function fixEXTRASplits() {
-  const SheetNames = [RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
-  SheetNames.forEach(name => {
-    processSplitBlocks(name, 'Z4', 'Y4', [
-      { from: 'B', to: 'C', op: 'mul' },
-      { from: 'P', to: 'S', op: 'mul' },
-      { from: 'E', to: 'F', op: 'mul' },
-      { from: 'J', to: 'K', op: 'mul' },
-      { from: 'D',        op: 'div' }
-    ]);
-  });
-}
-//-------------------------------------------------------------------Fund-------------------------------------------------------------------//
-function fixFundSplit() {
-  // Multiply columns
-  processSplitBlocks(FUND, 'BT4', 'BS4', [
-    { from: 'B',          op: 'mul' },
-    { from: 'E',          op: 'mul' },
-    { from: 'G',          op: 'mul' },
-    { from: 'BE',         op: 'mul' }
-  ]);
-  // Divide columns
-  processSplitBlocks(FUND, 'BT4', 'BS4', [
-    { from: 'AO',         op: 'div' },
-    { from: 'BK',         op: 'div' },
-    { from: 'BL',         op: 'div' }
-  ]);
-}
-
-/////////////////////////////////////////////////////////////////////COPY / CLEAR / CLEAN / FIX /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////CONSTANT/////////////////////////////////////////////////////////////////////

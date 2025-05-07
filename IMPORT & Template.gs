@@ -90,6 +90,35 @@ function doImportProventos() {
   doImportGroup(ProvNames, doImportProv, 'proventos');
 }
 
+/////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
+
+function doImportProv(ProvName){
+  Logger.log(`IMPORT: ${ProvName}`);
+
+  const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
+  if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
+  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
+  const sheet_tr = fetchSheetByName('Prov');
+  if (!sheet_tr) return;
+
+  if (ProvName == 'Proventos')
+  {
+    var Check = sheet_sr.getRange("B3").getDisplayValue();
+
+    if( Check == "Proventos" )  // check if error
+    {
+      var Data = sheet_sr.getRange(PRV).getValues();                                  // PRV = Provento Range
+      sheet_tr.getRange(PRV).setValues(Data);
+
+      Logger.log(`SUCCESS IMPORT: ${ProvName}.`);
+    }
+    else
+    {
+      Logger.log(`ERROR IMPORT: ${ProvName} - B3 != Proventos on doImportProv`);
+    }
+  }
+}
+
 /////////////////////////////////////////////////////////////////////Update Form/////////////////////////////////////////////////////////////////////
 
 function update_form() {
@@ -153,33 +182,6 @@ function doImportShares() {
     Logger.log(`ERROR IMPORT: ${SheetName} - ErrorValues on L1 or L2 on doImportShares`);
   }
 Logger.log(`SUCCESS IMPORT: Shares and FF`);
-}
-
-/////////////////////////////////////////////////////////////////////Proventos/////////////////////////////////////////////////////////////////////
-
-function doImportProv(ProvName){
-  const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) { Logger.log("ERROR IMPORT: Source ID is empty."); return; }
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
-  const sheet_tr = fetchSheetByName('Prov');
-  if (!sheet_tr) return;
-
-  Logger.log(`IMPORT: ${ProvName}`);
-
-  if (ProvName == 'Proventos')
-  {
-    var Check = sheet_sr.getRange("B3").getDisplayValue();
-
-    if( Check == "Proventos" )  // check if error
-    {
-      var Data = sheet_sr.getRange(PRV).getValues();                                  // PRV = Provento Range
-      sheet_tr.getRange(PRV).setValues(Data);
-    }
-    else
-    {
-      Logger.log(`ERROR IMPORT: ${ProvName} - B3 != Proventos on doImportProv`);
-    }
-  }
 }
 
 /////////////////////////////////////////////////////////////////////BASIC/////////////////////////////////////////////////////////////////////

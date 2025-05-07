@@ -464,59 +464,147 @@ function doGetProventos() {
   fillSubscriptions(sheet_tr, content[0]?.subscriptions || []);
 }
 
-// Fill Cash Dividends from B2 to B60
+/**
+ * Generic function to fill a titled table section with header and data rows.
+ * Logs start/finish at MIN, header actions at MID, raw data at MAX.
+ * Only writes header and data if at least one row passes validation.
+ *
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet            The target sheet.
+ * @param {string}                       titleCell        A1 cell for the section title.
+ * @param {string}                       clearRange       A1 range to clear before writing.
+ * @param {string}                       titleText        The title text to set in titleCell.
+ * @param {string}                       headerRange      A1 range for the header row.
+ * @param {Array<string>}                headers          Array of header labels.
+ * @param {Array<Object>}                items            Array of data objects.
+ * @param {function(Object): any[]}      mapRow           Function mapping an item to a row array.
+ * @param {function(Object, any[]): boolean} validateRow   Predicate to decide if a row should be written.
+ * @param {number}                       startRow         1-based row where data begins.
+ * @param {number}                       colStart         1-based column where data begins.
+ * @param {number}                       maxRows          Maximum number of rows to process.
+ * @returns {number} Number of rows written.
+ */
+function fillSection(
+  sheet,            // target sheet
+  titleCell,        // titleCell
+  clearRange,       // clearRange
+  titleText,        // titleText
+  headerRange,      // headerRange
+  headers,          // headers
+  items,            // items
+  mapRow,           // mapRow
+  validateRow,      // validateRow
+  startRow,         // startRow
+  colStart,         // colStart
+  maxRows           // maxRows
+) {
+  const colCount = headers.length;
+
+  LogDebug(`${titleText}: Starting with ${items.length} items`, 'MIN');
+  LogDebug(`${titleText}: Raw items: ${JSON.stringify(items)}`, 'MAX');
+
+  // Blank slate: clear and title
+  sheet.getRange(clearRange).clearContent();
+  sheet.getRange(titleCell).setValue(titleText);
+  LogDebug(`${titleText}: Cleared ${clearRange} and set title`, 'MID');
+
+  // Prepare filtered rows
+  const rows = items
+    .slice(0, maxRows)
+    .map(mapRow)
+    .filter((row, idx) => {
+      const ok = validateRow(items[idx], row);
+      if (!ok) LogDebug(`${titleText}: Skipping invalid row #${idx}`, 'MAX');
+      return ok;
+    });
+
+  // Only write header/data if we have rows
+  if (rows.length > 0) {
+    sheet.getRange(headerRange).setValues([headers]);
+    LogDebug(`${titleText}: Wrote headers at ${headerRange}`, 'MID');
+
+    LogDebug(`${titleText}: Writing ${rows.length} rows`, 'MIN');
+    sheet.getRange(startRow, colStart, rows.length, colCount).setValues(rows);
+  } else {
+    LogDebug(`${titleText}: No valid rows — header not written`, 'MID');
+  }
+
+  LogDebug(`${titleText}: Finished`, 'MIN');
+  return rows.length;
+}
+
+/** Populates Cash Dividends section. */
 function fillCashDividends(sheet_tr, dividends) {
-  const headerRange = "B3:H3";
-  const startRow = 4;
-  const maxRows = 57;
-
-  sheet_tr.getRange("B2").setValue('Proventos em Dinheiro');
-  sheet_tr.getRange("B3:H60").clearContent();
-
-  const headers = ['Proventos', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Valor (R$)', 'Relacionado a', 'Data de Pagamento'];
-  sheet_tr.getRange(headerRange).setValues([headers]);
-
-  dividends.slice(0, maxRows).forEach((div, i) => {
-    sheet_tr.getRange(startRow + i, 2, 1, 7).setValues([[
-      div.label, div.isinCode, div.approvedOn, div.lastDatePrior, div.rate, div.relatedTo, div.paymentDate
-    ]]);
-  });
+  return fillSection(
+    sheet_tr,                                             // target sheet
+    'B2',                                                 // titleCell
+    'B3:H60',                                             // clearRange
+    'Proventos em Dinheiro',                              // titleText
+    'B3:H3',                                              // headerRange
+    [                                                     // headers
+      'Proventos','Código ISIN','Data de Aprovação',
+      'Última Data Com','Valor (R$)','Relacionado a','Data de Pagamento'
+    ],
+    dividends,                                            // items
+    d => [                                                // mapRow
+      d.label, d.isinCode, d.approvedOn,
+      d.lastDatePrior, d.rate, d.relatedTo, d.paymentDate
+    ],
+    (item, row) => row.some(c => c !== '' && c != null),  // validateRow: any non-blank
+    4,                                                    // startRow
+    2,                                                    // colStart (B)
+    57                                                    // maxRows
+  );
 }
 
-// Fill Stock Dividends from row 63
+/** Populates Stock Dividends section. */
 function fillStockDividends(sheet_tr, stockDividends) {
-  const startRow = 63;
-  const headerRange = `B${startRow + 1}:G${startRow + 1}`;
-
-  sheet_tr.getRange(`B${startRow}:G${startRow + stockDividends.length + 1}`).clearContent();
-  sheet_tr.getRange(`B${startRow}`).setValue("Dividendos em Ações");
-
-  const headers = ['Proventos', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Fator', 'Ativo Emitido'];
-  sheet_tr.getRange(headerRange).setValues([headers]);
-
-  stockDividends.forEach((stockDiv, i) => {
-    sheet_tr.getRange(startRow + 2 + i, 2, 1, 6).setValues([[
-      stockDiv.label, stockDiv.isinCode, stockDiv.approvedOn, stockDiv.lastDatePrior, stockDiv.factor, stockDiv.assetIssued
-    ]]);
-  });
+  const start = 63;
+  return fillSection(
+    sheet_tr,                                             // target sheet
+    `B${start}`,                                          // titleCell
+    `B${start}:G${start + 1 + stockDividends.length}`,    // clearRange
+    'Dividendos em Ações',                                // titleText
+    `B${start+1}:G${start+1}`,                            // headerRange
+    [                                                     // headers
+      'Proventos','Código ISIN','Data de Aprovação',
+      'Última Data Com','Fator','Ativo Emitido'
+    ],
+    stockDividends,                                       // items
+    d => [                                                // mapRow
+      d.label, d.isinCode, d.approvedOn,
+      d.lastDatePrior, d.factor, d.assetIssued
+    ],
+    (item, row) => row.some(c => c !== '' && c != null),  // validateRow
+    start + 2,                                            // startRow
+    2,                                                    // colStart (B)
+    stockDividends.length                                 // maxRows
+  );
 }
 
-// Fill Subscriptions starting from column L, row 2
+/** Populates Subscriptions section. */
 function fillSubscriptions(sheet_tr, subscriptions) {
-  const headerRange = "L3:T3";
-  const startRow = 4;
-
-  sheet_tr.getRange("L2").setValue('Subscrições');
-  sheet_tr.getRange("L3:T60").clearContent();
-
-  const headers = ['Tipo', 'Código ISIN', 'Data de Aprovação', 'Última Data Com', 'Percentual (%)', 'Ativo Emitido', 'Preço Emissão (R$)', 'Período de Negociação', 'Data de Subscrição'];
-  sheet_tr.getRange(headerRange).setValues([headers]);
-
-  subscriptions.forEach((sub, i) => {
-    sheet_tr.getRange(startRow + i, 12, 1, 9).setValues([[
-      sub.label, sub.isinCode, sub.approvedOn, sub.lastDatePrior, sub.percentage, sub.assetIssued, sub.priceUnit, sub.tradingPeriod, sub.subscriptionDate
-    ]]);
-  });
+  return fillSection(
+    sheet_tr,                                             // target sheet
+    'L2',                                                 // titleCell
+    'L3:T60',                                             // clearRange
+    'Subscrições',                                        // titleText
+    'L3:T3',                                              // headerRange
+    [                                                     // headers
+      'Tipo','Código ISIN','Data de Aprovação',
+      'Última Data Com','Percentual (%)','Ativo Emitido',
+      'Preço Emissão (R$)','Período de Negociação','Data de Subscrição'
+    ],
+    subscriptions,                                        // items
+    s => [                                                // mapRow
+      s.label, s.isinCode, s.approvedOn,
+      s.lastDatePrior, s.percentage, s.assetIssued,
+      s.priceUnit, s.tradingPeriod, s.subscriptionDate
+    ],
+    (item, row) => row.some(c => c !== '' && c != null),  // validateRow
+    4,                                                    // startRow
+    12,                                                   // colStart (L)
+    57                                                    // maxRows
+  );
 }
 
 /////////////////////////////////////////////////////////////////////CodeCVM/////////////////////////////////////////////////////////////////////

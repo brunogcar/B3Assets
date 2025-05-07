@@ -251,7 +251,7 @@ function doExportFinancial(SheetName) {
 
     Export = getConfigValue(EBL)                                                      // EBL = Export to BLC
 
-    var A = sheet_co.getRange("B18").getValue();                                      // Balanço Atual
+    var A = sheet_sr.getRange("D5").getValue();                                       // Balanço Atual
 
     var B = sheet_sr.getRange("B43").getValue();                                      // Ativo
     var C = sheet_sr.getRange("B44").getValue();                                      // A. Circulante
@@ -269,7 +269,7 @@ function doExportFinancial(SheetName) {
 
     Export = getConfigValue(EDR)                                                     // EDR = Export to DRE
 
-    var A = sheet_co.getRange("B18").getValue();                                     // Balanço Atual
+    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
 
     var B = sheet_sr.getRange("B52").getValue();                                     // Receita Líquida 12 MESES
     var C = sheet_sr.getRange("B53").getValue();                                     // Resultado Bruto 12 MESES
@@ -291,7 +291,7 @@ function doExportFinancial(SheetName) {
 
     Export = getConfigValue(EFL)                                                     // EFL = Export to FLC
 
-    var A = sheet_co.getRange("B18").getValue();                                     // Balanço Atual
+    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
 
     var B = sheet_sr.getRange("B69").getValue();                                     // FCO
     var C = sheet_sr.getRange("B70").getValue();                                     // FCI
@@ -309,7 +309,7 @@ function doExportFinancial(SheetName) {
 
     Export = getConfigValue(EDV)                                                     // EDV = Export to DVA
 
-    var A = sheet_co.getRange("B18").getValue();                                     // Balanço Atual
+    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
 
     var B = sheet_sr.getRange("B77").getValue();                                     // Receitas
     var C = sheet_sr.getRange("B78").getValue();                                     // Insumos Adquiridos de Terceiros
@@ -339,13 +339,13 @@ function doExportInfo() {
   var SheetName = sheet_in.getName();
   Logger.log(`Exporting: ${SheetName}`);
 
-  const Data_Id = getConfigValue(DIR, 'Config');                    // DIR = DATA Source ID
+  const Data_Id = getConfigValue(DIR, 'Config');                     // DIR = DATA Source ID
   if (!Data_Id) { Logger.log("ERROR EXPORT: Target ID is empty."); return; }
 
-  var Exported = sheet_co.getRange(EXR).getDisplayValue();          // EXR = Exported?
+  const Exported = getConfigValue(EXR, 'Config');                   // EXR = Exported?
   if (Exported === "TRUE") { Logger.log("ERROR EXPORT: already exported."); return;  }
 
-  var A = sheet_co.getRange("B3").getValue();                       // Ticket
+  var A = sheet_in.getRange("C11").getValue();                      // Ticket
   var B = sheet_in.getRange("C3").getValue();                       // Código CVM
   var C = sheet_in.getRange("C4").getValue();                       // CNPJ
   var D = sheet_in.getRange("C5").getValue();                       // Empresa
@@ -384,7 +384,7 @@ function doExportProventos() {
   const sheet_ix = fetchSheetByName('Index');
   if (!sheet_ix) return;
 
-  if (!sheet_co || !sheet_ix || !sheet_pv) return;
+  if (!sheet_ix || !sheet_pv) return;
 
   const Class     = getConfigValue(IST, 'Config');                  // IST = Is Stock?
   const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
@@ -445,10 +445,10 @@ function doExportProventos() {
     return;
   }
 
-  var nonExportValues = Data[0].slice(3, 13);                        // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
-  var isAllBlankOrZero = nonExportValues.every(value => value === "" || value === 0);
+  var nonExportValues = Data[0].slice(3, 13);                                             // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
+  var isBlankOrZero = nonExportValues.some(value => value === "" || value === 0);         // nonExportValues.every to select ALL
 
-  if (isAllBlankOrZero) {
+  if (isBlankOrZero) {
     var Search = sheet_tr.getRange("A2:A" + LR).createTextFinder(TKT).findNext();
 
     if (Search) {

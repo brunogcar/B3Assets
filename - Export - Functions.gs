@@ -2,39 +2,61 @@
 
 function getSheetID() {
   const sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
+  Logger.log(`Sheet ID not found: ${sheet_Id}`)
   return sheet_Id;
 };
 
 function setSheetID() {
-  const Data_Id = getConfigValue(DIR, 'Config');                                   // DIR = DATA Source ID
-  const TKT     = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
-  const EXP     = getConfigValue(EXR, 'Config');                                   // EXR = Export
-  const SHI     = getConfigValue(ICR, 'Config');                                   // ICR = Sheet ID
+  // 1) Pull all your config flags
+  const Data_Id = getConfigValue(DIR, 'Config');   // DIR = DATA Source ID
+  const TKT     = getConfigValue(TKR, 'Config');   // TKR = Ticket Range
+  const EXP     = getConfigValue(EXR, 'Config');   // EXR = Export
+  const SHI     = getConfigValue(ICR, 'Config');   // ICR = Sheet ID
+  const bgcolor = getConfigValue(IDR, 'Config');   // IDR = ID Sheet
+  const colour  = '#d9ead3';
 
-  Logger.log('Setting Sheet ID');
-
+  // 2) Grab your active sheet’s ID
   const Sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
 
-  var ss_tr = SpreadsheetApp.openById(Data_Id);                                    // Target spreadsheet
-  var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
-  if (!sheet_tr) {Logger.log(`Target sheet not found: ${SheetName}`); return;}
-
-  const bgcolor = getConfigValue(IDR, 'Config');                                   // IDR = ID Sheet
-  var colour    = '#d9ead3';
-
-  const search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
-  if (!search) return;
-  if( bgcolor == colour)
-  {
-    if ( EXP == "TRUE" && SHI != "TRUE")                                           //Check conditions to export Sheet ID
-    {
-      search.offset(0, 11).setValue(Sheet_Id);
-      search.offset(0, 12).setValue(SNAME(3));
-
-      Logger.log(`Sheet ID Set: ${Sheet_Id}`);
-    }
+  // 3) Open the external “Relação” sheet
+  const ss_tr    = SpreadsheetApp.openById(Data_Id);
+  const sheet_tr = ss_tr.getSheetByName('Relação');
+  if (!sheet_tr) {
+    Logger.log('Target sheet not found: Relação');
+    return;
   }
-};
+  Logger.log('Found Relação sheet, searching for ticket...');
+
+  // 4) Find your ticket in column A
+  const search = sheet_tr
+    .getRange("A2:A" + sheet_tr.getLastRow())
+    .createTextFinder(TKT)
+    .findNext();
+
+  if (!search) {
+    Logger.log(`Ticket "${TKT}" not found in Relação sheet`);
+    return;
+  }
+  Logger.log(`Ticket "${TKT}" found at row ${search.getRow()}`);
+
+  // 5) Check your combined condition
+  if (bgcolor == colour) {
+    Logger.log('bgcolor matches expected colour');
+  } else {
+    Logger.log(`bgcolor "${bgcolor}" does NOT match "${colour}"`);
+  }
+
+  if (EXP == "TRUE" && SHI != "TRUE") {
+    Logger.log('Conditions met: EXP is TRUE and SHI is not TRUE — setting Sheet ID');
+    search.offset(0, 11).setValue(Sheet_Id);
+    search.offset(0, 12).setValue(SNAME(3));
+    Logger.log(`Sheet ID ${Sheet_Id} written to Relação!`);
+  } else {
+    Logger.log(
+      `Skipping write: EXP="${EXP}", SHI="${SHI}" — need EXP=="TRUE" && SHI!="TRUE"`
+    );
+  }
+}
 
 function doIsIdExported() {
   const IEP     = getConfigValue(IER, 'Config');                                   // IER = ID Exported?
@@ -88,28 +110,32 @@ function doIsExportable() {
   }
 };
 
+/**
+ * Checks the “Exported?” flag in the Config sheet and either
+ * 1) If TRUE: copies data from the Info sheet back into Config,
+ *    marks the flag TRUE again, and calls setSheetID().
+ * 2) If not TRUE: invokes doExportInfo() to perform the export.
+ *
+ * @returns {void}
+ */
 function doIsInfoExported() {
-  const EXP = getConfigValue(EXR, 'Config');                                       // EXR = Exported?
+  const EXP = getConfigValue(EXR, 'Config');                                      // EXR = Exported?
 
-  if( EXP === "TRUE" )
-  {
+  if (EXP === "TRUE") {
     const sheet_in = fetchSheetByName('Info');
     if (!sheet_in) return;
 
     const Range = sheet_in.getRange(TIR).getValues();                              // TIR = Tab Info Range
     sheet_in.getRange(TIR).setValues(Range);                                       // Copy Paste Info
 
-    const sheet_co = fetchSheetByName('Config');                                   // cant be deleted because of sheet_co.getRange(EXR)
-    if (!sheet_co) return;
-    sheet_co.getRange(EXR).setValues(EXP);                                         // Set Formula to TRUE // EXP === "TRUE"
+    setConfigValue(EXR, "TRUE");                                                   // Set Formula to TRUE // EXP === "TRUE"
 
-    setSheetID()
+    setSheetID();
   }
-  else if ( EXP !== "TRUE" )
-  {
-    doExportInfo()
+  else {
+    doExportInfo();
   }
-};
+}
 
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 

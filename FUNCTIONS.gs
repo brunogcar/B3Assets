@@ -2,6 +2,26 @@
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
 
 /**
+ * Conditional debug logger based on Config‑tab cell DBG.
+ * DBG cell must contain one of: "MIN", "MID", or "MAX".
+ *
+ * @param {string} msg     The message to log.
+ * @param {"MIN"|"MID"|"MAX"} level  How verbose this message is.
+ */
+function LogDebug(msg, level = "MIN") {
+  // Define verbosity order
+  const ORDER = ["MIN", "MID", "MAX"];
+
+  // Read the current debug setting (cell L12 on your Config sheet)
+  const dbgLevel = getConfigValue(DBG, 'Config');  // DBG = "L12"
+
+  // Only log if the message’s level is at or below the configured level
+  if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
+    Logger.log(msg);
+  }
+}
+
+/**
  * Generic batch‐runner for sheet operations (edit/export/import).
  *
  * @param {string[]} SheetNames         List of sheet‐name constants.
@@ -16,45 +36,32 @@
  * - Otherwise, for each sheet:
  *    • Logs `[i/N] (P%) action <SheetName>...`
  *    • Calls `fn(SheetName)` inside a try/catch
- *    • On success or error, logs the outcome **only** if DEBUG is `"TRUE"`.
  */
 function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
   const totalSheets = SheetNames.length;
   let count = 0;
 
-  const DEBUG    = getConfigValue(DBG, 'Config');               // DBG = Debug Mode
-
-  if (DEBUG == "TRUE") {
-    Logger.log(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`);
-  }
+  LogDebug(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`, "MAX");
 
   for (let i = 0; i < totalSheets; i++) {
     const SheetName = SheetNames[i];
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    if (DEBUG == "TRUE") {
-      Logger.log(`[${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`);
-    }
+    LogDebug(`[${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
 
     try {
       fn(SheetName);
-      if (DEBUG == "TRUE") {
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`);
-      }
+      LogDebug(`[${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, "MAX");
+
     } catch (error) {
-      if (DEBUG == "TRUE") {
-        Logger.log(`[${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`);
-      }
+      LogDebug(`[${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, "MAX");
     }
   }
-
-  if (DEBUG == "TRUE") {
-    Logger.log(
+  LogDebug(
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
-    );
-  }
+    , "MAX");
 }
 
 /**
@@ -68,10 +75,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
  */
 function fetchSheetByName(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
-  if (!sheet) {
-    Logger.log(`Sheet not found: ${SheetName}`);
-    return null;
-  }
+  if (!sheet) { LogDebug(`Sheet not found: ${SheetName}`, "MIN"); return null; }
   return sheet;
 }
 
@@ -95,28 +99,36 @@ function fetchSheetByName(SheetName) {
  *   const val3 = getConfigValue(ETE, 'Config');      // Only from Config
  */
 function getConfigValue(Acronym, Source = 'Both') {
-  const sheet_se = (Source !== "Config") ? fetchSheetByName('Settings') : null;
-  const sheet_co = (Source !== "Settings") ? fetchSheetByName('Config') : null;
+  // Only fetch the sheets you need
+  const sheet_se = (Source !== 'Config')   ? fetchSheetByName('Settings') : null;
+  const sheet_co = (Source !== 'Settings') ? fetchSheetByName('Config')   : null;
 
-  if (!sheet_se || !sheet_co){ Logger.log('Settings or Config sheet not found'); return null; }
+  // If we needed Settings but didn't get it, bail
+  if (Source !== 'Config' && !sheet_se) { LogDebug('Settings sheet not found', "MIN");
+    return null;
+  }
+  // If we needed Config but didn't get it, bail
+  if (Source !== 'Settings' && !sheet_co) { LogDebug('Settings sheet not found', "MIN");
+    return null;
+  }
 
   let Value = null;
 
-  // If Source is Settings or Both, try Settings first
+  // Try Settings first if applicable
   if (sheet_se) {
     try {
       Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
-      if (!Value || Value === "DEFAULT" || ErrorValues.includes(Value)) {
-        Value = null;                                                        // fallback
-      } else if (Source === "Settings") {
-        return Value;                                                        // shortcut if only using Settings
+      if (!Value || Value === 'DEFAULT' || ErrorValues.includes(Value)) {
+        Value = null;  // fall back to Config
+      } else if (Source === 'Settings') {
+        return Value;  // short‑circuit if only pulling from Settings
       }
     } catch (e) {
-      Logger.log(`Acronym ${Acronym} not found in Settings`);
+      LogDebug(`Acronym ${Acronym} not found in Settings`, "MIN");
     }
   }
 
-  // If Source is Config or fallback from Settings
+  // Then Config if we still need a value
   if (!Value && sheet_co) {
     try {
       Value = sheet_co.getRange(Acronym).getDisplayValue().trim();
@@ -124,12 +136,38 @@ function getConfigValue(Acronym, Source = 'Both') {
         Value = null;
       }
     } catch (e) {
-      Logger.log(`Acronym ${Acronym} not found in Config`);
+      LogDebug(`Acronym ${Acronym} not found in Config`, "MIN");
     }
   }
-
   return Value;
 }
+
+/**
+ * Writes a single value into the Config sheet at the given A1‑notation.
+ *
+ * @param {string} Acronym  The A1‑notation of the cell (e.g. EXR).
+ * @param {string|number} value  The value to write into that cell.
+ * @returns {boolean}  True if the write succeeded, false otherwise.
+ */
+function setConfigValue(Acronym, value) {
+  // Fetch the Config sheet
+  const sheet_co = fetchSheetByName('Config');
+  if (!sheet_co) {
+    LogDebug(`Config sheet not found; cannot set ${Acronym}`, "MIN");
+    return false;
+  }
+
+  try {
+    // Write the value
+    sheet_co.getRange(Acronym).setValue(value);
+    LogDebug(`Wrote value "${value}" to Config!${Acronym}`, "MID");
+    return true;
+  } catch (e) {
+    LogDebug(`Failed to write ${Acronym} to Config: ${e.message}`, "MIN");
+    return false;
+  }
+}
+
 
 /////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
 
@@ -210,22 +248,37 @@ function doRetire() {
 };
 
 function copypasteSheets() {
+  LogDebug('copypasteSheets: Starting formula clear on core sheets', 'MIN');
+
   const SheetNames = [
     'Index', 'Info', 'Comunicados', 'Prov', 'Preço', 'Cotações',
     'OPT', 'DATA', 'Value', 'Balanco', 'Resultado', 'Fluxo', 'Valor'
   ];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const Name = SheetNames[i];
-    const sheet = fetchSheetByName(Name);
-    if (!sheet) continue;
+  for (const Name of SheetNames) {
+    LogDebug(`copypasteSheets: Processing sheet "${Name}"`, 'MID');
 
-    const range = sheet.getDataRange();
-    range.copyTo(range, { contentsOnly: true });
+    const sheet = fetchSheetByName(Name);
+    if (!sheet) {
+      LogDebug(`copypasteSheets: Sheet not found, skipping "${Name}"`, 'MID');
+      continue;
+    }
+
+    try {
+      const range = sheet.getDataRange();
+      range.copyTo(range, { contentsOnly: true });
+      LogDebug(`copypasteSheets: Cleared formulas on "${Name}"`, 'MID');
+    } catch (e) {
+      LogDebug(`copypasteSheets: Error copying on "${Name}": ${e.message}`, 'MAX');
+    }
   }
+
+  LogDebug('copypasteSheets: Finished formula clear', 'MIN');
 }
 
 function doDeleteSheets() {
+  LogDebug('doDeleteSheets: Starting deletion of obsolete sheets', 'MIN');
+
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = [
     'Balanço Ativo',
@@ -235,41 +288,50 @@ function doDeleteSheets() {
     'Demonstração do Valor Adicionado'
   ];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const Name = SheetNames[i];
+  for (const Name of SheetNames) {
+    LogDebug(`doDeleteSheets: Attempting to delete "${Name}"`, 'MID');
+
     const sheet = fetchSheetByName(Name);
-    if (!sheet) continue;
+    if (!sheet) {
+      LogDebug(`doDeleteSheets: Sheet not found, skipping "${Name}"`, 'MID');
+      continue;
+    }
 
     try {
       ss.deleteSheet(sheet);
-      Logger.log(`Sheet deleted: ${Name}`);
+      LogDebug(`doDeleteSheets: Deleted sheet "${Name}"`, 'MID');
     } catch (error) {
-      Logger.log(`Error deleting sheet "${Name}": ${error}`);
+      LogDebug(`doDeleteSheets: Error deleting "${Name}": ${error.message}`, 'MID');
     }
   }
+
+  LogDebug('doDeleteSheets: Finished deleting obsolete sheets', 'MIN');
 }
 
-
 function moveSpreadsheetToFolder(folderName) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const file = DriveApp.getFileById(ss.getId());
+
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  const file  = DriveApp.getFileById(ss.getId());
+  LogDebug(`moveSpreadsheetToFolder: File ID = ${file.getId()}`, 'MAX');
 
   const folders = DriveApp.getFoldersByName(folderName);
   if (!folders.hasNext()) {
-    Logger.log(`Folder "${folderName}" not found.`);
+    LogDebug(`moveSpreadsheetToFolder: Folder "${folderName}" not found`, 'MID');
     return;
   }
 
   const folder = folders.next();
   folder.addFile(file);
   DriveApp.getRootFolder().removeFile(file);
-
-  Logger.log(`Spreadsheet moved to ${folderName}`);
+  LogDebug(`moveSpreadsheetToFolder: Moved file to "${folderName}"`, 'MIN');
 }
 
 function moveSpreadsheetToARQUIVO() {
-  moveSpreadsheetToFolder("-=ARQUIVO=-");
+  LogDebug('moveSpreadsheetToARQUIVO: Starting', 'MIN');
+  moveSpreadsheetToFolder('-=ARQUIVO=-');
+  LogDebug('moveSpreadsheetToARQUIVO: Finished', 'MIN');
 }
+
 
 /////////////////////////////////////////////////////////////////////DELETE/////////////////////////////////////////////////////////////////////
 
@@ -279,31 +341,51 @@ function doDelete() {
   revokeOwnAccess();
 }
 
+/**
+ * Revokes the script’s own authorization token so it will prompt for re‑authorization
+ * on the next run.
+ *
+ * @returns {void}
+ */
 function revokeOwnAccess() {
-  // Invalidate the script's authorization
-  var authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+  LogDebug('revokeOwnAccess: Starting', 'MIN');
+
+  // Check current authorization info
+  const authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
+  LogDebug(`revokeOwnAccess: authInfo loaded`, 'MID');
+  LogDebug(`revokeOwnAccess: Status = ${authInfo.getAuthorizationStatus()}`, 'MAX');
+
   if (authInfo) {
     ScriptApp.invalidateAuth();
-    Logger.log('Script access revoked successfully.');
+    LogDebug('revokeOwnAccess: Script access revoked successfully.', 'MID');
   } else {
-    Logger.log('Script is not authorized or access has already been revoked.');
+    LogDebug('revokeOwnAccess: Script is not authorized or access already revoked.', 'MID');
   }
+
+  LogDebug('revokeOwnAccess: Finished', 'MIN');
 }
 
 function moveSpreadsheetToBACKUP() {
-  moveSpreadsheetToFolder("-=BACKUP=-");
+  LogDebug('moveSpreadsheetToBACKUP: Starting', 'MIN');
+  moveSpreadsheetToFolder('-=BACKUP=-');
+  LogDebug('moveSpreadsheetToBACKUP: Finished', 'MIN');
 }
 
-function doDeleteSpreadsheet(){
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var fileId = ss.getId();
+function doDeleteSpreadsheet() {
+  LogDebug('doDeleteSpreadsheet: Starting permanent deletion', 'MIN');
+
+  const ss     = SpreadsheetApp.getActiveSpreadsheet();
+  const fileId = ss.getId();
+  LogDebug(`doDeleteSpreadsheet: File ID = ${fileId}`, 'MAX');
 
   try {
     DriveApp.getFileById(fileId).setTrashed(true);
-    Logger.log('Spreadsheet deleted successfully.');
+    LogDebug('doDeleteSpreadsheet: Spreadsheet trashed successfully', 'MIN');
   } catch (error) {
-    Logger.log(`Error deleting spreadsheet: ${error}`);
+    LogDebug(`doDeleteSpreadsheet: Error deleting spreadsheet: ${error}`, 'MIN');
   }
+
+  LogDebug('doDeleteSpreadsheet: Finished permanent deletion', 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////Name/////////////////////////////////////////////////////////////////////
@@ -368,12 +450,11 @@ function doCleanZeros() {
 }
 
 function doDeleteZeroOptions() {
-  Logger.log(`DELETE: 0 values from call put / blank values from ratios on Sheet ${OPCOES}`);
+  LogDebug(`DELETE: 0 values from call put / blank values from ratios on Sheet ${OPCOES}`, "MIN");
 
   const sheet = fetchSheetByName(OPCOES);
   if (!sheet) return;
 
-  const DEBUG   = getConfigValue(DBG, 'Config') === "TRUE";
   const lastRow = sheet.getLastRow();
 
   for (let row = lastRow; row > 4; row--) {
@@ -395,31 +476,29 @@ function doDeleteZeroOptions() {
         } else {
           reason = `blank H/I/J (H='${H}', I='${I}', J='${J}')`;
         }
-        if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`); }
+        LogDebug(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`, "MIN");
         sheet.deleteRow(row);
       }
     } catch (err) {
-      if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Error on row ${row}: ${err}`); }
+      LogDebug(`[doDeleteZeroOptions] Error on row ${row}: ${err}`, "MID");
     }
   }
-  if (DEBUG) { Logger.log(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`); }
+  LogDebug(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`, "MIN");
 }
 
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
-  Logger.log(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet on Sheet ${sheet_tr}`);
+  LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet on Sheet ${sheet_tr}`, "MIN");
 
   const colA = sheet_tr.getRange(2, 1, sheet_tr.getLastRow() - 1).getValues();     // only column A, skip header
   const rowIndex = colA.findIndex(row => row[0] === TKT);
-
-  const DEBUG = getConfigValue(DBG, 'Config') === "TRUE";
 
   if (rowIndex > -1) {
     const rowNum = rowIndex + 2;                                                   // +2 because we started from row 2
     const colCount = sheet_tr.getLastColumn();
     sheet_tr.getRange(rowNum, 1, 1, colCount).clearContent();
-    if (DEBUG) Logger.log(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from export sheet.`);
+    LogDebug(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from export sheet.`, "MIN");
   } else {
-    if (DEBUG) Logger.log(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found on export sheet.`);
+    LogDebug(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found on export sheet.`, "MIN");
   }
 }
 
