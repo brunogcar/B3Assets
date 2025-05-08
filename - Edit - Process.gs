@@ -68,56 +68,77 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
  */
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
   const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
-  const LR        = sheet_tr ? sheet_tr.getLastRow()   : sheet_sr.getLastRow();
+  const LR        = sheet_tr ? sheet_tr.getLastRow()  : sheet_sr.getLastRow();
+
+  let range_sr, range_tr, mappingFunc;
+
+  if (Edit === "TRUE") {
+    switch (SheetName) {
+      //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
+      case BLC:
+      case DRE:
+      case FLC:
+      case DVA:
+        if (New_sr.valueOf() > New_tr.valueOf()) {
+          doSaveFinancial(SheetName);
+          return;
+        }
+        if (New_sr.valueOf() === New_tr.valueOf()) {
+          // For these sheets, the mapping is applied on the target values.
+          range_sr = sheet_sr.getRange("B1:B" + LR);
+          range_tr = sheet_tr.getRange("B1:B" + LR);
+          mappingFunc = (source, target) =>
+            target.map((row, index) => [row[0] !== source[index][0] ? source[index][0] : row[0]]);
+        }
+        break;
+
+      //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
+      case Balanco:
+        if (New_sr.valueOf() > Old_sr.valueOf()) {
+          doSaveFinancial(SheetName);
+          return;
+        }
+        if (New_sr.valueOf() === Old_sr.valueOf()) {
+          range_sr = sheet_sr.getRange("B1:B" + LR);
+          range_tr = sheet_sr.getRange("C1:C" + LR);
+          mappingFunc = (source, target) =>
+            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
+        }
+        break;
+
+      //-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
+      case Resultado:
+      case Valor:
+      case Fluxo:
+        if (New_sr.valueOf() > Old_sr.valueOf()) {
+          doSaveFinancial(SheetName);
+          return;
+        }
+        if (New_sr.valueOf() === Old_sr.valueOf()) {
+          range_sr = sheet_sr.getRange("C1:C" + LR);
+          range_tr = sheet_sr.getRange("D1:D" + LR);
+          mappingFunc = (source, target) =>
+            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
+        }
+        break;
+
+      default:
+        LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren’t met on processEditFinancial`, 'MIN');
+        return;
+    }
+  }
 
   if (Edit !== "TRUE") {
     LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-    return;
   }
 
-  // pick which column‐pair to touch; same keys & fallback to col_tr=col_sr+1 when use_tr=false
-  const editMap = {
-    [BLC]:       { col_sr: 2, col_tr: 2, compareTo: 'New_tr' },
-    [DRE]:       { col_sr: 2, col_tr: 2, compareTo: 'New_tr' },
-    [FLC]:       { col_sr: 2, col_tr: 2, compareTo: 'New_tr' },
-    [DVA]:       { col_sr: 2, col_tr: 2, compareTo: 'New_tr' },
-
-    [Balanco]:   { col_sr: 2, col_tr: 3, compareTo: 'Old_sr' },
-    [Resultado]: { col_sr: 3, col_tr: 4, compareTo: 'Old_sr' },
-    [Valor]:     { col_sr: 3, col_tr: 4, compareTo: 'Old_sr' },
-    [Fluxo]:     { col_sr: 3, col_tr: 4, compareTo: 'Old_sr' }
-  };
-
-  const cfg = editMap[SheetName];
-  if (!cfg) {
-    LogDebug(`ERROR EDIT: ${SheetName} - Unsupported sheet in processEditFinancial`, 'MIN');
-    return;
-  }
-
-  // pick which date to compare against
-  const refDate = cfg.compareTo === 'New_tr' ? New_tr : Old_sr;
-
-  // if source has moved past reference, treat as a save
-  if (New_sr.valueOf() > refDate.valueOf()) {
-    doSaveFinancial(SheetName);
-    return;
-  }
-
-  // if dates exactly match, then do a cell‐by‐cell patch
-  if (New_sr.valueOf() === refDate.valueOf()) {
-    // write‐sheet is template unless writing back into source for Balanco
-    const tr = cfg.col_tr === 3 && sheet_tr == null ? sheet_sr : sheet_tr;
-    const sr = sheet_sr;
-
-    const range_sr = sr.getRange(1, cfg.col_sr, LR, 1);
-    const range_tr = tr.getRange(1, cfg.col_tr, LR, 1);
-
-    const src = range_sr.getValues();
-    const tgt = range_tr.getValues();
-    // only replace cells that differ
-    const updated = src.map((r,i) => [ r[0] !== tgt[i][0] ? r[0] : tgt[i][0] ]);
-
-    range_tr.setValues(updated);
+  /////////////////////////////////////////////////////////////////////PROCESS - END/////////////////////////////////////////////////////////////////////
+  // Common code block: update the values based on the mapping function
+  if (range_sr && range_tr && mappingFunc) {
+    const values_sr = range_sr.getValues();
+    const values_tr = range_tr.getValues();
+    const updatedValues = mappingFunc(values_sr, values_tr);
+    range_tr.setValues(updatedValues);
     LogDebug(`SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
     doExportFinancial(SheetName);
   }
