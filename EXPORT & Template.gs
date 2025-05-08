@@ -472,7 +472,7 @@ function doExportProventos() {
     return;
   }
 
-  var nonExportValues = Data[0].slice(3, 9);                                              // From index 1 (C) to index 11 (not inclusive), i.e. columns C through L.
+  var nonExportValues = Data[0].slice(3, 7);                                              // From index 3 (E) to index 7 (not inclusive), i.e. columns E through H.
   var isBlankOrZero = nonExportValues.some(value => value === "" || value === 0);         // nonExportValues.every to select ALL
 
   if (isBlankOrZero) {

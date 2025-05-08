@@ -158,7 +158,7 @@ function doCheckDATA(SheetName) {
     return processCheckDATA(sheet_sr, SheetName, 'FALSE');
   }
 
-  let Check = 'FALSE';
+  let Check = '';
 
   // 1) toggleHide case (OPCOES)
   if (cfg.toggleHide) {
