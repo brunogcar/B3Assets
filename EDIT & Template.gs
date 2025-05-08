@@ -241,7 +241,7 @@ function doEditFinancial(SheetName) {
   if (!sheet_tr) return;
 
   const Values_sr = sheet_sr.getRange(cfg.sourceRange).getValues()[0];
-  const [New_sr, , Old_sr] = doFinancialDateHelper(Values_sr);
+  const [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
   let New_tr = '', Old_tr = '';
   if (cfg.targetRange) {

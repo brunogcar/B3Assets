@@ -79,84 +79,117 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
 
 /////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 
+/**
+ * Saves financial sheet data, backing up older columns and optionally triggering exports/edits.
+ *
+ * @param {GoogleAppsScript.Spreadsheet.Sheet|null} sheet_tr The “template” sheet (or null if write-back is on source).
+ * @param {GoogleAppsScript.Spreadsheet.Sheet}      sheet_sr The source sheet where new data lives.
+ * @param {number|string}                           New_tr    The new template date millis or blank.
+ * @param {number|string}                           Old_tr    The old template date millis or blank.
+ * @param {number|string}                           New_sr    The new source date millis or blank.
+ * @param {number|string}                           Old_sr    The old source date millis or blank.
+ * @param {string}                                  Save      “TRUE” if SAVE is enabled in config.
+ * @param {string}                                  Edit      “TRUE” if EDIT is enabled in config.
+ */
 function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit) {
-  const LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
-  const LC = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
-  const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
+  const LR        = sheet_tr ? sheet_tr.getLastRow()    : sheet_sr.getLastRow();
+  const LC        = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
+  const SheetName = sheet_tr ? sheet_tr.getSheetName()  : sheet_sr.getSheetName();
 
+  LogDebug(
+    `DBG dates → New_tr=${New_tr} (${typeof New_tr}), Old_tr=${Old_tr} (${typeof Old_tr}), ` +
+    `New_sr=${New_sr} (${typeof New_sr}), Old_sr=${Old_sr} (${typeof Old_sr})`,
+    'MAX'
+  );
+
+  // bail out early if SAVE is disabled
   if (Save !== "TRUE") {
     LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
     return;
   }
 
+  // Configuration per‐sheet:
+  // col_sr:        source column to save from
+  // col_tr:        template column to save into (unless overridden by targetCol)
+  // backupOffset:  how many cols back from last to leave intact
+  // targetCol:     when present, write directly back into source at this column
   const financialMap = {
-    [BLC]:       { baseCol: 2, backupOffset: 1, use_tr: true },
-    [DRE]:       { baseCol: 2, backupOffset: 1, use_tr: true },
-    [FLC]:       { baseCol: 2, backupOffset: 1, use_tr: true },
-    [DVA]:       { baseCol: 2, backupOffset: 1, use_tr: true },
+    [BLC]:       { col_sr: 2, col_tr: 2, backupOffset: 1 },
+    [DRE]:       { col_sr: 2, col_tr: 2, backupOffset: 1 },
+    [FLC]:       { col_sr: 2, col_tr: 2, backupOffset: 1 },
+    [DVA]:       { col_sr: 2, col_tr: 2, backupOffset: 1 },
 
-    [Balanco]:   { baseCol: 2, backupOffset: 2, use_tr: false },
-    [Resultado]: { baseCol: 3, backupOffset: 3, use_tr: false },
-    [Valor]:     { baseCol: 3, backupOffset: 3, use_tr: false },
-    [Fluxo]:     { baseCol: 3, backupOffset: 3, use_tr: false }
+    [Balanco]:   { col_sr: 2, col_tr: 2, backupOffset: 2, targetCol: 3 },
+    [Resultado]: { col_sr: 3, col_tr: 4, backupOffset: 3 },
+    [Valor]:     { col_sr: 3, col_tr: 4, backupOffset: 3 },
+    [Fluxo]:     { col_sr: 3, col_tr: 4, backupOffset: 3 }
   };
 
   const cfg = financialMap[SheetName];
   if (!cfg) {
-    LogDebug(`ERROR: ${SheetName} not supported in processSaveFinancial`, 'MIN');
+    LogDebug(`ERROR SAVE: ${SheetName} not supported in processSaveFinancial`, 'MIN');
     return;
   }
 
-  const sr = sheet_sr;
-  const tr = cfg.use_tr ? sheet_tr : sheet_sr;
+  // pick write‐sheet: either the template (sheet_tr) or source (sheet_sr) when targetCol is set
+  const sr       = sheet_sr;
+  const tr       = cfg.targetCol != null ? sheet_sr : sheet_tr;
+  const writeCol = cfg.targetCol != null ? cfg.targetCol : cfg.col_tr;
 
-  let save_range_sr, save_range_tr, backup_range_sr, backup_range_tr;
-  let edit_range_sr, edit_range_tr;
+  let save_sr, save_tr, backup_sr, backup_tr, edit_sr, edit_tr;
 
-  if (New_sr.valueOf() > Old_sr.valueOf()) {
-    if (Old_sr === "") {
-      save_range_sr = sr.getRange(1, cfg.baseCol, LR, 1);
-      save_range_tr = tr.getRange(1, cfg.baseCol, LR, 1);
-    } else {
-      backup_range_sr = sr.getRange(1, cfg.baseCol + 1, LR, LC - cfg.backupOffset);
-      backup_range_tr = tr.getRange(1, cfg.baseCol + 2, LR, LC - cfg.backupOffset);
+  // only proceed when source date has advanced
 
-      save_range_sr = sr.getRange(1, cfg.baseCol, LR, 1);
-      save_range_tr = tr.getRange(1, cfg.baseCol, LR, 1);
+  if (New_sr.valueOf() > New_tr.valueOf()) {
+    if (New_tr.valueOf() === "") {
+      // first‐time save entire column
+      save_sr = sr.getRange(1, cfg.col_sr, LR, 1);
+      save_tr = tr.getRange(1, writeCol,      LR, 1);
+    }
+    else if (New_sr.valueOf() > Old_sr.valueOf()) {
+      // back up the existing “current” column(s)
+      backup_sr = sr.getRange(1, cfg.col_sr + 1, LR, LC - cfg.backupOffset);
+      backup_tr = tr.getRange(1, writeCol   + 1, LR, LC - cfg.backupOffset);
+
+      // then overwrite with the new column
+      save_sr = sr.getRange(1, cfg.col_sr,    LR, 1);
+      save_tr = tr.getRange(1, writeCol,       LR, 1);
     }
   } else {
-    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`, 'MIN');
+    LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren’t met on processSaveFinancial`, 'MIN');
   }
 
-  if (Edit === "TRUE") {
-    if(New_sr.valueOf() === New_tr.valueOf()) {
-      edit_range_sr = sr.getRange(1, cfg.baseCol, LR, 1);
-      edit_range_tr = tr.getRange(1, cfg.baseCol + 1, LR, 1);
-    }
+  // if EDIT is enabled and new‐source equals new‐template, prepare an edit‐check
+  if (Edit === "TRUE" && New_sr.valueOf() === New_tr.valueOf()) {
+    edit_sr = sr.getRange(1, cfg.col_sr,     LR, 1);
+    edit_tr = tr.getRange(1, writeCol + 1,   LR, 1);
   } else if (Edit !== "TRUE") {
     LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
   }
 
-  // --- Perform backup ---
-  if (backup_range_sr && backup_range_tr) {
-    const backupValues = backup_range_sr.getValues();
-    backup_range_tr.setValues(backupValues);
+  // ——— perform backup ———
+  if (backup_sr && backup_tr) {
+    backup_tr.setValues(backup_sr.getValues());
   }
 
-  // --- Perform main SAVE ---
-  if (save_range_sr && save_range_tr) {
-    const values = save_range_sr.getValues();
-    save_range_tr.setValues(values);
+  // ——— perform main SAVE ———
+  if (save_sr && save_tr) {
+    save_tr.setValues(save_sr.getValues());
     LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
     doExportFinancial(SheetName);
   }
 
-  // --- Perform EDIT check ---
-  if (edit_range_sr && edit_range_tr) {
-    const values_sr = edit_range_sr.getValues();
-    const values_tr = edit_range_tr.getValues();
-    const areEqual = values_sr.every((row, i) => row[0] === values_tr[i][0]);
-    if (!areEqual) {
+  // bail out early if EDIT is disabled
+  if (Edit !== "TRUE") {
+    LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
+    return;
+  }
+
+  // ——— perform EDIT check ———
+  if (edit_sr && edit_tr) {
+    const src = edit_sr.getValues();
+    const tgt = edit_tr.getValues();
+    if (src.some((r,i) => r[0] !== tgt[i][0])) {
       doEditFinancial(SheetName);
     }
   }

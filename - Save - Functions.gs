@@ -37,54 +37,41 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
 }
 
-
-
 /**
- * Converts an array of date strings into timestamps (milliseconds since epoch),
- * handling either "DD/MM/YYYY" or "YYYY-MM-DD" formats. Invalid or unparsable
- * entries return an empty string.
+ * Convert an array of “date‐like” values (strings or Date objects)
+ * into timestamps (ms since epoch), or return “” if invalid.
  *
- * @param {string[]} dateStrings
- *   An array of date strings to convert. Supported formats:
- *     • "DD/MM/YYYY" (e.g. "12/5/2024")
- *     • "YYYY-MM-DD" (e.g. "2024-05-12")
- *
- * @returns {(number|string)[]}
- *   An array where each element is:
- *     • A number representing the timestamp (ms since epoch) if parsing succeeded
- *     • An empty string ("") if the input was invalid or not in a supported format
- *
- * @example
- *   const inputs = ["12/5/2024", "2023-10-03", "invalid", null];
- *   const results = doFinancialDateHelper(inputs);
- *   // results might be [1715558400000, 1696281600000, "", ""]
+ * @param {Array<string|Date|number>} dateArr
+ * @returns {Array<number|string>} [newDateTs, oldDateTs, …]
  */
-function doFinancialDateHelper(dateStrings) {
-  return dateStrings.map(v => {
-    // Reject nullish or non-string/non-number values
-    if (v == null || typeof v.toString !== "function") {
-      return "";
+function doFinancialDateHelper(dateArr) {
+  return dateArr.map(v => {
+    // 1) If it’s already a Date, grab its ms
+    if (v instanceof Date && !isNaN(v)) {
+      return v.getTime();
     }
-
-    const str = v.toString().trim();
-
-    // Case 1: "DD/MM/YYYY"
-    if (str.includes("/")) {
-      const [d, m, y] = str.split("/");
+    // 2) If it’s a number (timestamp), leave it
+    if (typeof v === 'number' && !isNaN(v)) {
+      return v;
+    }
+    // 3) Everything else -> string
+    const str = v != null ? v.toString().trim() : '';
+    // DD/MM/YYYY
+    if (str.includes('/')) {
+      const [d,m,y] = str.split('/');
       if (d && m && y) {
         return new Date(+y, +m - 1, +d).getTime();
       }
     }
-    // Case 2: "YYYY-MM-DD"
-    else if (str.includes("-")) {
-      const [y, m, d] = str.split("-");
+    // YYYY-MM-DD
+    if (str.includes('-')) {
+      const [y,m,d] = str.split('-');
       if (y && m && d) {
         return new Date(+y, +m - 1, +d).getTime();
       }
     }
-
-    // Fallback: return empty string for invalid formats
-    return "";
+    // fallback
+    return '';
   });
 }
 

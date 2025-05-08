@@ -233,11 +233,13 @@ function doSaveFinancial(SheetName) {
   if (!sheet_tr) return;
 
   const Values_sr = sheet_sr.getRange(cfg.sourceRange).getValues()[0];
-  const [New_sr, , Old_sr] = doFinancialDateHelper(Values_sr);
+  LogDebug(`DBG sourceRange ${cfg.sourceRange} values: ${JSON.stringify(Values_sr)}`, 'MAX');
+  const [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
 
   let New_tr = '', Old_tr = '';
   if (cfg.targetRange) {
     const Values_tr = sheet_tr.getRange(cfg.targetRange).getValues()[0];
+    LogDebug(`DBG targetRange ${cfg.targetRange} values: ${JSON.stringify(Values_tr)}`, 'MAX');
     [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
   }
 
