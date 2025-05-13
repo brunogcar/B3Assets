@@ -123,209 +123,153 @@ function doSaveBasic(SheetName) {
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
+const financialMap = {
+  BLC: {
+    saveKey: SBL,   editKey: DBL,
+    sh_sr: Balanco, sh_tr: BLC,   recurse: true,
+    col_new: 2, col_old: 3, col_old_src: 3,
+    col_src: 2, col_trg: 2, col_bak: 3,
+    checks: ["K3","K4"],
+    conditions: sheet => {
+      const [B2,B27] = ["B2","B27"].map(r=>sheet.getRange(r).getDisplayValue());
+      return B2!=0 && B2!=="" && B27!=0 && B27!=="";
+    }
+  },
+  DRE: {
+    saveKey: SDE,   editKey: DDE,
+    sh_sr: Resultado, sh_tr: DRE, recurse: true,
+    col_new: 2, col_old: 3, col_old_src: 4,
+    col_src: 2, col_trg: 2, col_bak: 3,
+    checks: ["K5"],
+    conditions: sheet => {
+      const [B4,B27] = ["B4","B27"].map(r=>sheet.getRange(r).getDisplayValue());
+      return B4!=0 && B4!=="" && B27!=0 && B27!=="";
+    }
+  },
+  FLC: {
+    saveKey: SFL,   editKey: DFL,
+    sh_sr: Fluxo,     sh_tr: FLC, recurse: true,
+    col_new: 2, col_old: 3, col_old_src: 4,
+    col_src: 2, col_trg: 2, col_bak: 3,
+    checks: ["K6"],
+    conditions: sheet => {
+      const v = sheet.getRange("B2").getDisplayValue();
+      return v!=0 && v!=="";
+    }
+  },
+  DVA: {
+    saveKey: SDV,   editKey: DDV,
+    sh_sr: Valor,     sh_tr: DVA, recurse: true,
+    col_new: 2, col_old: 3, col_old_src: 4,
+    col_src: 2, col_trg: 2, col_bak: 3,
+    checks: ["K7"],
+    conditions: sheet => {
+      const v = sheet.getRange("B2").getDisplayValue();
+      return v!=0 && v!=="";
+    }
+  },
+  Balanco: {
+    saveKey: SBL,   editKey: DBL,
+    sh_sr: Balanco, sh_tr: Balanco, recurse: false,
+    col_new: 2, col_old: 3, col_old_src: 3,
+    col_src: 2, col_trg: 3, col_bak: 4,
+    conditions: sheet => {
+      const [B2,B27] = ["B2","B27"].map(r=>sheet.getRange(r).getDisplayValue());
+      return B2!=0 && B2!=="" && B27!=0 && B27!=="";
+    }
+  },
+  Resultado: {
+    saveKey: SDE,   editKey: DDE,
+    sh_sr: Resultado, sh_tr: Resultado, recurse: false,
+    col_new: 3, col_old: 4, col_old_src: 4,
+    col_src: 3, col_trg: 4, col_bak: 5,
+    conditions: sheet => {
+      const [B4,B27] = ["B4","B27"].map(r=>sheet.getRange(r).getDisplayValue());
+      return B4!=="" && B27!=0 && B27!=="";
+    }
+  },
+  Fluxo: {
+    saveKey: SFL,   editKey: DFL,
+    sh_sr: Fluxo,     sh_tr: Fluxo, recurse: false,
+    col_new: 3, col_old: 4, col_old_src: 4,
+    col_src: 3, col_trg: 4, col_bak: 5,
+    conditions: sheet => {
+      const v = sheet.getRange("B2").getDisplayValue();
+      return v!=0 && v!=="";
+    }
+  },
+  Valor: {
+    saveKey: SDV,   editKey: DDV,
+    sh_sr: Valor,     sh_tr: Valor, recurse: false,
+    col_new: 3, col_old: 4, col_old_src: 4,
+    col_src: 3, col_trg: 4, col_bak: 5,
+    conditions: sheet => {
+      const v = sheet.getRange("B2").getDisplayValue();
+      return v!=0 && v!=="";
+    }
+  }
+};
+
 function doSaveFinancial(SheetName) {
   LogDebug(`SAVE: ${SheetName}`, 'MIN');
+
   const sheet_up = fetchSheetByName('UPDATE');
   if (!sheet_up) return;
 
-  let Save, Edit;
-  let sheet_tr, sheet_sr;
+  const cfg = Object.values(financialMap)
+                    .find(c => c.sh_tr === SheetName);
+  if (!cfg) {LogDebug(`No financialMap entry for ${SheetName}`, 'MIN'); return; }
 
-  switch (SheetName) {
-    case BLC:
-      Save = getConfigValue(SBL);
-      Edit = getConfigValue(DBL);
+  const Save = getConfigValue(cfg.saveKey);
+  if (Save !== "TRUE") {
+    LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+    return;
+  }
 
-      sheet_tr = fetchSheetByName(BLC);
-      if (!sheet_tr) return;
+  const sheet_sr = fetchSheetByName(cfg.sh_sr);
+  if (!sheet_sr) return;
+  const sheet_tr = cfg.sh_tr === cfg.sh_sr
+    ? sheet_sr
+    : fetchSheetByName(cfg.sh_tr);
+  if (!sheet_tr) return;
 
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
+  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
+  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
+  LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
+  const [New_tr, Old_tr] = doFinancialDateHelper([raw_New_tr, raw_Old_tr]);
 
-      sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
+  // — Read SR dates (with conditional old‐date column) —
+  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
+  const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
+  const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
+  LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
+  const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
 
-      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
+  if (cfg.checks) {
+    const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
+    const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
+    if (!valid) {
+      LogDebug(`ERROR SAVE: ${SheetName} - Checks failed: ${JSON.stringify(checkVals)}`, 'MID');
+      return;
+    }
+  }
+  if (cfg.conditions && !cfg.conditions(sheet_sr)) {
+    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
+    return;
+  }
 
-      var [B2_sr, B27_sr] = ["B2", "B27"].map(r => sheet_sr.getRange(r).getDisplayValue());
+  const validNewDate = New_sr.valueOf() !== "-" && New_sr.valueOf() !== "";
 
-      var CHECK1 = sheet_up.getRange("K3").getValue();
-      var CHECK2 = sheet_up.getRange("K4").getValue();
-
-      if (((CHECK1 >= 90 && CHECK1 <= 92) || (CHECK1 == 0 || CHECK1 > 40000)) &&
-          ((CHECK2 >= 90 && CHECK2 <= 92) || (CHECK2 == 0 || CHECK1 > 40000))) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (B2_sr != 0 && B2_sr != "") &&
-            (B27_sr != 0 && B27_sr != "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Balanco);
-        } else {
-          LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case Balanco:
-      Save = getConfigValue(SBL);
-      Edit = getConfigValue(DBL);
-
-      sheet_sr = fetchSheetByName(Balanco);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:C1").getValues()[0];
-      var [New_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C4_sr != 0 && C4_sr != "") &&
-          (C27_sr != 0 && C27_sr != "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case DRE:
-      Save = getConfigValue(SDE);
-      Edit = getConfigValue(DDE);
-
-      sheet_tr = fetchSheetByName(DRE);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K5").getValue();
-
-      if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C4_sr != 0 && C4_sr != "") &&
-            (C27_sr != 0 && C27_sr != "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Resultado);
-        } else {
-          LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case Resultado:
-      Save = getConfigValue(SDE);
-      Edit = getConfigValue(DDE);
-
-      sheet_sr = fetchSheetByName(Resultado);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C4_sr, C27_sr] = ["C4", "C27"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C4_sr != "") &&
-          (C27_sr != 0 && C27_sr != "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case FLC:
-      Save = getConfigValue(SFL);
-      Edit = getConfigValue(DFL);
-
-      sheet_tr = fetchSheetByName(FLC);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K6").getValue();
-
-      if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C2_sr != 0 && C2_sr !== "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Fluxo);
-        } else {
-          LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case Fluxo:
-      Save = getConfigValue(SFL);
-      Edit = getConfigValue(DFL);
-
-      sheet_sr = fetchSheetByName(Fluxo);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-
-      if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-          (C2_sr != 0 && C2_sr !== "")) {
-        processSaveFinancial(sheet_sr, sheet_sr, '', '', New_sr, Old_sr, Save, Edit);
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-      }
-      break;
-
-    case DVA:
-      Save = getConfigValue(SDV);
-      Edit = getConfigValue(DDV);
-
-      sheet_tr = fetchSheetByName(DVA);
-      if (!sheet_tr) return;
-
-      var Values_tr = sheet_tr.getRange("B1:C1").getValues()[0];
-      var [New_tr, Old_tr] = doFinancialDateHelper(Values_tr);
-
-      sheet_sr = fetchSheetByName(Valor);
-      if (!sheet_sr) return;
-
-      var Values_sr = sheet_sr.getRange("B1:D1").getValues()[0];
-      var [New_sr, dud_sr, Old_sr] = doFinancialDateHelper(Values_sr);
-
-      var [C2_sr] = ["C2"].map(r => sheet_sr.getRange(r).getDisplayValue());
-      var CHECK = sheet_up.getRange("K7").getValue();
-
-      if ((CHECK >= 90 && CHECK <= 92) || (CHECK == 0 || CHECK > 40000)) {
-        if ((New_sr.valueOf() != "-" && New_sr.valueOf() != "") &&
-            (C2_sr != 0 && C2_sr !== "")) {
-          processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit);
-          doSaveFinancial(Valor);
-        } else {
-          LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Does not exist on doSaveFinancial`, 'MIN');
-      }
-      break;
+  if (validNewDate) {
+  processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
+    // Recurse if needed
+    if (cfg.recurse) {
+      doSaveFinancial(cfg.sh_sr);
+    }
+  }
+  else {
+    LogDebug(`ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid on doSaveFinancial`, 'MIN');
+    return;
   }
 }
 

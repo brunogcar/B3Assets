@@ -58,89 +58,65 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
 /**
  * Applies an “edit” sync to financial sheets when the source & template dates match.
  *
- * @param {GoogleAppsScript.Spreadsheet.Sheet|null} sheet_tr The template sheet (or null if source-only).
- * @param {GoogleAppsScript.Spreadsheet.Sheet}      sheet_sr The source sheet.
- * @param {number|string}                           New_tr    New template date millis or blank.
- * @param {number|string}                           Old_tr    Old template date millis or blank.
- * @param {number|string}                           New_sr    New source date millis or blank.
- * @param {number|string}                           Old_sr    Old source date millis or blank.
- * @param {string}                                  Edit      “TRUE” if EDIT is enabled.
+ * @param {Sheet}           sheet_tr  Target sheet (ticker)
+ * @param {Sheet}           sheet_sr  Source sheet (template)
+ * @param {Date|string}     New_tr  Parsed “new” date from target
+ * @param {Date|string}     Old_tr  Parsed “old” date from target
+ * @param {Date|string}     New_sr  Parsed “new” date from source
+ * @param {Date|string}     Old_sr  Parsed “old” date from source
+ * @param {boolean|string}  Save    “TRUE” if SAVE is enabled in config.
+ * @param {boolean|string}  Edit    “TRUE” if EDIT is enabled in config.
  */
-function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Edit) {
-  const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
-  const LR        = sheet_tr ? sheet_tr.getLastRow()  : sheet_sr.getLastRow();
+function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
+  const SheetName = sheet_tr.getSheetName();
+  const cfg       = Object.values(financialMap)
+                            .find(c => c.sh_tr === SheetName);
+  if (!cfg) {
+    LogDebug(`No financialMap entry for ${SheetName}`, 'MIN');
+    return;
+  }
 
-  let range_sr, range_tr, mappingFunc;
+  const LR = sheet_sr.getLastRow();
 
-  if (Edit === "TRUE") {
-    switch (SheetName) {
-      //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-      case BLC:
-      case DRE:
-      case FLC:
-      case DVA:
-        if (New_sr.valueOf() > New_tr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() === New_tr.valueOf()) {
-          // For these sheets, the mapping is applied on the target values.
-          range_sr = sheet_sr.getRange("B1:B" + LR);
-          range_tr = sheet_tr.getRange("B1:B" + LR);
-          mappingFunc = (source, target) =>
-            target.map((row, index) => [row[0] !== source[index][0] ? source[index][0] : row[0]]);
-        }
-        break;
+  let doEdit = false;
 
-      //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
-      case Balanco:
-        if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() === Old_sr.valueOf()) {
-          range_sr = sheet_sr.getRange("B1:B" + LR);
-          range_tr = sheet_sr.getRange("C1:C" + LR);
-          mappingFunc = (source, target) =>
-            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-        }
-        break;
+  if (New_sr.valueOf() === New_tr.valueOf()) {
+    doEdit = true;
+  } else {
+    LogDebug(`Skipping edit: dates differ (SR:${New_sr} vs TR:${New_tr})`, 'MIN');
+    return;
+  }
 
-      //-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
-      case Resultado:
-      case Valor:
-      case Fluxo:
-        if (New_sr.valueOf() > Old_sr.valueOf()) {
-          doSaveFinancial(SheetName);
-          return;
-        }
-        if (New_sr.valueOf() === Old_sr.valueOf()) {
-          range_sr = sheet_sr.getRange("C1:C" + LR);
-          range_tr = sheet_sr.getRange("D1:D" + LR);
-          mappingFunc = (source, target) =>
-            source.map((row, index) => [row[0] !== target[index][0] ? row[0] : target[index][0]]);
-        }
-        break;
+  if (doEdit) {
+    const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
+    const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
 
-      default:
-        LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren’t met on processEditFinancial`, 'MIN');
-        return;
+
+    // Compare and apply only the changed cells
+    const values_sr = edit_sr.getValues();
+    const values_tr = edit_tr.getValues();
+
+    const updates = [];
+    values_sr.forEach((row, i) => {
+      const vSr = row[0], vTr = values_tr[i][0];
+      if (vSr !== vTr) {
+        updates.push({ row: i+1, value: vSr });
+      }
+    });
+
+    if (updates.length === 0) {
+      LogDebug(`No edits detected for ${SheetName}`, 'MIN');
+      return;
     }
-  }
 
-  if (Edit !== "TRUE") {
-    LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-  }
-
-  /////////////////////////////////////////////////////////////////////PROCESS - END/////////////////////////////////////////////////////////////////////
-  // Common code block: update the values based on the mapping function
-  if (range_sr && range_tr && mappingFunc) {
-    const values_sr = range_sr.getValues();
-    const values_tr = range_tr.getValues();
-    const updatedValues = mappingFunc(values_sr, values_tr);
-    range_tr.setValues(updatedValues);
-    LogDebug(`SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
-    doExportFinancial(SheetName);
+    // Apply updates one‐by‐one (to preserve blanks/unmodified cells)
+    updates.forEach(u => {
+      sheet_tr.getRange(u.row, cfg.col_trg).setValue(u.value);
+    });
+    LogDebug(
+      `Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`,
+      'MIN'
+    );
   }
 }
 

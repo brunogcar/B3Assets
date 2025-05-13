@@ -82,152 +82,81 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
 /**
  * Saves financial sheet data, backing up older columns and optionally triggering exports/edits.
  *
- * @param {GoogleAppsScript.Spreadsheet.Sheet|null} sheet_tr The “template” sheet (or null if write-back is on source).
- * @param {GoogleAppsScript.Spreadsheet.Sheet}      sheet_sr The source sheet where new data lives.
- * @param {number|string}                           New_tr    The new template date millis or blank.
- * @param {number|string}                           Old_tr    The old template date millis or blank.
- * @param {number|string}                           New_sr    The new source date millis or blank.
- * @param {number|string}                           Old_sr    The old source date millis or blank.
- * @param {string}                                  Save      “TRUE” if SAVE is enabled in config.
- * @param {string}                                  Edit      “TRUE” if EDIT is enabled in config.
+ * @param {Sheet}           sheet_tr  Target sheet (ticker)
+ * @param {Sheet}           sheet_sr  Source sheet (template)
+ * @param {Date|string}     New_tr  Parsed “new” date from target
+ * @param {Date|string}     Old_tr  Parsed “old” date from target
+ * @param {Date|string}     New_sr  Parsed “new” date from source
+ * @param {Date|string}     Old_sr  Parsed “old” date from source
+ * @param {boolean|string}  Save    “TRUE” if SAVE is enabled in config.
+ * @param {boolean|string}  Edit    “TRUE” if EDIT is enabled in config.
  */
-function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr, Save, Edit) {
-  var LR = sheet_tr ? sheet_tr.getLastRow() : sheet_sr.getLastRow();
-  var LC = sheet_tr ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
-  var SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
+function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
+  const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
+  const cfg       = Object.values(financialMap)
+                            .find(c => c.sh_tr === SheetName);
+  if (!cfg) {
+    LogDebug(`No financialMap entry for ${SheetName}`, 'MIN');
+    return;
+  }
 
-  // Main SAVE update variables:
-  let save_range_sr, save_range_tr, mappingFunc;
-  // Backup update variables:
-  let backup_range_sr, backup_range_tr, backupMappingFunc;
-  // EDIT update variables:
-  let edit_range_sr, edit_range_tr, editMappingFunc;
+  const LR        = sheet_sr.getLastRow();
+  const LC        = cfg.recurse ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
 
-  if ( Save == "TRUE" ) {
+  let doSave = false;
+  let doEdit = false;
 
-    //-------------------------------------------------------------------BLC / DRE / FLC / DVA-------------------------------------------------------------------//
-    if ([BLC, DRE, FLC, DVA].includes(SheetName)) {
-      if (New_sr.valueOf() > Old_sr.valueOf()) {
-        if (Old_sr.valueOf() == "") {
-          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-          save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
-          mappingFunc = (source, target) => source;
-        } else {
-          backup_range_sr = sheet_tr.getRange(1, 2, LR, LC - 1);
-          backup_range_tr = sheet_tr.getRange(1, 3, LR, LC - 1);
-          backupMappingFunc = (source, target) => source;
-
-          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-          save_range_tr = sheet_tr.getRange(1, 2, LR, 1);
-          mappingFunc = (source, target) => source;
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`, 'MIN');
-      }
-
-      if ( Edit == "TRUE" ) {
-        if (New_sr.valueOf() == New_tr.valueOf()) {
-          edit_range_sr = sheet_sr.getRange("B1:B" + LR);
-          edit_range_tr = sheet_tr.getRange("B1:B" + LR);
-          editMappingFunc = (source, target) => source;
-        }
-      }
-      if ( Edit != "TRUE" ) {
-        LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-      }
+  if (New_sr.valueOf() > Old_sr.valueOf()) {
+    if (!cfg.recurse || New_sr.valueOf() > New_tr.valueOf()) {
+      doSave = true;
     }
-    //-------------------------------------------------------------------Balanco-------------------------------------------------------------------//
-    else if (SheetName === Balanco) {
-      if (New_sr.valueOf() > Old_sr.valueOf()) {
-        if (Old_sr.valueOf() == "") {
-          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-          save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
-          mappingFunc = (source, target) => source;
-        } else {
-          backup_range_sr = sheet_sr.getRange(1, 3, LR, LC - 2);
-          backup_range_tr = sheet_sr.getRange(1, 4, LR, LC - 2);
-          backupMappingFunc = (source, target) => source;
-
-          save_range_sr = sheet_sr.getRange(1, 2, LR, 1);
-          save_range_tr = sheet_sr.getRange(1, 3, LR, 1);
-          mappingFunc = (source, target) => source;
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`, 'MIN');
-      }
-
-      if ( Edit == "TRUE" ) {
-        if (New_sr.valueOf() == New_tr.valueOf()) {
-          edit_range_sr = sheet_sr.getRange("B1:B" + LR);
-          edit_range_tr = sheet_sr.getRange("C1:C" + LR);
-          editMappingFunc = (source, target) => source;
-        }
-      }
-      if ( Edit != "TRUE" ) {
-        LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-      }
+    else if (New_sr.valueOf() === New_tr.valueOf()) {
+      doEdit = true;
     }
-    //-------------------------------------------------------------------Resultado / Valor / Fluxo-------------------------------------------------------------------//
-    else if ([Resultado, Valor, Fluxo].includes(SheetName)) {
-      if (New_sr.valueOf() > Old_sr.valueOf()) {
-        if (Old_sr.valueOf() == "") {
-          save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
-          save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
-          mappingFunc = (source, target) => source;
-        } else {
-          backup_range_sr = sheet_sr.getRange(1, 4, LR, LC - 3);
-          backup_range_tr = sheet_sr.getRange(1, 5, LR, LC - 3);
-          backupMappingFunc = (source, target) => source;
+  }
+  else if (New_sr.valueOf() === New_tr.valueOf()) {
+    doEdit = true;
+  }
 
-          save_range_sr = sheet_sr.getRange(1, 3, LR, 1);
-          save_range_tr = sheet_sr.getRange(1, 4, LR, 1);
-          mappingFunc = (source, target) => source;
-        }
-      } else {
-        LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on processSaveFinancial`, 'MIN');
-      }
+  if (!doSave && !doEdit) {
+    LogDebug(`SKIP Save and EDIT`, 'MID');
+    return;
+  }
 
-      if ( Edit == "TRUE" ) {
-        if (New_sr.valueOf() == New_tr.valueOf()) {
-          edit_range_sr = sheet_sr.getRange("C1:C" + LR);
-          edit_range_tr = sheet_sr.getRange("D1:D" + LR);
-          editMappingFunc = (source, target) => source;
-        }
-      }
-      if ( Edit != "TRUE" ) {
-        LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
-      }
+  if (doSave) {
+    const sheet_bk = cfg.recurse ? sheet_tr : sheet_sr;
+    if (!isNaN(Old_sr.valueOf())) {
+      const width    = LC - cfg.col_trg + 1;
+      const backup_sr = sheet_bk.getRange(1, cfg.col_trg, LR, width);
+      const backup_tr = sheet_bk.getRange(1, cfg.col_bak, LR, width);
+      backup_tr.setValues(backup_sr.getValues());
+      LogDebug(`Backup [${cfg.col_trg}→${cfg.col_trg+width-1}] → [${cfg.col_bak}→${cfg.col_bak+width-1}] for ${SheetName}`, 'MIN');
     }
-//-------------------------------------------------------------------Foot-------------------------------------------------------------------//
-  }
-  if ( Save != "TRUE" ) {
-    LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+
+    const save_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
+    const save_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
+    save_tr.setValues(save_sr.getValues());
+    LogDebug(`Saved column src=${cfg.col_src} → trg=${cfg.col_trg} for ${SheetName}`, 'MIN');
+
+    if (cfg.recurse) {
+      doExportFinancial(SheetName);
+      LogDebug(`Exported ${SheetName}`, 'MID');
+    }
+  } else {
+    LogDebug(`Dates not advancing or aligned: ` + `Old_sr=${Old_sr}, New_sr=${New_sr}, New_tr=${New_tr}`, 'MIN');
   }
 
-  /////////////////////////////////////////////////////////////////////COMMON UPDATE BLOCK/////////////////////////////////////////////////////////////////////
-  // Perform backup update first, if defined.
-  if (backup_range_sr && backup_range_tr && backupMappingFunc) {
-    const backupValues = backup_range_sr.getValues();
-    backup_range_tr.setValues(backupMappingFunc(backupValues, backup_range_tr.getValues()));
-  }
-
-  // Then perform the main SAVE update.
-  if (save_range_sr && save_range_tr && mappingFunc) {
-    const values_sr = save_range_sr.getValues();
-    const values_tr = save_range_tr.getValues();
-    const updatedValues = mappingFunc(values_sr, values_tr);
-    save_range_tr.setValues(updatedValues);
-    LogDebug(`SUCCESS SAVE. Sheet: ${SheetName}.`, 'MIN');
-    doExportFinancial(SheetName);
-  }
-
-  // Finally, perform the common EDIT check.
-  if (edit_range_sr && edit_range_tr && editMappingFunc) {
-    const editValues_sr = edit_range_sr.getValues();
-    const editValues_tr = edit_range_tr.getValues();
-    const areEqual = editValues_tr.every((row, index) => row[0] === editValues_sr[index][0]);
-    if (!areEqual) {
+  // 3) EDIT branch
+  if (doEdit) {
+    const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
+    const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
+    const src = edit_sr.getValues().flat();
+    const trg = edit_tr.getValues().flat();
+    if (src.some((v,i) => v !== trg[i])) {
+      LogDebug(`Detected edits for ${SheetName}`, 'MIN');
       doEditFinancial(SheetName);
+    } else {
+      LogDebug(`No edits needed for ${SheetName}`, 'MID');
     }
   }
 }
