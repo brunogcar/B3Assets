@@ -153,10 +153,10 @@ function doCheckDATA(SheetName) {
     Check = cfg.sheetVar.getRange(cfg.cell).getValue();
     if (Check === '') {
       sheet_o.hideSheet();
-      LogDebug(`HIDDEN: OPT`, 'MIN');
+      LogDebug(`🔒 HIDDEN: OPT`, 'MIN');
     } else if (sheet_o.isSheetHidden()) {
       sheet_o.showSheet();
-      LogDebug(`DISPLAYED: ${SheetName}`, 'MIN');
+      LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
     }
 
   // 2) classSheet case (SWING_x)
@@ -240,7 +240,7 @@ function doTrim() {
     try {
       doTrimSheet(SheetName);
     } catch (error) {
-      LogDebug(`Error trimming sheet ${SheetName}: ${error}`, 'MIN');
+      LogDebug(`❌ ERROR trimming ${SheetName}: ${error}`, 'MIN');
     }
   }
 }
@@ -258,19 +258,19 @@ function doTrimSheet(SheetName) {
     case SWING_4:
       if (LR > 126) {
         sheet_sr.getRange(127, 1, LR - 126, LC).clearContent();
-        LogDebug(`SUCCESS TRIM. Cleared rows 127→${LR} in ${SheetName}.`, 'MIN');
+        LogDebug(`✂️ SUCCESS TRIM: Cleared rows 127→${LR} in ${SheetName}.`, 'MIN');
       }
       break;
 
     case SWING_12:
       if (LR > 366) {
         sheet_sr.getRange(367, 1, LR - 366, LC).clearContent();
-        LogDebug(`SUCCESS TRIM. Cleared rows 367→${LR} in ${SheetName}.`, 'MIN');
+        LogDebug(`✂️ SUCCESS TRIM: Cleared rows 367→${LR} in ${SheetName}.`, 'MIN');
       }
       break;
 
     case SWING_52:
-      LogDebug(`NOTHING TO TRIM. ${SheetName} stays at ${LR} rows.`, 'MIN');
+      LogDebug(`NOTHING TO TRIM: ${SheetName} stays at ${LR} rows.`, 'MIN');
       break;
 
     default:
@@ -316,7 +316,7 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!sheet.isSheetHidden() && Hidden.indexOf(SheetName) !== -1) {
           sheet.hideSheet();
-          LogDebug(`Sheet hidden: ${SheetName}`, 'MIN');
+          LogDebug(`🔒 HIDDEN: ${SheetName}`, 'MIN');
         }
       }
       break;
@@ -332,7 +332,7 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
-          LogDebug(`Sheet deleted: ${SheetName}`, 'MIN');
+          LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
         }
       }
       break;
@@ -348,7 +348,7 @@ function doDisableSheets() {
         const SheetName = sheet.getName();
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
-          LogDebug(`Sheet deleted: ${SheetName}`, 'MIN');
+          LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
         }
       }
       break;
@@ -372,11 +372,11 @@ function hideConfig() {
   if (Hide_Config == "TRUE") {
     if (sheet_sr && !sheet_sr.isSheetHidden()) {
       sheet_sr.hideSheet();
-      LogDebug(`HIDDEN: ${sheet_sr.getName()}`, 'MIN');
+      LogDebug(`🔒 HIDDEN: ${sheet_sr.getName()}`, 'MIN');
     }
     if (sheet_co && !sheet_co.isSheetHidden()) {
       sheet_co.hideSheet();
-      LogDebug(`HIDDEN: ${sheet_co.getName()}`, 'MIN');
+      LogDebug(`🔒 HIDDEN: ${sheet_co.getName()}`, 'MIN');
     }
   }
 };

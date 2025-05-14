@@ -1,384 +1,163 @@
-/////////////////////////////////////////////////////////////////////SAVE FUNCTIONS/////////////////////////////////////////////////////////////////////
-/**
- * Processes a batch “save” operation over a list of sheet names.
- *
- * This function:
- * 1. Fetches each sheet by name and calls `checkCallback(sheetName)` to decide
- *    whether that sheet has data to save (expects `"TRUE"` for “yes”).
- * 2. Collects all sheets that pass into an array.
- * 3. Flushes the spreadsheet to ensure any pending writes are applied.
- * 4. Iterates over the filtered list, calls `saveFunction(sheetName)` on each,
- *    and logs progress and success/errors conditionally based on DEBUG mode.
- *
- * @param {string[]} SheetNames      An array of sheet‐name constants to consider.
- * @param {function(string):string}  checkCallback   Returns "TRUE" or "FALSE" for whether that sheet has data to save.
- * @param {function(string):void}    saveFunction      The function to perform the actual save on a sheet name.
- */
-function doSaveGroup(SheetNames, checkCallback, saveFunction) {
-  const SheetNamesToSave = [];
-  for (let i = 0; i < SheetNames.length; i++) {
-    const Name = SheetNames[i];
-    const sheet = fetchSheetByName(Name);
-    if (!sheet) return;
+/////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
 
-    if (checkCallback(Name) === "TRUE") {
-      SheetNamesToSave.push(Name);
-    }
-  }
-
-  const totalSheets = SheetNamesToSave.length;
-  if (totalSheets === 0) {
-    LogDebug(`No valid data found. Skipping save operation.`, 'MIN');
-    return;
-  }
-
-  SpreadsheetApp.flush();
-
-  _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
-}
-
-/**
- * Convert an array of “date‐like” values (strings or Date objects)
- * into timestamps (ms since epoch), or return “” if invalid.
- *
- * @param {Array<string|Date|number>} dateArr
- * @returns {Array<number|string>} [newDateTs, oldDateTs, …]
- */
-function doFinancialDateHelper(dateArr) {
-  return dateArr.map(v => {
-    // 1) If it’s already a Date, grab its ms
-    if (v instanceof Date && !isNaN(v)) {
-      return v.getTime();
-    }
-    // 2) If it’s a number (timestamp), leave it
-    if (typeof v === 'number' && !isNaN(v)) {
-      return v;
-    }
-    // 3) Everything else -> string
-    const str = v != null ? v.toString().trim() : '';
-    // DD/MM/YYYY
-    if (str.includes('/')) {
-      const [d,m,y] = str.split('/');
-      if (d && m && y) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    }
-    // YYYY-MM-DD
-    if (str.includes('-')) {
-      const [y,m,d] = str.split('-');
-      if (y && m && d) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    }
-    // fallback
-    return '';
-  });
-}
-
-/////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
-
-function doCheckDATAS() {
-  const SheetNames = [
-    SWING_4, SWING_12, SWING_52,
-    PROV, OPCOES, BTC, TERMO, FUND,
-    BLC, DRE, FLC, DVA,
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
-    RIGHT_1, RIGHT_2,
-    RECEIPT_9, RECEIPT_10,
-    WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK
-  ];
-
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
-    try {
-      doCheckDATA(SheetName);
-    } catch (error) {
-      LogDebug(`DATA Check: ❌ ERROR: ${SheetName}: ${error}`, 'MIN');
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
-
-function doCheckDATA(SheetName) {
-  const sheet_sr = fetchSheetByName(SheetName);    // Source sheet
-  const sheet_i  = fetchSheetByName('Index');      // Index sheet
-  const sheet_d  = fetchSheetByName('DATA');       // DATA sheet
-  const sheet_p  = fetchSheetByName(PROV);         // PROV sheet
-  const sheet_o  = fetchSheetByName('OPT');        // OPT sheet
-  const sheet_b  = fetchSheetByName(Balanco);      // Balanco sheet
-  const sheet_r  = fetchSheetByName(Resultado);    // Resultado sheet
-  const sheet_f  = fetchSheetByName(Fluxo);        // Fluxo sheet
-  const sheet_v  = fetchSheetByName(Valor);        // Valor sheet
-
-  LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
-
-  const cfg = {
-    [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, forceHide:false, cells: null },
-    [SWING_4]:    { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
-    [SWING_12]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
-    [SWING_52]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
-    [BTC]:        { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [TERMO]:      { sheetVar: sheet_d, cell:  "B24",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [FUTURE]:     { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:false, cells: ["B32","B33","B34"] },
-    [FUTURE_1]:   { sheetVar: sheet_d, cell:  "B32",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
-    [FUTURE_2]:   { sheetVar: sheet_d, cell:  "B33",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
-    [FUTURE_3]:   { sheetVar: sheet_d, cell:  "B34",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
-    [RIGHT_1]:    { sheetVar: sheet_d, cell:  "C38",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [RIGHT_2]:    { sheetVar: sheet_d, cell:  "C39",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [RECEIPT_9]:  { sheetVar: sheet_d, cell:  "C44",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [RECEIPT_10]: { sheetVar: sheet_d, cell:  "C45",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [WARRANT_11]: { sheetVar: sheet_d, cell:  "C50",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [WARRANT_12]: { sheetVar: sheet_d, cell:  "C51",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [WARRANT_13]: { sheetVar: sheet_d, cell:  "C52",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [BLOCK]:      { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:false, cells: ["C56","C57","C58"] },
-    [BLC]:        { sheetVar: sheet_b, cell:  "B1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [DRE]:        { sheetVar: sheet_r, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [FLC]:        { sheetVar: sheet_f, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-    [DVA]:        { sheetVar: sheet_v, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
-  }[SheetName];
-
-  if (!cfg) {
-    LogDebug(`Sheet Name "${SheetName}" not recognized.`, 'MIN');
-    return processCheckDATA(sheet_sr, SheetName, 'FALSE');
-  }
-
-  let Check = '';
-
-  // 1) toggleHide case (OPCOES)
-  if (cfg.toggleHide) {
-    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
-    if (Check === '') {
-      sheet_o.hideSheet();
-      LogDebug(`🔒 HIDDEN: OPT`, 'MIN');
-    } else if (sheet_o.isSheetHidden()) {
-      sheet_o.showSheet();
-      LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
-    }
-
-  // 2) classSheet case (SWING_x)
-  } else if (cfg.classSheet) {
-    const Class   = getConfigValue(IST, 'Config');
-    Check = (Class === 'STOCK')
-      ? sheet_d.getRange(cfg.cell).getValue()
-      : 'TRUE';
-
-  // 3) cells array case (FUTURE, BLOCK)
-  } else if (cfg.cells) {
-    for (let addr of cfg.cells) {
-      const val = sheet_d.getRange(addr).getValue();
-      if (!ErrorValues.includes(val)) {
-        Check = val;
-        break;
-      }
-    }
-
-  // 4) simple cell case
-  } else {
-    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
-  }
-
-  return processCheckDATA(sheet_sr, SheetName, Check, cfg.forceHide);
-}
-
-/////////////////////////////////////////////////////////////////////DO CHECK Process/////////////////////////////////////////////////////////////////////
-
-/**
- * @param {Sheet}   sheet_sr
- * @param {string}  SheetName
- * @param {*}       Check       the raw value you pulled
- * @param {boolean} forceHide   if true, always hide (even on pass)
- * @returns {"TRUE"|"FALSE"}
- */
-function processCheckDATA(sheet_sr, SheetName, Check, forceHide) {
-  const fixedSheets = [BLC, DRE, FLC, DVA];
-
-  // 1) On a failed check → hide (unless fixed) and return FALSE
-  if (ErrorValues.includes(Check)) {
-    if (fixedSheets.includes(SheetName)) {
-      LogDebug(`DATA Check: ❌ FALSE: ${SheetName}`, 'MIN');
-      return "FALSE";
-    }
-    if (!sheet_sr.isSheetHidden()) {
-      sheet_sr.hideSheet();
-      LogDebug(`🔒 HIDDEN : ${SheetName}`, 'MIN');
-    }
-    LogDebug(`DATA Check: ❌ FALSE: ${SheetName}`, 'MIN');
-    return "FALSE";
-  }
-
-  // 2) Passing check: show only if not forceHide
-  if (!forceHide) {
-    if (sheet_sr.isSheetHidden()) {
-      sheet_sr.showSheet();
-      LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
-    }
-  }
-
-  // 3) If forceHide, ensure it’s hidden
-  if (forceHide) {
-    if (!sheet_sr.isSheetHidden()) {
-      sheet_sr.hideSheet();
-      LogDebug(`🔐 FORCED HIDEN: ${SheetName}`, 'MIN');
-    }
-  }
-
-  LogDebug(`DATA Check: ✅ TRUE: ${SheetName}`, 'MIN');
-  return "TRUE";
-}
-
-/////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
-
-function doTrim() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52];
-
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
-    try {
-      doTrimSheet(SheetName);
-    } catch (error) {
-      LogDebug(`Error trimming sheet ${SheetName}: ${error}`, 'MIN');
-    }
-  }
-}
-
-function doTrimSheet(SheetName) {
-  LogDebug(`TRIM: ${SheetName}`, 'MIN');
-
-  const sheet_sr = fetchSheetByName(SheetName);
-  if (!sheet_sr) return;
-
+function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   const LR = sheet_sr.getLastRow();
   const LC = sheet_sr.getLastColumn();
 
-  switch (SheetName) {
-    case SWING_4:
-      if (LR > 126) {
-        sheet_sr.getRange(127, 1, LR - 126, LC).clearContent();
-        LogDebug(`✂️ SUCCESS TRIM. Cleared rows 127→${LR} in ${SheetName}.`, 'MIN');
-      }
-      break;
+  const A1 = sheet_sr.getRange("A1").getValue();
+  const A2 = sheet_sr.getRange("A2").getValue();
+  const A5 = sheet_sr.getRange("A5").getValue();
 
-    case SWING_12:
-      if (LR > 366) {
-        sheet_sr.getRange(367, 1, LR - 366, LC).clearContent();
-        LogDebug(`✂️ SUCCESS TRIM. Cleared rows 367→${LR} in ${SheetName}.`, 'MIN');
-      }
-      break;
+  const Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0];
+  const Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0];
+  const Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0];
 
-    case SWING_52:
-      LogDebug(`NOTHING TO TRIM. ${SheetName} stays at ${LR} rows.`, 'MIN');
-      break;
-
-    default:
-      LogDebug(`No trim logic defined for ${SheetName}.`, 'MIN');
+  // Handle SAVE = FALSE early
+  if (Save !== "TRUE") {
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, 'MIN');
+    return;
   }
+
+  // Handle invalid A2 early
+  if (ErrorValues.includes(A2)) {
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, 'MIN');
+    return;
+  }
+
+  const IsEqual = Row2.some((val, i) => val === Row1[i] || val === Row5[i]);
+
+  if (A5 === "") {
+    // Save only header
+    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
+    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
+    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
+    exportFn(SheetName);
+    return;
+  }
+
+  if (A2 > A1 || A2 > A5) {
+    // Save header and body
+    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
+    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
+    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
+
+    const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
+    sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
+
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
+    exportFn(SheetName);
+    return;
+  }
+
+  if (
+    ((A2 === A5 || A2 === A1) && IsEqual) ||
+    ErrorValues.includes(A1) || ErrorValues.includes(A5)
+  ) {
+    if (Edit === "TRUE") {
+      doEditBasic(SheetName);
+    } else {
+      LogDebug(`❌ ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, 'MIN');
+    }
+    return;
+  }
+
+  LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: processSaveGeneric`, 'MIN');
 }
 
-/////////////////////////////////////////////////////////////////////Hide and Show Sheets/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
+
+function processSaveBasic(sheet_sr, SheetName, Save, Edit) {
+  processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportBasic);
+}
+
+function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
+  processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportExtra);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
+
 /**
- * Hides or deletes specific sheets based on the asset class defined in the Config!IST.
+ * Saves financial sheet data, backing up older columns and optionally triggering exports/edits.
  *
- * This function needs direct access to the `SpreadsheetApp.getActiveSpreadsheet()` object
- * because it performs actions that require the spreadsheet context itself — such as:
- * - Fetching *all* sheets using `getSheets()`
- * - Deleting sheets using `ss.deleteSheet(sheet)`
- *
- * These operations go beyond simply fetching a sheet by name (which `fetchSheetByName()` handles),
- * so we must declare `const ss = SpreadsheetApp.getActiveSpreadsheet();` here directly.
- *
- * - STOCK: hides specific sheets listed in `Hidden`.
- * - ADR/BDR/ETF: deletes all sheets *not* in the `Keep` set.
- *
- * @returns {void}
+ * @param {Sheet}           sheet_tr  Target sheet (ticker)
+ * @param {Sheet}           sheet_sr  Source sheet (template)
+ * @param {Date|string}     New_tr  Parsed “new” date from target
+ * @param {Date|string}     Old_tr  Parsed “old” date from target
+ * @param {Date|string}     New_sr  Parsed “new” date from source
+ * @param {Date|string}     Old_sr  Parsed “old” date from source
+ * @param {boolean|string}  Save    “TRUE” if SAVE is enabled in config.
+ * @param {boolean|string}  Edit    “TRUE” if EDIT is enabled in config.
  */
-function doDisableSheets() {
-  const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove
-  const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) return;
-
-  const Class = getConfigValue(IST, 'Config');                     // IST = asset class
-
-  const sheets = ss.getSheets();
-
-  switch (Class) {
-    case 'STOCK': {
-      var Hidden = [
-        'DATA','Prov_','FIBO','Cotações','UPDATE','Balanço',
-        'Balanço Ativo','Balanço Passivo','Resultado','Demonstração',
-        'Fluxo','Fluxo de Caixa','Valor','Demonstração do Valor Adicionado'
-      ];
-      for (let i = 0; i < sheets.length; i++) {
-        const sheet = sheets[i];
-        const SheetName = sheet.getName();
-        if (!sheet.isSheetHidden() && Hidden.indexOf(SheetName) !== -1) {
-          sheet.hideSheet();
-          LogDebug(`🔒 HIDDEN: ${SheetName}`, 'MIN');
-        }
-      }
-      break;
-    }
-    case 'ADR': {
-      var Keep = new Set([
-        'Config','Settings','Index','Preço','FIBO',
-        SWING_4, SWING_12, SWING_52,'Cotações'
-      ]);
-      // reverse order to safely delete
-      for (let i = sheets.length - 1; i >= 0; i--) {
-        const sheet = sheets[i];
-        const SheetName = sheet.getName();
-        if (!Keep.has(SheetName)) {
-          ss.deleteSheet(sheet);
-          LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
-        }
-      }
-      break;
-    }
-    case 'BDR':
-    case 'ETF': {
-      var Keep = new Set([
-        'Config','Settings','Index','Prov','Prov_','Preço','FIBO',
-        SWING_4, SWING_12, SWING_52,'Cotações','DATA','OPT','Opções','BTC','Termo'
-      ]);
-      for (let i = sheets.length - 1; i >= 0; i--) {
-        const sheet = sheets[i];
-        const SheetName = sheet.getName();
-        if (!Keep.has(SheetName)) {
-          ss.deleteSheet(sheet);
-          LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
-        }
-      }
-      break;
-    }
-    default:
-      LogDebug(`Class "${Class}" not recognized. No sheets modified.`, 'MIN');
+function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
+  const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
+  const cfg       = Object.values(financialMap)
+                            .find(c => c.sh_tr === SheetName);
+  if (!cfg) {
+    LogDebug(`🚩 No financialMap entry: ${SheetName}`, 'MIN');
+    return;
   }
 
-  // Always run hideConfig() to re‐hide Config/Settings if needed
-  hideConfig();
+  const LR        = sheet_sr.getLastRow();
+  const LC        = cfg.recurse ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
+
+  let doSave = false;
+  let doEdit = false;
+
+  if (New_sr.valueOf() > Old_sr.valueOf()) {
+    if (!cfg.recurse || New_sr.valueOf() > New_tr.valueOf()) {
+      doSave = true;
+    }
+    else if (New_sr.valueOf() === New_tr.valueOf()) {
+      doEdit = true;
+    }
+  }
+  else if (New_sr.valueOf() === New_tr.valueOf()) {
+    doEdit = true;
+  }
+
+  if (!doSave && !doEdit) {
+    LogDebug(`SKIP Save and EDIT`, 'MID');
+    return;
+  }
+
+  if (doSave) {
+    const sheet_bk = cfg.recurse ? sheet_tr : sheet_sr;
+    if (!isNaN(Old_sr.valueOf())) {
+      const width    = LC - cfg.col_trg + 1;
+      const backup_sr = sheet_bk.getRange(1, cfg.col_trg, LR, width);
+      const backup_tr = sheet_bk.getRange(1, cfg.col_bak, LR, width);
+      backup_tr.setValues(backup_sr.getValues());
+      LogDebug(`✅ SUCCESS BACKUP: Range [${cfg.col_trg}→${cfg.col_trg+width-1}] → [${cfg.col_bak}→${cfg.col_bak+width-1}]: ${SheetName}`, 'MIN');
+    }
+
+    const save_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
+    const save_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
+    save_tr.setValues(save_sr.getValues());
+    LogDebug(`✅ SUCCESS SAVE: Column src=${cfg.col_src} → trg=${cfg.col_trg}: ${SheetName}`, 'MIN');
+
+    if (cfg.recurse) {
+      doExportFinancial(SheetName);
+    }
+  } else {
+    LogDebug(`🏷️ Dates not advancing or aligned: ` + `Old_sr=${Old_sr}, New_sr=${New_sr}, New_tr=${New_tr}`, 'MIN');
+  }
+
+  // 3) EDIT branch
+  if (doEdit) {
+    const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
+    const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
+    const src = edit_sr.getValues().flat();
+    const trg = edit_tr.getValues().flat();
+    if (src.some((v,i) => v !== trg[i])) {
+      LogDebug(`🏷️ Detected edits: ${SheetName}`, 'MID');
+      doEditFinancial(SheetName);
+    } else {
+      LogDebug(`🏷️ No edits needed: ${SheetName}`, 'MID');
+    }
+  }
 }
 
-/////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
-
-function hideConfig() {
-  const sheet_sr = fetchSheetByName(`Settings`);                        // Source sheet
-  const sheet_co = fetchSheetByName(`Config`);                          // Config sheet
-
-  var Hide_Config = sheet_co.getRange(HCR).getDisplayValue();            // HCR = Hide Config Range
-
-  if (Hide_Config == "TRUE") {
-    if (sheet_sr && !sheet_sr.isSheetHidden()) {
-      sheet_sr.hideSheet();
-      LogDebug(`🔒 HIDDEN: ${sheet_sr.getName()}`, 'MIN');
-    }
-    if (sheet_co && !sheet_co.isSheetHidden()) {
-      sheet_co.hideSheet();
-      LogDebug(`🔒 HIDDEN: ${sheet_co.getName()}`, 'MIN');
-    }
-  }
-};
-
-/////////////////////////////////////////////////////////////////////SAVE FUNCTIONS/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////SAVE PROCESS/////////////////////////////////////////////////////////////////////

@@ -50,8 +50,8 @@ function doEditBasic(SheetName) {
       editKey: DTR,                                          // DTR = Edit to Swing
       checks: ['C2'],
       conditions: ([c2]) => {
-        const cls = getConfigValue(IST, 'Config');       // IST = Is Stock?
-        return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(cls);
+        const Class = getConfigValue(IST, 'Config');       // IST = Is Stock?
+        return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(Class);
       },
       handler: processEditBasic
     },
@@ -166,7 +166,7 @@ function doEditFinancial(SheetName) {
 
   const Edit = getConfigValue(cfg.editKey);
   if (Edit !== "TRUE") {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT disabled`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     return;
   }
 
@@ -182,7 +182,7 @@ function doEditFinancial(SheetName) {
   LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
   const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
 
-  LogDebug(`[${SheetName}] Edit dates: SR New=${New_sr}, TR New=${New_tr}`, 'MAX');
+  LogDebug(`[${SheetName}] ⏳ EDIT DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
 
   // Row-specific conditions on source template
   if (cfg.conditions && !cfg.conditions(sheet_sr)) {

@@ -48,7 +48,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    LogDebug(`[🔄 ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
+    LogDebug(`[⏳ ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
 
     try {
       fn(SheetName);

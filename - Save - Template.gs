@@ -13,9 +13,9 @@ function doSaveBasic(SheetName) {
       editKey: DTR,
       checks: ['B2','C2'],
       conditions: ([b2, c2]) => {
-        const cls = getConfigValue(IST, 'Config');
-        if (cls === 'STOCK')     return b2 != 0 && c2 > 0;
-        return cls.match(/BDR|ETF|ADR/) && c2 > 0;
+        const Class = getConfigValue(IST, 'Config');
+        if (Class === 'STOCK')     return b2 != 0 && c2 > 0;
+        return Class.match(/BDR|ETF|ADR/) && c2 > 0;
       },
       handler: processSaveBasic
     },
@@ -109,7 +109,7 @@ function doSaveBasic(SheetName) {
   if (cfg.conditions(vals)) {
     cfg.handler(sheet_sr, SheetName, Save, Edit);
   } else {
-    LogDebug(`🚩 ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - Conditions arent met: doSaveBasic`, 'MIN');
   }
 }
 
@@ -217,7 +217,7 @@ function doSaveFinancial(SheetName) {
 
   const Save = getConfigValue(cfg.saveKey);
   if (Save !== "TRUE") {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, 'MIN');
     return;
   }
 
@@ -240,6 +240,8 @@ function doSaveFinancial(SheetName) {
   LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
   const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
 
+  LogDebug(`[${SheetName}] ⏳ SAVE DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
+
   if (cfg.checks) {
     const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
     const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
@@ -249,7 +251,7 @@ function doSaveFinancial(SheetName) {
     }
   }
   if (cfg.conditions && !cfg.conditions(sheet_sr)) {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: doSaveFinancial`, 'MIN');
     return;
   }
 
@@ -263,7 +265,7 @@ function doSaveFinancial(SheetName) {
     }
   }
   else {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid on doSaveFinancial`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid: doSaveFinancial`, 'MIN');
     return;
   }
 }
@@ -421,13 +423,13 @@ function fillSection(
 ) {
   const colCount = headers.length;
 
-  LogDebug(`${titleText}: Starting with ${items.length} items`, 'MIN');
+  LogDebug(`${titleText}: ℹ️ Starting with ${items.length} items`, 'MIN');
   LogDebug(`${titleText}: Raw items: ${JSON.stringify(items)}`, 'MAX');
 
   // Blank slate: clear and title
   sheet.getRange(clearRange).clearContent();
   sheet.getRange(titleCell).setValue(titleText);
-  LogDebug(`${titleText}: ℹ️ Cleared ${clearRange} and set title`, 'MID');
+  LogDebug(`${titleText}: 🧽Cleared ${clearRange} and set title`, 'MID');
 
   // Prepare filtered rows
   const rows = items
@@ -442,7 +444,7 @@ function fillSection(
   // Only write header/data if we have rows
   if (rows.length > 0) {
     sheet.getRange(headerRange).setValues([headers]);
-    LogDebug(`${titleText}: Wrote headers at ${headerRange}`, 'MID');
+    LogDebug(`${titleText}: 💾 Wrote headers at ${headerRange}`, 'MID');
 
     LogDebug(`${titleText}: 💾 Writing ${rows.length} rows`, 'MIN');
     sheet.getRange(startRow, colStart, rows.length, colCount).setValues(rows);
@@ -598,7 +600,7 @@ function doSaveShares() {
 
       LogDebug(`✅ SUCCESS SAVE: Shares and FF`, 'MIN');
     } else {
-      LogDebug(`❌ ERROR SAVE: Invalid values in M1/M2`, 'MIN');
+      LogDebug(`❌ ERROR SAVE: Invalid values in M1 ${M1} / M2 ${M2}`, 'MIN');
     }
   } catch (error) {
     LogDebug(`❌ ERROR in doSaveShares: ${error.message}`, 'MIN');

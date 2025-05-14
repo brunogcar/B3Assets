@@ -13,7 +13,7 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   }
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2: processEditGeneric`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, 'MIN');
     return;
   }
 
@@ -33,13 +33,13 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
     sheet_sr.getRange(5, 1, 1, columnCount).setValues(Data_Header);
     sheet_sr.getRange(1, 1, 1, columnCount).setValues(Data_Header);
 
-    LogDebug(`✅ SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS EDIT: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
     return;
   }
 
   // Final fallback
-  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions aren't met: processEditGeneric`, 'MIN');
+  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: processEditGeneric`, 'MIN');
 }
 
 

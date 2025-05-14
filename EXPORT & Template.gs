@@ -42,7 +42,7 @@ function doExportBasic(SheetName) {
   const Class     = getConfigValue(IST, 'Config');                                   // IST = Is Stock?
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
-  if (!Target_Id) { LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN'); return; }
+  if (!Target_Id) { LogDebug(`❌ ERROR EXPORT: Target ID is empty.`, 'MIN'); return; }
 
   const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
   const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
@@ -55,7 +55,7 @@ function doExportBasic(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
 
-  const exportTable = [
+  const exportMap = [
     {
       names: [SWING_4, SWING_12, SWING_52],
       exportKey: ETR,                                                                   // ETR = Export to Swing
@@ -100,9 +100,9 @@ function doExportBasic(SheetName) {
     }
   ];
 
-  const cfg = exportTable.find(e => e.names.includes(SheetName));
+  const cfg = exportMap.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - No entry in exportMap: doExportBasic`, 'MIN');
     return;
   }
 
@@ -112,7 +112,7 @@ function doExportBasic(SheetName) {
 
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
-    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met: doExportBasic.`);
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
 
     if (SheetName === OPCOES) {
      tryCleanOpcaoExportRow(sheet_tr, TKT);
@@ -152,7 +152,7 @@ function doExportExtra(SheetName) {
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
-    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    LogDebug(`❌ EXPORT: Target ID is empty.`, 'MIN');
     return;
   }
 
@@ -196,17 +196,17 @@ function doExportExtra(SheetName) {
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
   if (ErrorValues.includes(A)) {
-    LogDebug(`EXPORT Skipped: ${SheetName} - Data (A) failed ErrorValues: doExportExtra.`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - ErrorValues in Data A ${A}: doExportExtra.`, 'MIN');
     return;
   }
 
   if (ShouldExport != true) {
-    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met: doExportExtra.`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportExtra.`, 'MIN');
     return;
   }
 
   if (Export != "TRUE") {
-        LogDebug(`EXPORT: ${SheetName} - Export is set to FALSE: doExportExtra.`, 'MIN');
+        LogDebug(`❌ ERROR EXPORT: ${SheetName} - Export is set to FALSE: doExportExtra.`, 'MIN');
     return;
   }
 
@@ -234,7 +234,7 @@ function doExportFinancial(SheetName) {
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');
   if (!Target_Id) {
-    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR EXPORT: Target ID is empty.`, 'MIN');
     return;
   }
 
@@ -356,13 +356,13 @@ function doExportInfo() {
 
   const Data_Id = getConfigValue(DIR, 'Config');                     // DIR = DATA Source ID
   if (!Data_Id) {
-    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR EXPORT: Target ID is empty.`, 'MIN');
     return;
   }
 
   const Exported = getConfigValue(EXR, 'Config');                   // EXR = Exported?
   if (Exported === "TRUE") {
-    LogDebug("ERROR EXPORT: already exported.", 'MIN');
+    LogDebug(`❌ ERROR EXPORT: already exported.`, 'MIN');
     return;
   }
 
@@ -396,7 +396,7 @@ function doExportInfo() {
 
   setSheetID();                                                     // Mark as exported
 
-  LogDebug(`✅ SUCCESS EXPORT. Sheet: ${SheetName}.`, 'MIN');
+  LogDebug(`✅ SUCCESS EXPORT: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ function doExportProventos() {
   const Class     = getConfigValue(IST, 'Config');                  // IST = Is Stock?
   const Target_Id = getConfigValue(TDR, 'Config');                  // Target sheet ID
   if (!Target_Id) {
-    LogDebug("ERROR EXPORT: Target ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR EXPORT: Target ID is empty.`, 'MIN');
     return;
   }
 
@@ -482,7 +482,7 @@ function doExportProventos() {
       // Clear the entire row (including TKT)
       var rowToClear = Search.getRow();
       sheet_tr.getRange(rowToClear, 1, 1, Data[0].length + 1).clearContent();
-      LogDebug(`CLEARED EXPORT: Entire row for ${TKT} cleared due to values being blank/zero.`, 'MIN');
+      LogDebug(`🧽 CLEARED EXPORT: Entire row for ${TKT} cleared due to values being blank/zero.`, 'MIN');
     } else {
       LogDebug(`NO ACTION: No existing row found for ${TKT}, and values are blank/zero.`, 'MIN');
     }
@@ -496,7 +496,7 @@ function doExportProventos() {
 
 function processExport(TKT, Data, sheet_tr, SheetName) {
   if (!Data || Data.length <= 0) {
-    LogDebug(`EXPORT: Skipped ${SheetName} - No valid data to export.`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - No valid data to export.`, 'MIN');
     return;
   }
 

@@ -10,7 +10,7 @@ function Import(){
 
   const Source_Id = getConfigValue(SIR, 'Config');                               // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
     return;
   }
 
@@ -33,7 +33,7 @@ function Import(){
     }
     else
     {
-      LogDebug(`Invalid Option: ${Option}`, 'MIN');
+      LogDebug(`❌ Invalid Import  Option: ${Option}`, 'MIN');
     }
   }
 }
@@ -41,7 +41,7 @@ function Import(){
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
 
 function import_Current(){
-  LogDebug('Import: import_Current', 'MIN');
+  LogDebug(`IMPORT: import_Current`, 'MIN');
 
   import_config();
 
@@ -56,7 +56,7 @@ function import_Current(){
 
 // doCleanZeros();
 
-  LogDebug('Import: Finished', 'MIN');
+  LogDebug(`✅ SUCCESS IMPORT: Finished`, 'MIN');
 };
 
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////
@@ -99,7 +99,11 @@ function doImportProv(ProvName){
   LogDebug(`IMPORT: ${ProvName}`, 'MIN');
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) { LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN'); return; }
+  if (!Source_Id) {
+    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
+    return;
+    }
+
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
   const sheet_tr = fetchSheetByName('Prov');
   if (!sheet_tr) return;
@@ -149,7 +153,7 @@ function update_form() {
 function import_config() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
     return;
   }
 
@@ -168,7 +172,7 @@ function import_config() {
 function doImportShares() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
     return;
     }
 
@@ -189,7 +193,7 @@ function doImportShares() {
   }
   else
   {
-    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L1=${SheetName} or L2=${SheetName}: doImportShares`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L1=${L1} or L2=${L2}: doImportShares`, 'MIN');
   }
   LogDebug(`✅ SUCCESS IMPORT: Shares and FF`, 'MIN');
 }
@@ -238,7 +242,7 @@ function doImportBasic(SheetName) {
 
   const cfg = basicImportMap[SheetName];
   if (!cfg) {
-    LogDebug(`❌ ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
+    LogDebug(`🚩 ERROR IMPORT: ${SheetName} - No entry in basicImportMap: doImportShares`, 'MIN');
     return;
   }
 
@@ -262,7 +266,7 @@ function doImportBasic(SheetName) {
 
   const Check = sheet_sr.getRange("A5").getValue();
   if (Check === "") {
-    LogDebug(`❌ ERROR IMPORT: ${SheetName} - A5 is blank: doImportBasic.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - A5 ${Check} is blank: doImportBasic.`, 'MIN');
     return;
   }
 
@@ -302,13 +306,13 @@ function doImportFinancial(SheetName) {
 
   const Source_Id  = getConfigValue(SIR, 'Config');
   if (!Source_Id) {
-    LogDebug("❌ ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.", 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.`, 'MIN');
     return;
   }
 
   const cfg = financialImportMap[SheetName];
   if (!cfg) {
-    LogDebug(`❌ ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
+    LogDebug(`🚩 ERROR IMPORT: ${SheetName} - No entry in financialImportMap: doImportBasic`, 'MIN');
     return;
   }
 
