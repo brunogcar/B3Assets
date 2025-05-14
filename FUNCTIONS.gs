@@ -590,4 +590,20 @@ function doRestoreFundExport() {
     sheet_co.getRange(EFU).setValue(Value);                                 // EFU = Export to Fund
 }
 
+/////////////////////////////////////////////////////////////////////Unicode emoji or symbol/////////////////////////////////////////////////////////////////////
+
+/*                                                                  to be added to log messages
+Meaning	Emoji/Symbol	Codepoint
+Success / OK	✅ ✔️ 🆗	U+2705 U+2714 U+1F197
+Failure / Error	❌ ✖️ 🛑	U+274C U+2716 U+1F6D1
+Warning	⚠️ 🔶 🔸	U+26A0 U+1F536 U+1F538
+Info / Notice	ℹ️ 🛈 📘	U+2139 U+1F6C8 U+1F4D8
+Debug / Trace	🐛 🔍 🛠️	U+1F41B U+1F50D U+1F6E0
+In Progress	🔄 ⏳ ⏱️	U+1F504 U+23F3 U+23F1
+Data / I/O	📈 📉 💾	U+1F4C8 U+1F4C9 U+1F4BE
+Locks / Sync	🔒 🔓 🔐	U+1F512 U+1F513 U+1F510
+Flags / Pins	📌 🚩 🏷️	U+1F4CC U+1F6A9 U+1F3F7
+Notifications	🔔 🔕 🔕	U+1F514 U+1F515
+*/
+
 /////////////////////////////////////////////////////////////////////FUNCTIONS/////////////////////////////////////////////////////////////////////

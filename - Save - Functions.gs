@@ -81,6 +81,7 @@ function doCheckDATAS() {
   const SheetNames = [
     SWING_4, SWING_12, SWING_52,
     PROV, OPCOES, BTC, TERMO, FUND,
+    BLC, DRE, FLC, DVA,
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -93,7 +94,7 @@ function doCheckDATAS() {
     try {
       doCheckDATA(SheetName);
     } catch (error) {
-      LogDebug(`Error checking DATA for sheet ${SheetName}: ${error}`, 'MIN');
+      LogDebug(`DATA Check: ❌ ERROR: ${SheetName}: ${error}`, 'MIN');
     }
   }
 }
@@ -111,33 +112,33 @@ function doCheckDATA(SheetName) {
   const sheet_f  = fetchSheetByName(Fluxo);        // Fluxo sheet
   const sheet_v  = fetchSheetByName(Valor);        // Valor sheet
 
-  LogDebug(`CHECK Sheet: ${SheetName}`, 'MIN');
+  LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
 
   const cfg = {
-    [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, cells: null },
-    [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, cells: null },
-    [SWING_4]:    { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
-    [SWING_12]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
-    [SWING_52]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  cells: null },
-    [BTC]:        { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: false, cells: null },
-    [TERMO]:      { sheetVar: sheet_d, cell:  "B24",       toggleHide: false, classSheet: false, cells: null },
-    [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, cells: null },
-    [FUTURE]:     { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, cells: ["B32","B33","B34"] },
-    [FUTURE_1]:   { sheetVar: sheet_d, cell:  "B32",       toggleHide: false, classSheet: false, cells: null },
-    [FUTURE_2]:   { sheetVar: sheet_d, cell:  "B33",       toggleHide: false, classSheet: false, cells: null },
-    [FUTURE_3]:   { sheetVar: sheet_d, cell:  "B34",       toggleHide: false, classSheet: false, cells: null },
-    [RIGHT_1]:    { sheetVar: sheet_d, cell:  "C38",       toggleHide: false, classSheet: false, cells: null },
-    [RIGHT_2]:    { sheetVar: sheet_d, cell:  "C39",       toggleHide: false, classSheet: false, cells: null },
-    [RECEIPT_9]:  { sheetVar: sheet_d, cell:  "C44",       toggleHide: false, classSheet: false, cells: null },
-    [RECEIPT_10]: { sheetVar: sheet_d, cell:  "C45",       toggleHide: false, classSheet: false, cells: null },
-    [WARRANT_11]: { sheetVar: sheet_d, cell:  "C50",       toggleHide: false, classSheet: false, cells: null },
-    [WARRANT_12]: { sheetVar: sheet_d, cell:  "C51",       toggleHide: false, classSheet: false, cells: null },
-    [WARRANT_13]: { sheetVar: sheet_d, cell:  "C52",       toggleHide: false, classSheet: false, cells: null },
-    [BLOCK]:      { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, cells: ["C56","C57","C58"] },
-    [BLC]:        { sheetVar: sheet_b, cell:  "B1",        toggleHide: false, classSheet: false, cells: null },
-    [DRE]:        { sheetVar: sheet_r, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
-    [FLC]:        { sheetVar: sheet_f, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
-    [DVA]:        { sheetVar: sheet_v, cell:  "C1",        toggleHide: false, classSheet: false, cells: null },
+    [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, forceHide:false, cells: null },
+    [SWING_4]:    { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
+    [SWING_12]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
+    [SWING_52]:   { sheetVar: sheet_d, cell:  "B16",       toggleHide: false, classSheet: true,  forceHide:false, cells: null },
+    [BTC]:        { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [TERMO]:      { sheetVar: sheet_d, cell:  "B24",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [FUTURE]:     { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:false, cells: ["B32","B33","B34"] },
+    [FUTURE_1]:   { sheetVar: sheet_d, cell:  "B32",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
+    [FUTURE_2]:   { sheetVar: sheet_d, cell:  "B33",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
+    [FUTURE_3]:   { sheetVar: sheet_d, cell:  "B34",       toggleHide: false, classSheet: false, forceHide:true,  cells: null },
+    [RIGHT_1]:    { sheetVar: sheet_d, cell:  "C38",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [RIGHT_2]:    { sheetVar: sheet_d, cell:  "C39",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [RECEIPT_9]:  { sheetVar: sheet_d, cell:  "C44",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [RECEIPT_10]: { sheetVar: sheet_d, cell:  "C45",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [WARRANT_11]: { sheetVar: sheet_d, cell:  "C50",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [WARRANT_12]: { sheetVar: sheet_d, cell:  "C51",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [WARRANT_13]: { sheetVar: sheet_d, cell:  "C52",       toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [BLOCK]:      { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:false, cells: ["C56","C57","C58"] },
+    [BLC]:        { sheetVar: sheet_b, cell:  "B1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [DRE]:        { sheetVar: sheet_r, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [FLC]:        { sheetVar: sheet_f, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
+    [DVA]:        { sheetVar: sheet_v, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:false, cells: null },
   }[SheetName];
 
   if (!cfg) {
@@ -180,33 +181,52 @@ function doCheckDATA(SheetName) {
     Check = cfg.sheetVar.getRange(cfg.cell).getValue();
   }
 
-  return processCheckDATA(sheet_sr, SheetName, Check);
+  return processCheckDATA(sheet_sr, SheetName, Check, cfg.forceHide);
 }
 
 /////////////////////////////////////////////////////////////////////DO CHECK Process/////////////////////////////////////////////////////////////////////
 
-function processCheckDATA(sheet_sr, SheetName, Check) {
+/**
+ * @param {Sheet}   sheet_sr
+ * @param {string}  SheetName
+ * @param {*}       Check       the raw value you pulled
+ * @param {boolean} forceHide   if true, always hide (even on pass)
+ * @returns {"TRUE"|"FALSE"}
+ */
+function processCheckDATA(sheet_sr, SheetName, Check, forceHide) {
   const fixedSheets = [BLC, DRE, FLC, DVA];
 
+  // 1) On a failed check → hide (unless fixed) and return FALSE
   if (ErrorValues.includes(Check)) {
     if (fixedSheets.includes(SheetName)) {
-      LogDebug(`DATA Check: FALSE for ${SheetName}`, 'MIN');
+      LogDebug(`DATA Check: ❌ FALSE: ${SheetName}`, 'MIN');
       return "FALSE";
     }
     if (!sheet_sr.isSheetHidden()) {
       sheet_sr.hideSheet();
-      LogDebug(`Sheet ${SheetName} HIDDEN`, 'MIN');
+      LogDebug(`🔒 HIDDEN : ${SheetName}`, 'MIN');
     }
-    LogDebug(`DATA Check: FALSE for ${SheetName}`, 'MIN');
+    LogDebug(`DATA Check: ❌ FALSE: ${SheetName}`, 'MIN');
     return "FALSE";
   }
 
-  if (sheet_sr.isSheetHidden()) {
-    sheet_sr.showSheet();
-    LogDebug(`Sheet ${SheetName} DISPLAYED`, 'MIN');
+  // 2) Passing check: show only if not forceHide
+  if (!forceHide) {
+    if (sheet_sr.isSheetHidden()) {
+      sheet_sr.showSheet();
+      LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
+    }
   }
 
-  LogDebug(`DATA Check: TRUE for ${SheetName}`, 'MIN');
+  // 3) If forceHide, ensure it’s hidden
+  if (forceHide) {
+    if (!sheet_sr.isSheetHidden()) {
+      sheet_sr.hideSheet();
+      LogDebug(`🔐 FORCED HIDEN: ${SheetName}`, 'MIN');
+    }
+  }
+
+  LogDebug(`DATA Check: ✅ TRUE: ${SheetName}`, 'MIN');
   return "TRUE";
 }
 
