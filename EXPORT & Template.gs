@@ -48,7 +48,7 @@ function doExportBasic(SheetName) {
   const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
 
   if (Class !== 'STOCK') {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}) on doExportBasic`, 'MIN');
+    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}): doExportBasic`, 'MIN');
     return;
   }
 
@@ -112,7 +112,7 @@ function doExportBasic(SheetName) {
 
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
-    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
+    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met: doExportBasic.`);
 
     if (SheetName === OPCOES) {
      tryCleanOpcaoExportRow(sheet_tr, TKT);
@@ -122,7 +122,7 @@ function doExportBasic(SheetName) {
 
   const Export = getConfigValue(cfg.exportKey);
   if (Export !== 'TRUE') {
-    LogDebug(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportBasic.`);
+    LogDebug(`EXPORT: ${SheetName} - Export is set to FALSE: doExportBasic.`);
     return;
   }
 
@@ -196,17 +196,17 @@ function doExportExtra(SheetName) {
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
   if (ErrorValues.includes(A)) {
-    LogDebug(`EXPORT Skipped: ${SheetName} - Data (A) failed ErrorValues on doExportExtra.`, 'MIN');
+    LogDebug(`EXPORT Skipped: ${SheetName} - Data (A) failed ErrorValues: doExportExtra.`, 'MIN');
     return;
   }
 
   if (ShouldExport != true) {
-    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportExtra.`, 'MIN');
+    LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met: doExportExtra.`, 'MIN');
     return;
   }
 
   if (Export != "TRUE") {
-        LogDebug(`EXPORT: ${SheetName} - Export on config is set to FALSE on doExportExtra.`, 'MIN');
+        LogDebug(`EXPORT: ${SheetName} - Export is set to FALSE: doExportExtra.`, 'MIN');
     return;
   }
 
@@ -220,7 +220,7 @@ function doExportExtra(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(target_sh[SheetName] || SheetName);           // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`, 'MIN');
+    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
   }
   processExport(TKT, Data, sheet_tr, SheetName);
@@ -244,7 +244,7 @@ function doExportFinancial(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist on doExportFinancial from sheet_tr`, 'MIN');
+    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
   }
 
@@ -254,7 +254,7 @@ function doExportFinancial(SheetName) {
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
   if (Export !== "TRUE") {
-    LogDebug(`ERROR EXPORT: ${SheetName} - EXPORT on config is set to FALSE on doExportFinancial`, 'MIN');
+    LogDebug(`ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
     return;
   }
 
@@ -385,7 +385,7 @@ function doExportInfo() {
   var sheet_tr = ss_tr.getSheetByName('Relação');                   // Target sheet
 
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: Target sheet 'Relação' not found in spreadsheet ID ${Data_Id}`, 'MIN');
+    LogDebug(`ERROR EXPORT: 'Relação' not found in spreadsheet ID ${Data_Id}`, 'MIN');
     return;
   }
 
@@ -461,14 +461,14 @@ function doExportProventos() {
   var sheet_tr = ss_tr.getSheetByName('Poventos');
 
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: Target sheet 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
+    LogDebug(`ERROR EXPORT: 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
     return;
   }
 
   var LR = sheet_tr.getLastRow();
 
   if (Class !== 'STOCK') {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class} on doExportProventos`, 'MIN');
+    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class}: doExportProventos`, 'MIN');
     return;
   }
 
@@ -509,14 +509,14 @@ function processExport(TKT, Data, sheet_tr, SheetName) {
   if (Search) {
     // Update adjacent columns with Data
     Search.offset(0, 1, 1, Data[0].length).setValues(Data);
-    LogDebug(`SUCCESS EXPORT. Data for ${TKT} updated on Sheet: ${SheetName}.`, 'MIN');
+    LogDebug(`SUCCESS EXPORT. Data for ${TKT} Updated: ${SheetName}.`, 'MIN');
   } else {
     // Ticker not found; add a new row with the ticker in column A...
     sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
-    LogDebug(`SUCCESS EXPORT. Ticker: ${TKT} added to ${SheetName}.`, 'MIN');
+    LogDebug(`SUCCESS EXPORT. Ticker: ${TKT} Added: ${SheetName}.`, 'MIN');
     // ...and then write Data to the adjacent columns.
     sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
-    LogDebug(`SUCCESS EXPORT. Data for ${TKT} exported on Sheet: ${SheetName}.`, 'MIN');
+    LogDebug(`SUCCESS EXPORT. Data for ${TKT} Exported: ${SheetName}.`, 'MIN');
   }
 }
 

@@ -104,7 +104,7 @@ function doSaveBasics() {
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
     try { doSaveBasic(SheetName); }
-    catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
+    catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
   }
 }
 
@@ -117,7 +117,7 @@ function doSaveExtras() {
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
     try { doSaveBasic(SheetName); }
-    catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
+    catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
   }
 }
 
@@ -134,7 +134,7 @@ function doSaveFinancials() {
     for (let i = 0; i < SheetNames.length; i++) {
       const SheetName = SheetNames[i];
       try { doSaveFinancial(SheetName); }
-      catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
+      catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
     }
   }
 }

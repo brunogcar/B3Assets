@@ -14,13 +14,13 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   // Handle SAVE = FALSE early
   if (Save !== "TRUE") {
-    LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+    LogDebug(`ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, 'MIN');
     return;
   }
 
   // Handle invalid A2 early
   if (ErrorValues.includes(A2)) {
-    LogDebug(`ERROR SAVE: ${SheetName} - ErrorValues in A2 on processSave`, 'MIN');
+    LogDebug(`ERROR SAVE: ${SheetName} - ErrorValues in A2: processSaveGeneric`, 'MIN');
     return;
   }
 
@@ -57,12 +57,12 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
     if (Edit === "TRUE") {
       doEditBasic(SheetName);
     } else {
-      LogDebug(`ERROR SAVE: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
+      LogDebug(`ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     }
     return;
   }
 
-  LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren't met on processSave`, 'MIN');
+  LogDebug(`ERROR SAVE: ${SheetName} - Conditions aren't met: processSaveGeneric`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   const cfg       = Object.values(financialMap)
                             .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`No financialMap entry for ${SheetName}`, 'MIN');
+    LogDebug(`No financialMap entry: ${SheetName}`, 'MIN');
     return;
   }
 
@@ -130,13 +130,13 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
       const backup_sr = sheet_bk.getRange(1, cfg.col_trg, LR, width);
       const backup_tr = sheet_bk.getRange(1, cfg.col_bak, LR, width);
       backup_tr.setValues(backup_sr.getValues());
-      LogDebug(`Backup [${cfg.col_trg}→${cfg.col_trg+width-1}] → [${cfg.col_bak}→${cfg.col_bak+width-1}] for ${SheetName}`, 'MIN');
+      LogDebug(`Backup [${cfg.col_trg}→${cfg.col_trg+width-1}] → [${cfg.col_bak}→${cfg.col_bak+width-1}]: ${SheetName}`, 'MIN');
     }
 
     const save_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
     const save_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
     save_tr.setValues(save_sr.getValues());
-    LogDebug(`Saved column src=${cfg.col_src} → trg=${cfg.col_trg} for ${SheetName}`, 'MIN');
+    LogDebug(`Saved column src=${cfg.col_src} → trg=${cfg.col_trg}: ${SheetName}`, 'MIN');
 
     if (cfg.recurse) {
       doExportFinancial(SheetName);
@@ -152,10 +152,10 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     const src = edit_sr.getValues().flat();
     const trg = edit_tr.getValues().flat();
     if (src.some((v,i) => v !== trg[i])) {
-      LogDebug(`Detected edits for ${SheetName}`, 'MIN');
+      LogDebug(`Detected edits: ${SheetName}`, 'MIN');
       doEditFinancial(SheetName);
     } else {
-      LogDebug(`No edits needed for ${SheetName}`, 'MID');
+      LogDebug(`No edits needed: ${SheetName}`, 'MID');
     }
   }
 }

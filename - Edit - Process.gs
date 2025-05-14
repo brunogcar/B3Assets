@@ -8,12 +8,12 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   const A5 = sheet_sr.getRange("A5").getValue();
 
   if (Edit !== "TRUE") {
-    LogDebug(`ERROR EDIT: ${SheetName} - EDIT on config is set to FALSE`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     return;
   }
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`ERROR EDIT: ${SheetName} - ErrorValues in A2 on processEdit`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - ErrorValues in A2: processEditGeneric`, 'MIN');
     return;
   }
 
@@ -39,7 +39,7 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   }
 
   // Final fallback
-  LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren't met on processEdit`, 'MIN');
+  LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren't met: processEditGeneric`, 'MIN');
 }
 
 
@@ -71,7 +71,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   const cfg       = Object.values(financialMap)
                             .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`No financialMap entry for ${SheetName}`, 'MIN');
+    LogDebug(`No financialMap entry: ${SheetName}`, 'MIN');
     return;
   }
 
@@ -102,7 +102,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     });
 
     if (updates.length === 0) {
-      LogDebug(`No edits detected for ${SheetName}`, 'MID');
+      LogDebug(`No edits detected: ${SheetName}`, 'MID');
       return;
     }
 

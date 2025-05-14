@@ -117,7 +117,7 @@ function doImportProv(ProvName){
     }
     else
     {
-      LogDebug(`ERROR IMPORT: ${ProvName} - B3 != Proventos on doImportProv`, 'MIN');
+      LogDebug(`ERROR IMPORT: ${ProvName} - B3 != Proventos: doImportProv`, 'MIN');
     }
   }
 }
@@ -189,7 +189,7 @@ function doImportShares() {
   }
   else
   {
-    LogDebug(`ERROR IMPORT: ${SheetName} - ErrorValues on L1 or L2 on doImportShares`, 'MIN');
+    LogDebug(`ERROR IMPORT: ${SheetName} - ErrorValues - L1=${SheetName} or L2=${SheetName}: doImportShares`, 'MIN');
   }
   LogDebug(`SUCCESS IMPORT: Shares and FF`, 'MIN');
 }
@@ -256,13 +256,13 @@ function doImportBasic(SheetName) {
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT on config is set to FALSE.`, 'MIN');
+    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
     return;
   }
 
   const Check = sheet_sr.getRange("A5").getValue();
   if (Check === "") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - A5 is blank on doImportBasic.`, 'MIN');
+    LogDebug(`ERROR IMPORT: ${SheetName} - A5 is blank: doImportBasic.`, 'MIN');
     return;
   }
 
@@ -277,7 +277,7 @@ function doImportBasic(SheetName) {
   const Data_Header = sheet_sr.getRange(1, 1, 1, LC).getValues();
   sheet_tr.getRange(1, 1, 1, LC).setValues(Data_Header);
 
-  LogDebug(`SUCCESS IMPORT for sheet ${SheetName}.`, 'MIN');
+  LogDebug(`SUCCESS IMPORT: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////FINANCIAL////////////////////////////////////////////////////////////////////
@@ -326,13 +326,13 @@ function doImportFinancial(SheetName) {
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT on config is set to FALSE.`, 'MIN');
+    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
     return;
   }
 
   const Check = sheet_sr.getRange(cfg.checkCell).getValue();
   if (Check === "") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - ${cfg.checkCell} is blank on doImportFinancial.`, 'MIN');
+    LogDebug(`ERROR IMPORT: ${SheetName} - ${cfg.checkCell} is blank: doImportFinancial.`, 'MIN');
     return;
   }
 
@@ -346,7 +346,7 @@ function doImportFinancial(SheetName) {
   sheet_tr.getRange(1, cfg.dataOffset.colStart, LR, width)
           .setValues(data);
 
-  LogDebug(`SUCCESS IMPORT for sheet ${SheetName}.`, 'MIN');
+  LogDebug(`SUCCESS IMPORT: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT TEMPLATE/////////////////////////////////////////////////////////////////////

@@ -129,7 +129,7 @@ function doEditBasic(SheetName) {
 
   const cfg = editTable.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`ERROR EDIT: ${SheetName} - Unhandled sheet type in doEditBasic`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - No entry in editTable: doEditBasic`, 'MIN');
     return;
   }
 
@@ -139,7 +139,7 @@ function doEditBasic(SheetName) {
   if (cfg.conditions(vals)) {
     cfg.handler(sheet_sr, SheetName, Edit);
   } else {
-    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditBasic`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met: doEditBasic`, 'MIN');
   }
 }
 
@@ -153,7 +153,7 @@ function doEditFinancial(SheetName) {
   const cfg = Object.values(financialMap)
                     .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`No financialMap entry for ${SheetName}`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - No entry in financialMap: doEditFinancial`, 'MIN');
     return;
   }
 
@@ -186,7 +186,7 @@ function doEditFinancial(SheetName) {
 
   // Row-specific conditions on source template
   if (cfg.conditions && !cfg.conditions(sheet_sr)) {
-    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditFinancial`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met: doEditFinancial`, 'MIN');
     return;
   }
 
@@ -200,7 +200,7 @@ function doEditFinancial(SheetName) {
     }
   }
   else {
-    LogDebug(`ERROR EDIT: ${SheetName} - New_sr '${New_sr}' is invalid on doEditFinancial`, 'MIN');
+    LogDebug(`ERROR EDIT: ${SheetName} - New_sr '${New_sr}' is invalid: doEditFinancial`, 'MIN');
     return;
   }
 }

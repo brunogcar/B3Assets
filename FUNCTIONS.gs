@@ -48,17 +48,18 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    LogDebug(`[${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
+    LogDebug(`[🔄 ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
 
     try {
       fn(SheetName);
-      LogDebug(`[${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, "MAX");
+      LogDebug(`[🆗 ${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, "MAX");
 
     } catch (error) {
-      LogDebug(`[${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, "MAX");
+      LogDebug(`[🛑 ${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, "MAX");
     }
   }
   LogDebug(
+      `💾 `
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
     , "MAX");
@@ -75,7 +76,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
  */
 function fetchSheetByName(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
-  if (!sheet) { LogDebug(`Sheet not found: ${SheetName}`, "MIN"); return null; }
+  if (!sheet) { LogDebug(`⚠️ Sheet not found: ${SheetName}`, "MIN"); return null; }
   return sheet;
 }
 
@@ -104,11 +105,11 @@ function getConfigValue(Acronym, Source = 'Both') {
   const sheet_co = (Source !== 'Settings') ? fetchSheetByName('Config')   : null;
 
   // If we needed Settings but didn't get it, bail
-  if (Source !== 'Config' && !sheet_se) { LogDebug('Settings sheet not found', "MIN");
+  if (Source !== 'Config' && !sheet_se) { LogDebug('⚠️ Settings sheet not found', "MIN");
     return null;
   }
   // If we needed Config but didn't get it, bail
-  if (Source !== 'Settings' && !sheet_co) { LogDebug('Settings sheet not found', "MIN");
+  if (Source !== 'Settings' && !sheet_co) { LogDebug('⚠️ Config sheet not found', "MIN");
     return null;
   }
 
@@ -124,7 +125,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         return Value;  // short‑circuit if only pulling from Settings
       }
     } catch (e) {
-      LogDebug(`Acronym ${Acronym} not found in Settings`, "MIN");
+      LogDebug(`⚠️ Acronym ${Acronym} not found in Settings`, "MIN");
     }
   }
 
@@ -136,7 +137,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         Value = null;
       }
     } catch (e) {
-      LogDebug(`Acronym ${Acronym} not found in Config`, "MIN");
+      LogDebug(`⚠️ Acronym ${Acronym} not found in Config`, "MIN");
     }
   }
   return Value;
@@ -153,17 +154,17 @@ function setConfigValue(Acronym, value) {
   // Fetch the Config sheet
   const sheet_co = fetchSheetByName('Config');
   if (!sheet_co) {
-    LogDebug(`Config sheet not found; cannot set ${Acronym}`, "MIN");
+    LogDebug(`⚠️ Config sheet not found; cannot set ${Acronym}`, "MIN");
     return false;
   }
 
   try {
     // Write the value
     sheet_co.getRange(Acronym).setValue(value);
-    LogDebug(`Wrote value "${value}" to Config!${Acronym}`, "MID");
+    LogDebug(`🆗 Wrote value "${value}" to Config!${Acronym}`, "MID");
     return true;
   } catch (e) {
-    LogDebug(`Failed to write ${Acronym} to Config: ${e.message}`, "MIN");
+    LogDebug(`🛑 Failed to write ${Acronym} to Config: ${e.message}`, "MIN");
     return false;
   }
 }
@@ -268,9 +269,9 @@ function copypasteSheets() {
     try {
       const range = sheet.getDataRange();
       range.copyTo(range, { contentsOnly: true });
-      LogDebug(`copypasteSheets: Cleared formulas on "${Name}"`, 'MIN');
+      LogDebug(`copypasteSheets: Cleared formulas: "${Name}"`, 'MIN');
     } catch (e) {
-      LogDebug(`copypasteSheets: Error copying on "${Name}": ${e.message}`, 'MIN');
+      LogDebug(`copypasteSheets: Error copying: "${Name}": ${e.message}`, 'MIN');
     }
   }
 }
@@ -442,7 +443,7 @@ function doCleanZeros() {
 }
 
 function doDeleteZeroOptions() {
-  LogDebug(`DELETE: 0 values from call put / blank values from ratios on Sheet ${OPCOES}`, "MIN");
+  LogDebug(`DELETE: 0 values from call put / blank values from ratios: ${OPCOES}`, "MIN");
 
   const sheet = fetchSheetByName(OPCOES);
   if (!sheet) return;
@@ -472,13 +473,13 @@ function doDeleteZeroOptions() {
         sheet.deleteRow(row);
       }
     } catch (err) {
-      LogDebug(`[doDeleteZeroOptions] Error on row ${row}: ${err}`, "MIN");
+      LogDebug(`[doDeleteZeroOptions] Error: row ${row}: ${err}`, "MIN");
     }
   }
 }
 
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
-  LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet on Sheet ${sheet_tr}`, "MIN");
+  LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet: ${sheet_tr}`, "MIN");
 
   const colA = sheet_tr.getRange(2, 1, sheet_tr.getLastRow() - 1).getValues();     // only column A, skip header
   const rowIndex = colA.findIndex(row => row[0] === TKT);
@@ -487,14 +488,14 @@ function tryCleanOpcaoExportRow(sheet_tr, TKT) {
     const rowNum = rowIndex + 2;                                                   // +2 because we started from row 2
     const colCount = sheet_tr.getLastColumn();
     sheet_tr.getRange(rowNum, 1, 1, colCount).clearContent();
-    LogDebug(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from export sheet.`, "MIN");
+    LogDebug(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from exported sheet ${sheet_tr}.`, "MIN");
   } else {
-    LogDebug(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found on export sheet.`, "MIN");
+    LogDebug(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found: ${sheet_tr}.`, "MIN");
   }
 }
 
 function normalizeFund() {
-  LogDebug(`NORMALIZE: values on Sheet ${FUND}`, "MIN");
+  LogDebug(`NORMALIZE: Values: ${FUND}`, "MIN");
 
   const sheet = fetchSheetByName(FUND);
   if (!sheet) return;
@@ -534,11 +535,11 @@ function normalizeFund() {
 function reverseColumns() {
   const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const SheetName = sheet.getName();
-  LogDebug(`reverseColumns: Starting on sheet "${SheetName}"`, 'MIN');
+  LogDebug(`reverseColumns: Starting: "${SheetName}"`, 'MIN');
 
   const active = fetchSheetByName(SheetName);
   if (!active) {
-    LogDebug(`reverseColumns: Sheet "${SheetName}" not found`, 'MIN');
+    LogDebug(`reverseColumns: "${SheetName}" not found`, 'MIN');
     return;
   }
 
@@ -558,11 +559,11 @@ function reverseColumns() {
 function reverseRows() {
   const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const SheetName = sheet.getName();
-  LogDebug(`reverseRows: Starting on sheet "${SheetName}"`, 'MIN');
+  LogDebug(`reverseRows: Starting: "${SheetName}"`, 'MIN');
 
   const active = fetchSheetByName(SheetName);
   if (!active) {
-    LogDebug(`reverseRows: Sheet "${SheetName}" not found`, 'MIN');
+    LogDebug(`reverseRows: "${SheetName}" not found`, 'MIN');
     return;
   }
 

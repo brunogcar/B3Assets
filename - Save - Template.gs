@@ -98,7 +98,7 @@ function doSaveBasic(SheetName) {
 
   const cfg = saveTable.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`ERROR SAVE: ${SheetName} - Unhandled sheet type in doSaveBasic`, 'MIN');
+    LogDebug(`ERROR SAVE: ${SheetName} - No entry in saveTable: doSaveBasic`, 'MIN');
     return;
   }
 
@@ -210,7 +210,10 @@ function doSaveFinancial(SheetName) {
 
   const cfg = Object.values(financialMap)
                     .find(c => c.sh_tr === SheetName);
-  if (!cfg) {LogDebug(`No financialMap entry for ${SheetName}`, 'MIN'); return; }
+  if (!cfg) {
+    LogDebug(`ERROR SAVE: ${SheetName} - No entry in financialMap: doSaveFinancial`, 'MIN');
+    return;
+  }
 
   const Save = getConfigValue(cfg.saveKey);
   if (Save !== "TRUE") {
