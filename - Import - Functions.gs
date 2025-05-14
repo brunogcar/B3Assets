@@ -40,96 +40,85 @@ function checkAutorizeScript() {
 
 /////////////////////////////////////////////////////////////////////Triggers/////////////////////////////////////////////////////////////////////
 
-function doCheckTriggers() {
-  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
-
-  var Triggers = ScriptApp.getProjectTriggers().length;
-
-  LogDebug(`Number of existing triggers: ${Triggers}`, 'MIN');
-
-  if (Class == 'STOCK')
-  {
-    if (Triggers == 0)
-    {
-      LogDebug("No triggers found. Creating new triggers...", 'MIN');
-      doCreateTriggers();
-    }
-    else if (Triggers > 0 && Triggers < 5)
-    {
-      LogDebug("Found 1-4 triggers. Deleting and creating new triggers...", 'MIN');
-      doDeleteTriggers();
-      doCreateTriggers();
-    }
-    else if (Triggers > 5)
-    {
-      LogDebug("Found more than 5 triggers. Deleting and creating new triggers...", 'MIN');
-      doDeleteTriggers();
-      doCreateTriggers();
-    }
-  }
-  else
-  {
-    if (Triggers == 0)
-    {
-      LogDebug("No triggers found. Creating new triggers...", 'MIN');
-      doCreateTriggers();
-    }
-    else if (Triggers > 1)
-    {
-      LogDebug("Found more than 1 triggers. Deleting and creating new triggers...", 'MIN');
-      doDeleteTriggers();
-      doCreateTriggers();
-    }
-  }
+// Central trigger definitions (single source of truth)
+const triggerMap = {
+  STOCK: [
+    { fn: 'doSaveAllBasics',    cfgKey: TG1 },    // Basic Trigger Event
+    { fn: 'doSaveAllFinancials', cfgKey: TG2 },    // Financial Trigger Event
+    { fn: 'doSaveAllExtras',     cfgKey: TG3 },    // Extras Trigger Event
+    { fn: 'doSettings',          cfgKey: TG4 },    // Settings Trigger Event
+    { fn: 'doSaveAll',           cfgKey: TG5 },    // SaveAll Trigger Event
+  ],
+  BDR:   [{ fn: 'doSaveAllBasics', hour: 20 }],
+  ETF:   [{ fn: 'doSaveAllBasics', hour: 20 }],
+  ADR:   [{ fn: 'doSaveSWING',     hour: 20 }],
 };
 
+// Compare two sets for equality
+function setsEqual(a, b) {
+  if (a.size !== b.size) return false;
+  for (let x of a) if (!b.has(x)) return false;
+  return true;
+}
+
+// Check and reconcile project triggers
+function doCheckTriggers() {
+  const Class       = getConfigValue(IST, 'Config');
+  const desiredList = triggerMap[Class] || [];
+
+  // Only consider time-based triggers
+  const existing    = ScriptApp.getProjectTriggers()
+                        .filter(t => t.getEventType() === ScriptApp.EventType.CLOCK);
+  const haveFns     = existing.map(t => t.getHandlerFunction());
+  const wantFns     = desiredList.map(d => d.fn);
+
+  if (!setsEqual(new Set(haveFns), new Set(wantFns))) {
+    LogDebug(`Triggers mismatch (have:${haveFns.length}, want:${wantFns.length}). Rebuilding…`, 'MIN');
+    doDeleteTriggers();
+    doCreateTriggers();
+    writeTriggersToSheet();
+  } else {
+    LogDebug(`Triggers up-to-date (${haveFns.length}).`, 'MIN');
+  }
+}
+
+// Create triggers based on mapping
 function doCreateTriggers() {
-  const Class = getConfigValue(IST, 'Config');                                      // IST = Is Stock?
+  const Class     = getConfigValue(IST, 'Config');
+  const desired   = triggerMap[Class] || [];
+  if (desired.length === 0) return;
 
-  // Check existing triggers
+  LogDebug(`📝 Creating ${desired.length} triggers for class '${Class}'`, 'MIN');
+
+  desired.forEach(d => {
+    // If cfgKey is provided, pull the configured hour
+    const Hour = d.cfgKey
+      ? getConfigValue(d.cfgKey, 'Config')
+      : d.hour;
+
+    ScriptApp.newTrigger(d.fn)
+      .timeBased()
+      .atHour(Hour)
+      .everyDays(1)
+      .create();
+
+    LogDebug(` → ${d.fn} @ ${Hour}`, 'MIN');
+  });
+}
+
+function doDeleteTriggers() {
   const triggers = ScriptApp.getProjectTriggers();
-  let shouldCreateTrigger = true;
-  for (let i = 0; i < triggers.length; i++) {
-    if (triggers[i].getEventType() === ScriptApp.EventType.CLOCK) {
-      shouldCreateTrigger = false;
-      break;
-    }
+
+  if (triggers.length === 0) {
+    LogDebug(`No triggers found to delete.`, 'MIN');
   }
 
-  if (!shouldCreateTrigger) return;
-
-  if (Class === 'STOCK') {
-    LogDebug("Creating new triggers...", 'MIN');
-
-    const Hour_1 = getConfigValue(TG1, 'Config');                                    // Basic Trigger Event
-    const Hour_2 = getConfigValue(TG2, 'Config');                                    // Financial Trigger Event
-    const Hour_3 = getConfigValue(TG3, 'Config');                                    // Extras Trigger Event
-    const Hour_4 = getConfigValue(TG4, 'Config');                                    // Settings Trigger Event
-    const Hour_5 = getConfigValue(TG5, 'Config');                                    // SaveAll Trigger Event
-
-    ScriptApp.newTrigger("doSaveAllBasics")
-      .timeBased().atHour(Hour_1).everyDays(1).create();
-
-    ScriptApp.newTrigger("doSaveAllFinancials")
-      .timeBased().atHour(Hour_2).everyDays(1).create();
-
-    ScriptApp.newTrigger("doSaveAllExtras")
-      .timeBased().atHour(Hour_3).everyDays(1).create();
-
-    ScriptApp.newTrigger("doSettings")
-      .timeBased().atHour(Hour_4).everyDays(1).create();
-
-    ScriptApp.newTrigger("doSaveAll")
-      .timeBased().atHour(Hour_5).everyDays(1).create();
-
-  } else if (Class === 'BDR' || Class === 'ETF') {
-    ScriptApp.newTrigger("doSaveAllBasics")
-      .timeBased().atHour(20).everyDays(1).create();
-
-  } else if (Class === 'ADR') {
-    ScriptApp.newTrigger("doSaveSWING")
-      .timeBased().atHour(20).everyDays(1).create();
+  for (const trigger of triggers) {
+    LogDebug(`⚠️ Deleting trigger: ${trigger.getHandlerFunction()} (ID: ${trigger.getUniqueId()})`, 'MIN');
+    ScriptApp.deleteTrigger(trigger);
   }
+
+  LogDebug(`All triggers deleted.`, 'MIN');
 }
 
 
@@ -151,41 +140,33 @@ function getSheetTriggersHandle() {
 }
 
 function writeTriggersToSheet() {
-  const sheet = fetchSheetByName("Config");
+  const sheet = fetchSheetByName('Config');
   if (!sheet) return;
 
   const triggers = getSheetTriggersHandle();
-  const startRow = 24; // L24
-  const startColumn = 12; // Column "L" = 12th column
+  const count    = getSheetTriggers();
 
-  // Clear old values from L24 downward
-  const lastRow = sheet.getLastRow();
+  // Write count to L21
+  sheet.getRange(21, 12).setValue(count);
+
+  const startRow   = 24; // L24
+  const startCol   = 12; // Column L
+  const lastRow    = sheet.getLastRow();
+
+  // Clear old handler names
   if (lastRow >= startRow) {
-    sheet.getRange(startRow, startColumn, lastRow - startRow + 1, 1).clearContent();
+    sheet.getRange(startRow, startCol, lastRow - startRow + 1, 1).clearContent();
   }
 
-  // Write triggers if available
+  // Write handler names or a placeholder
   if (triggers.length > 0) {
-    sheet.getRange(startRow, startColumn, triggers.length, 1).setValues(triggers.map(t => [t]));
+    sheet.getRange(startRow, startCol, triggers.length, 1)
+         .setValues(triggers.map(t => [t]));
   } else {
-    sheet.getRange(startRow, startColumn).setValue("No active triggers");
-  }
-  LogDebug(`Wrote ${triggers.length} triggers to Config`, 'MIN');
-}
-
-function doDeleteTriggers() {
-  const triggers = ScriptApp.getProjectTriggers();
-
-  if (triggers.length === 0) {
-    LogDebug(`No triggers found to delete.`, 'MIN');
+    sheet.getRange(startRow, startCol).setValue('No active triggers');
   }
 
-  for (const trigger of triggers) {
-    LogDebug(`Deleting trigger: ${trigger.getHandlerFunction()} (ID: ${trigger.getUniqueId()})`, 'MIN');
-    ScriptApp.deleteTrigger(trigger);
-  }
-
-  LogDebug(`All triggers deleted.`, 'MIN');
+  LogDebug(`🖋️ Wrote ${triggers.length} triggers and count ${count} to Config`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT FUNCTIONS/////////////////////////////////////////////////////////////////////
