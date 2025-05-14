@@ -10,11 +10,9 @@ function doSaveAll() {
   doSaveShares();
   doProventos();
 
-  doSaveGroup([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
-
-  doSaveGroup([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
-
   doSaveGroup([
+    OPCOES, BTC, TERMO,
+    FUND, SWING_4, SWING_12, SWING_52,
     FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
@@ -35,9 +33,10 @@ function doSaveAllBasics() {
 
   SpreadsheetApp.flush();
 
-  doSaveGroup([OPCOES, BTC, TERMO], doCheckDATA, doSaveBasic);
-
-  doSaveGroup([FUND, SWING_4, SWING_12, SWING_52], doCheckDATA, doSaveBasic);
+  doSaveGroup([
+    OPCOES, BTC, TERMO,
+    FUND, SWING_4, SWING_12, SWING_52
+    ], doCheckDATA, doSaveBasic);
 
   doSaveShares();
   doExportProventos();
@@ -104,7 +103,7 @@ function doSaveBasics() {
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
-    try { doSaveSheet(SheetName); }
+    try { doSaveBasic(SheetName); }
     catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
   }
 }
@@ -117,7 +116,7 @@ function doSaveExtras() {
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
-    try { doSaveSheet(SheetName); }
+    try { doSaveBasic(SheetName); }
     catch (error) { Logger.log(`Error saving sheet ${SheetName}: ${error}`); }
   }
 }

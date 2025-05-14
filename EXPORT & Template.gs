@@ -23,7 +23,7 @@ function doExportBasics() {
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doExportExtras() {
-  const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
   doExportGroup(SheetNames, doExportExtra, 'extra');
 }
 
@@ -59,44 +59,44 @@ function doExportBasic(SheetName) {
     {
       names: [SWING_4, SWING_12, SWING_52],
       exportKey: ETR,                                                                   // ETR = Export to Swing
-      cells: ['C2'],
-      test: ([c2]) => c2 > 0
+      checks: ['C2'],
+      conditions: ([c2]) => c2 > 0
     },
     {
       names: [OPCOES],
       exportKey: EOP,                                                                   // EOP = Export to Option
-      cells: ['C2','E2'],
-      test: ([call, put]) => call != 0 && put != 0 && call !== '' && put !== ''
+      checks: ['C2','E2'],
+      conditions: ([call, put]) => call != 0 && put != 0 && call !== '' && put !== ''
     },
     {
       names: [BTC],
       exportKey: EBT,                                                                   // EBT = Export to BTC
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2)
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2)
     },
     {
       names: [TERMO],
       exportKey: ETE,                                                                   // ETE = Export to Termo
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2)
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2)
     },
     {
       names: [FUTURE],
       exportKey: ETF,                                                                   // ETF = Export to Future
-      cells: ['C2','E2','G2'],
-      test: vals => vals.some(v => !ErrorValues.includes(v))
+      checks: ['C2','E2','G2'],
+      conditions: vals => vals.some(v => !ErrorValues.includes(v))
     },
     {
       names: [FUTURE_1, FUTURE_2, FUTURE_3],
       exportKey: ETF,                                                                   // ETF = Export to Future
-      cells: ['B2','C2'],
-      test: ([b2, c2]) => !ErrorValues.includes(b2) && c2 > 0
+      checks: ['B2','C2'],
+      conditions: ([b2, c2]) => !ErrorValues.includes(b2) && c2 > 0
     },
     {
       names: [FUND],
       exportKey: EFU,                                                                   // EFU = Export to Fund
-      cells: ['B2'],
-      test: ([b2]) => !ErrorValues.includes(b2)
+      checks: ['B2'],
+      conditions: ([b2]) => !ErrorValues.includes(b2)
     }
   ];
 
@@ -110,8 +110,8 @@ function doExportBasic(SheetName) {
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) return;
 
-  const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
-  if (!cfg.test(vals)) {
+  const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
+  if (!cfg.conditions(vals)) {
     LogDebug(`EXPORT: Skipped ${SheetName} - Conditions for export not met on doExportBasic.`);
 
     if (SheetName === OPCOES) {

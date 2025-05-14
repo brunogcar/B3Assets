@@ -11,8 +11,8 @@ function doSaveBasic(SheetName) {
       names: [SWING_4, SWING_12, SWING_52],
       saveKey: STR,
       editKey: DTR,
-      cells: ['B2','C2'],
-      test: ([b2, c2]) => {
+      checks: ['B2','C2'],
+      conditions: ([b2, c2]) => {
         const cls = getConfigValue(IST, 'Config');
         if (cls === 'STOCK')     return b2 != 0 && c2 > 0;
         return cls.match(/BDR|ETF|ADR/) && c2 > 0;
@@ -23,83 +23,75 @@ function doSaveBasic(SheetName) {
       names: [OPCOES],
       saveKey: SOP,
       editKey: DOP,
-      cells: ['C2','E2','C3','E3','D2','F2','D3','F3','K3','N3'],
-      test: ([call, put, call_, put_, callPM, putPM, callPM_, putPM_, diff, diff2]) =>
+      checks: ['C2','E2','D2','F2','K3','N3'],
+      conditions: ([call, put,call_PM, put_PM, diff_simples, diff_composto]) =>
         call && put &&
-        (callPM || putPM) &&
-        (diff || diff2),
+        (call_PM || put_PM) &&
+        (diff_simples || diff_composto),
       handler: processSaveBasic
     },
     {
       names: [BTC],
       saveKey: SBT,
       editKey: DBT,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveBasic
     },
     {
       names: [TERMO],
       saveKey: STE,
       editKey: DTE,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveBasic
     },
     {
       names: [FUND],
       saveKey: SFU,
       editKey: DFU,
-      cells: ['B2'],
-      test: ([b2]) => !ErrorValues.includes(b2),
+      checks: ['B2'],
+      conditions: ([b2]) => !ErrorValues.includes(b2),
       handler: processSaveBasic
     },
     {
       names: [FUTURE],
       saveKey: SFT,
       editKey: DFT,
-      cells: ['C2','E2','G2'],
-      test: vals => vals.some(v => !ErrorValues.includes(v)),
+      checks: ['C2','E2','G2'],
+      conditions: vals => vals.some(v => !ErrorValues.includes(v)),
       handler: processSaveBasic
-    },
-    {
-      names: [FUTURE_1, FUTURE_2, FUTURE_3],
-      saveKey: SFT,
-      editKey: DFT,
-      cells: ['C2'],
-      test: ([c2]) => !ErrorValues.includes(c2),
-      handler: processSaveExtra
     },
     {
       names: [RIGHT_1, RIGHT_2],
       saveKey: SRT,
       editKey: DRT,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [RECEIPT_9, RECEIPT_10],
       saveKey: SRC,
       editKey: DRC,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [WARRANT_11, WARRANT_12, WARRANT_13],
       saveKey: SWT,
       editKey: DWT,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     },
     {
       names: [BLOCK],
       saveKey: SBK,
       editKey: DBK,
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
     }
   ];
@@ -112,9 +104,9 @@ function doSaveBasic(SheetName) {
 
   const Save = getConfigValue(cfg.saveKey);
   const Edit = getConfigValue(cfg.editKey);
-  const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
+  const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
 
-  if (cfg.test(vals)) {
+  if (cfg.conditions(vals)) {
     cfg.handler(sheet_sr, SheetName, Save, Edit);
   } else {
     LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`, 'MIN');

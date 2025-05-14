@@ -140,7 +140,6 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
 
     if (cfg.recurse) {
       doExportFinancial(SheetName);
-      LogDebug(`Exported ${SheetName}`, 'MID');
     }
   } else {
     LogDebug(`Dates not advancing or aligned: ` + `Old_sr=${Old_sr}, New_sr=${New_sr}, New_tr=${New_tr}`, 'MIN');

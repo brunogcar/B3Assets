@@ -58,14 +58,13 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
 /**
  * Applies an “edit” sync to financial sheets when the source & template dates match.
  *
- * @param {Sheet}           sheet_tr  Target sheet (ticker)
- * @param {Sheet}           sheet_sr  Source sheet (template)
- * @param {Date|string}     New_tr  Parsed “new” date from target
- * @param {Date|string}     Old_tr  Parsed “old” date from target
- * @param {Date|string}     New_sr  Parsed “new” date from source
- * @param {Date|string}     Old_sr  Parsed “old” date from source
- * @param {boolean|string}  Save    “TRUE” if SAVE is enabled in config.
- * @param {boolean|string}  Edit    “TRUE” if EDIT is enabled in config.
+ * @param {GoogleAppsScript.Spreadsheet.Sheet|null} sheet_tr The template sheet (or null if source-only).
+ * @param {GoogleAppsScript.Spreadsheet.Sheet}      sheet_sr The source sheet.
+ * @param {number|string}                           New_tr    New template date millis or blank.
+ * @param {number|string}                           Old_tr    Old template date millis or blank.
+ * @param {number|string}                           New_sr    New source date millis or blank.
+ * @param {number|string}                           Old_sr    Old source date millis or blank.
+ * @param {string}                                  Edit      “TRUE” if EDIT is enabled.
  */
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
   const SheetName = sheet_tr.getSheetName();
@@ -91,8 +90,6 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
     const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
 
-
-    // Compare and apply only the changed cells
     const values_sr = edit_sr.getValues();
     const values_tr = edit_tr.getValues();
 
@@ -105,7 +102,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     });
 
     if (updates.length === 0) {
-      LogDebug(`No edits detected for ${SheetName}`, 'MIN');
+      LogDebug(`No edits detected for ${SheetName}`, 'MID');
       return;
     }
 
@@ -113,10 +110,10 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     updates.forEach(u => {
       sheet_tr.getRange(u.row, cfg.col_trg).setValue(u.value);
     });
-    LogDebug(
-      `Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`,
-      'MIN'
-    );
+    LogDebug(`Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
+    if (cfg.recurse) {
+      doExportFinancial(SheetName);
+    }
   }
 }
 

@@ -48,8 +48,8 @@ function doEditBasic(SheetName) {
     {
       names: [SWING_4, SWING_12, SWING_52],
       editKey: DTR,                                          // DTR = Edit to Swing
-      cells: ['C2'],
-      test: ([c2]) => {
+      checks: ['C2'],
+      conditions: ([c2]) => {
         const cls = getConfigValue(IST, 'Config');       // IST = Is Stock?
         return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(cls);
       },
@@ -58,71 +58,71 @@ function doEditBasic(SheetName) {
     {
       names: [OPCOES],
       editKey: DOP,                                          // DOP = Edit to Option
-      cells: ['C2','E2'],
-      test: ([call, put]) => (call != 0 && put != 0 && call !== '' && put !== ''),
+      checks: ['C2','E2'],
+      conditions: ([call, put]) => (call != 0 && put != 0 && call !== '' && put !== ''),
       handler: processEditBasic
     },
     {
       names: [BTC],
       editKey: DBT,                                          // DBT = Edit to BTC
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditBasic
     },
     {
       names: [TERMO],
       editKey: DTE,                                          // DTE = Edit to Termo
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditBasic
     },
     {
       names: [FUND],
       editKey: DFU,                                          // DFU = Edit to Fund
-      cells: ['B2'],
-      test: ([b2]) => !ErrorValues.includes(b2),
+      checks: ['B2'],
+      conditions: ([b2]) => !ErrorValues.includes(b2),
       handler: processEditBasic
     },
     {
       names: [FUTURE],
       editKey: DFT,                                          // DFT = Edit to Future
-      cells: ['C2','E2','G2'],
-      test: vals => vals.some(v => !ErrorValues.includes(v)),
+      checks: ['C2','E2','G2'],
+      conditions: vals => vals.some(v => !ErrorValues.includes(v)),
       handler: processEditBasic
     },
     {
       names: [FUTURE_1, FUTURE_2, FUTURE_3],
       editKey: DFT,                                          // DFT = Edit to Future
-      cells: ['C2'],
-      test: ([c2]) => !ErrorValues.includes(c2),
+      checks: ['C2'],
+      conditions: ([c2]) => !ErrorValues.includes(c2),
       handler: processEditExtra
     },
     {
       names: [RIGHT_1, RIGHT_2],
       editKey: DRT,                                          // DRT = Edit to Right
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditExtra
     },
     {
       names: [RECEIPT_9, RECEIPT_10],
       editKey: DRC,                                          // DRC = Edit to Receipt
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditExtra
     },
     {
       names: [WARRANT_11, WARRANT_12, WARRANT_13],
       editKey: DWT,                                          // DWT = Edit to Warrant
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditExtra
     },
     {
       names: [BLOCK],
       editKey: DBK,                                          // DBK = Edit to Block
-      cells: ['D2'],
-      test: ([d2]) => !ErrorValues.includes(d2),
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditExtra
     }
   ];
@@ -134,9 +134,9 @@ function doEditBasic(SheetName) {
   }
 
   const Edit = getConfigValue(cfg.editKey);
-  const vals = cfg.cells.map(a1 => sheet_sr.getRange(a1).getValue());
+  const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
 
-  if (cfg.test(vals)) {
+  if (cfg.conditions(vals)) {
     cfg.handler(sheet_sr, SheetName, Edit);
   } else {
     LogDebug(`ERROR EDIT: ${SheetName} - Conditions arent met on doEditBasic`, 'MIN');

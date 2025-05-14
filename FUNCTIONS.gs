@@ -229,6 +229,7 @@ function doSettings() {
         if ( Other == 'SHARES')          { doSaveShares(); }
         if ( Other == 'RIGHTS')          { doRestoreRight(); }
         if ( Other == 'ZEROS OPTIONS')   { doDeleteZeroOptions(); }
+        if ( Other == 'NORM FUND')       { normalizeFund(); }
       }
     }
   }
@@ -267,13 +268,11 @@ function copypasteSheets() {
     try {
       const range = sheet.getDataRange();
       range.copyTo(range, { contentsOnly: true });
-      LogDebug(`copypasteSheets: Cleared formulas on "${Name}"`, 'MID');
+      LogDebug(`copypasteSheets: Cleared formulas on "${Name}"`, 'MIN');
     } catch (e) {
-      LogDebug(`copypasteSheets: Error copying on "${Name}": ${e.message}`, 'MAX');
+      LogDebug(`copypasteSheets: Error copying on "${Name}": ${e.message}`, 'MIN');
     }
   }
-
-  LogDebug('copypasteSheets: Finished formula clear', 'MIN');
 }
 
 function doDeleteSheets() {
@@ -299,13 +298,11 @@ function doDeleteSheets() {
 
     try {
       ss.deleteSheet(sheet);
-      LogDebug(`doDeleteSheets: Deleted sheet "${Name}"`, 'MID');
+      LogDebug(`doDeleteSheets: Deleted sheet "${Name}"`, 'MIN');
     } catch (error) {
-      LogDebug(`doDeleteSheets: Error deleting "${Name}": ${error.message}`, 'MID');
+      LogDebug(`doDeleteSheets: Error deleting "${Name}": ${error.message}`, 'MIN');
     }
   }
-
-  LogDebug('doDeleteSheets: Finished deleting obsolete sheets', 'MIN');
 }
 
 function moveSpreadsheetToFolder(folderName) {
@@ -352,17 +349,14 @@ function revokeOwnAccess() {
 
   // Check current authorization info
   const authInfo = ScriptApp.getAuthorizationInfo(ScriptApp.AuthMode.FULL);
-  LogDebug(`revokeOwnAccess: authInfo loaded`, 'MID');
   LogDebug(`revokeOwnAccess: Status = ${authInfo.getAuthorizationStatus()}`, 'MAX');
 
   if (authInfo) {
     ScriptApp.invalidateAuth();
-    LogDebug('revokeOwnAccess: Script access revoked successfully.', 'MID');
+    LogDebug('revokeOwnAccess: Script access revoked successfully.', 'MIN');
   } else {
-    LogDebug('revokeOwnAccess: Script is not authorized or access already revoked.', 'MID');
+    LogDebug('revokeOwnAccess: Script is not authorized or access already revoked.', 'MIN');
   }
-
-  LogDebug('revokeOwnAccess: Finished', 'MIN');
 }
 
 function moveSpreadsheetToBACKUP() {
@@ -384,8 +378,6 @@ function doDeleteSpreadsheet() {
   } catch (error) {
     LogDebug(`doDeleteSpreadsheet: Error deleting spreadsheet: ${error}`, 'MIN');
   }
-
-  LogDebug('doDeleteSpreadsheet: Finished permanent deletion', 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////Name/////////////////////////////////////////////////////////////////////
@@ -480,10 +472,9 @@ function doDeleteZeroOptions() {
         sheet.deleteRow(row);
       }
     } catch (err) {
-      LogDebug(`[doDeleteZeroOptions] Error on row ${row}: ${err}`, "MID");
+      LogDebug(`[doDeleteZeroOptions] Error on row ${row}: ${err}`, "MIN");
     }
   }
-  LogDebug(`[doDeleteZeroOptions] Completed scanning rows 5–${lastRow}.`, "MIN");
 }
 
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
@@ -503,6 +494,8 @@ function tryCleanOpcaoExportRow(sheet_tr, TKT) {
 }
 
 function normalizeFund() {
+  LogDebug(`NORMALIZE: values on Sheet ${FUND}`, "MIN");
+
   const sheet = fetchSheetByName(FUND);
   if (!sheet) return;
 
@@ -533,41 +526,57 @@ function normalizeFund() {
   sheet.getRange(rowStart, colStart, Block.length, Block[0].length)
        .setValues(Block);
 
-  Logger.log(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`);
+  LogDebug(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`, "MIN");
 }
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
 
 function reverseColumns() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const SheetName = sheet.getName();
+  LogDebug(`reverseColumns: Starting on sheet "${SheetName}"`, 'MIN');
+
   const active = fetchSheetByName(SheetName);
-  if (!active) return;
+  if (!active) {
+    LogDebug(`reverseColumns: Sheet "${SheetName}" not found`, 'MIN');
+    return;
+  }
 
-  const LR = sheet.getLastRow();
-  const LC = sheet.getLastColumn();
-  const Range = active.getRange(1, 4, LR, LC - 3);
+  const LR = active.getLastRow();
+  const LC = active.getLastColumn();
+  const Range = active.getRange(1, 4, LR, LC - 3);  // cols D→last
+  LogDebug(`reverseColumns: Range = ${Range.getA1Notation()}`, 'MAX');
+
   const Values = Range.getValues();
+  LogDebug(`reverseColumns: Original values snapshot: ${JSON.stringify(Values)}`, 'MAX');
 
-  const ReversedValues = Values.map(row => row.reverse());
-  Range.setValues(ReversedValues);
-  Logger.log(`Columns reversed in sheet: ${SheetName}`);
+  const reversed = Values.map(row => row.reverse());
+  Range.setValues(reversed);
+  LogDebug(`reverseColumns: Columns reversed for ${Values.length} rows`, 'MIN');
 }
 
 function reverseRows() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const SheetName = sheet.getName();
+  LogDebug(`reverseRows: Starting on sheet "${SheetName}"`, 'MIN');
+
   const active = fetchSheetByName(SheetName);
-  if (!active) return;
+  if (!active) {
+    LogDebug(`reverseRows: Sheet "${SheetName}" not found`, 'MIN');
+    return;
+  }
 
-  const LR = sheet.getLastRow();
-  const LC = sheet.getLastColumn();
-  const Range = active.getRange(5, 1, LR - 4, LC);
+  const LR = active.getLastRow();
+  const LC = active.getLastColumn();
+  const Range = active.getRange(5, 1, LR - 4, LC);  // rows 5→last
+  LogDebug(`reverseRows: Range = ${Range.getA1Notation()}`, 'MAX');
+
   const Values = Range.getValues();
+  LogDebug(`reverseRows: Original values snapshot: ${JSON.stringify(Values)}`, 'MAX');
 
-  Values.reverse();
-  Range.setValues(Values);
-  Logger.log(`Rows reversed in sheet: ${SheetName}`);
+  const reversed = Values.reverse();
+  Range.setValues(reversed);
+  LogDebug(`reverseRows: Rows reversed (count = ${Values.length})`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////RESTORE Functions/////////////////////////////////////////////////////////////////////
