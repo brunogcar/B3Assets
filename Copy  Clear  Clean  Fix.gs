@@ -24,7 +24,7 @@ function doCopyFinancial(SheetName) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
 
   if (!sheet) {
-    LogDebug(`ERROR COPY: ${SheetName} Does not exist`, 'MIN');
+    LogDebug(`❌ ERROR COPY: ${SheetName} Does not exist`, 'MIN');
     return;
   }
 
@@ -219,7 +219,7 @@ function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
     sheet.getRange(RangeA1).setValues(Values);
   });
 
-  LogDebug(`SUCCESS FIX: ${SheetName}`, 'MIN');
+  LogDebug(`✅ SUCCESS FIX: ${SheetName}`, 'MIN');
 }
 
 // Generic split-processor has been defined separately as processSplitBlocks

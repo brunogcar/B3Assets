@@ -61,7 +61,7 @@ function doImport_SWING_12_to_SWING_4()
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) {
-    LogDebug(`ERROR IMPORT: Source ID is empty.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
     return;
   }
 
@@ -72,7 +72,7 @@ function doImport_SWING_12_to_SWING_4()
 
   // Check if the source sheet exists
   if (!sheet_sr) {
-    LogDebug(`ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.`, 'MIN');
     return;
   }
 

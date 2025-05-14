@@ -8,12 +8,12 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   const A5 = sheet_sr.getRange("A5").getValue();
 
   if (Edit !== "TRUE") {
-    LogDebug(`ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     return;
   }
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`ERROR EDIT: ${SheetName} - ErrorValues in A2: processEditGeneric`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2: processEditGeneric`, 'MIN');
     return;
   }
 
@@ -33,13 +33,13 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
     sheet_sr.getRange(5, 1, 1, columnCount).setValues(Data_Header);
     sheet_sr.getRange(1, 1, 1, columnCount).setValues(Data_Header);
 
-    LogDebug(`SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS EDIT. Sheet: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
     return;
   }
 
   // Final fallback
-  LogDebug(`ERROR EDIT: ${SheetName} - Conditions aren't met: processEditGeneric`, 'MIN');
+  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions aren't met: processEditGeneric`, 'MIN');
 }
 
 
@@ -71,7 +71,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   const cfg       = Object.values(financialMap)
                             .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`No financialMap entry: ${SheetName}`, 'MIN');
+    LogDebug(`🚩 No financialMap entry: ${SheetName}`, 'MIN');
     return;
   }
 
@@ -82,7 +82,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   if (New_sr.valueOf() === New_tr.valueOf()) {
     doEdit = true;
   } else {
-    LogDebug(`Skipping edit: dates differ (SR:${New_sr} vs TR:${New_tr})`, 'MIN');
+    LogDebug(`⚠️ WARNING EDIT: Skipping: dates differ (SR:${New_sr} vs TR:${New_tr})`, 'MIN');
     return;
   }
 
@@ -102,7 +102,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     });
 
     if (updates.length === 0) {
-      LogDebug(`No edits detected: ${SheetName}`, 'MID');
+      LogDebug(`🏷️ No edits detected: ${SheetName}`, 'MID');
       return;
     }
 

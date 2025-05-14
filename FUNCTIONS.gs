@@ -59,7 +59,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     }
   }
   LogDebug(
-      `💾 `
+      `💾 ` +
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
     , "MAX");

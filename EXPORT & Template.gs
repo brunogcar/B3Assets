@@ -48,7 +48,7 @@ function doExportBasic(SheetName) {
   const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
 
   if (Class !== 'STOCK') {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}): doExportBasic`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}): doExportBasic`, 'MIN');
     return;
   }
 
@@ -102,7 +102,7 @@ function doExportBasic(SheetName) {
 
   const cfg = exportTable.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Sheet name not recognized in doExportBasic`, 'MIN');
     return;
   }
 
@@ -220,7 +220,7 @@ function doExportExtra(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(target_sh[SheetName] || SheetName);           // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
   }
   processExport(TKT, Data, sheet_tr, SheetName);
@@ -244,7 +244,7 @@ function doExportFinancial(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
   }
 
@@ -254,7 +254,7 @@ function doExportFinancial(SheetName) {
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
   if (Export !== "TRUE") {
-    LogDebug(`ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
     return;
   }
 
@@ -339,7 +339,7 @@ function doExportFinancial(SheetName) {
     break;
 
     default:
-      LogDebug(`ERROR EXPORT: ${SheetName} - Invalid sheet name`, 'MIN');
+      LogDebug(`❌ ERROR EXPORT: ${SheetName} - Invalid sheet name`, 'MIN');
       return;
   }
 processExport(TKT, Data, sheet_tr, SheetName);
@@ -385,7 +385,7 @@ function doExportInfo() {
   var sheet_tr = ss_tr.getSheetByName('Relação');                   // Target sheet
 
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: 'Relação' not found in spreadsheet ID ${Data_Id}`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: 'Relação' not found in spreadsheet ID ${Data_Id}`, 'MIN');
     return;
   }
 
@@ -396,7 +396,7 @@ function doExportInfo() {
 
   setSheetID();                                                     // Mark as exported
 
-  LogDebug(`SUCCESS EXPORT. Sheet: ${SheetName}.`, 'MIN');
+  LogDebug(`✅ SUCCESS EXPORT. Sheet: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
@@ -442,7 +442,7 @@ function doExportProventos() {
   var Q = sheet_pv.getRange("P76").getValue();                      // TOTAL Proventos
 
   if (ErrorValues.includes(B) || ErrorValues.includes(ISIN)) {
-    LogDebug(`ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT PROVENTOS: ${SheetName} - Date / ISIN error or missing`, 'MIN');
     return;
   }
 
@@ -461,14 +461,14 @@ function doExportProventos() {
   var sheet_tr = ss_tr.getSheetByName('Poventos');
 
   if (!sheet_tr) {
-    LogDebug(`ERROR EXPORT: 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
     return;
   }
 
   var LR = sheet_tr.getLastRow();
 
   if (Class !== 'STOCK') {
-    LogDebug(`ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class}: doExportProventos`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Class != STOCK - ${Class}: doExportProventos`, 'MIN');
     return;
   }
 
@@ -509,14 +509,14 @@ function processExport(TKT, Data, sheet_tr, SheetName) {
   if (Search) {
     // Update adjacent columns with Data
     Search.offset(0, 1, 1, Data[0].length).setValues(Data);
-    LogDebug(`SUCCESS EXPORT. Data for ${TKT} Updated: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS EXPORT. Data for ${TKT} Updated: ${SheetName}.`, 'MIN');
   } else {
     // Ticker not found; add a new row with the ticker in column A...
     sheet_tr.getRange(LR + 1, 1, 1, 1).setValue(TKT);
-    LogDebug(`SUCCESS EXPORT. Ticker: ${TKT} Added: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS EXPORT. Ticker: ${TKT} Added: ${SheetName}.`, 'MIN');
     // ...and then write Data to the adjacent columns.
     sheet_tr.getRange(LR + 1, 2, 1, Data[0].length).setValues(Data);
-    LogDebug(`SUCCESS EXPORT. Data for ${TKT} Exported: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS EXPORT. Data for ${TKT} Exported: ${SheetName}.`, 'MIN');
   }
 }
 

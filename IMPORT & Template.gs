@@ -10,7 +10,7 @@ function Import(){
 
   const Source_Id = getConfigValue(SIR, 'Config');                               // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
     return;
   }
 
@@ -99,7 +99,7 @@ function doImportProv(ProvName){
   LogDebug(`IMPORT: ${ProvName}`, 'MIN');
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) { LogDebug("ERROR IMPORT: Source ID is empty.", 'MIN'); return; }
+  if (!Source_Id) { LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN'); return; }
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
   const sheet_tr = fetchSheetByName('Prov');
   if (!sheet_tr) return;
@@ -113,11 +113,11 @@ function doImportProv(ProvName){
       var Data = sheet_sr.getRange(PRV).getValues();                                  // PRV = Provento Range
       sheet_tr.getRange(PRV).setValues(Data);
 
-      LogDebug(`SUCCESS IMPORT: ${ProvName}.`, 'MIN');
+      LogDebug(`✅ SUCCESS IMPORT: ${ProvName}.`, 'MIN');
     }
     else
     {
-      LogDebug(`ERROR IMPORT: ${ProvName} - B3 != Proventos: doImportProv`, 'MIN');
+      LogDebug(`❌ ERROR IMPORT: ${ProvName} - B3 != Proventos: doImportProv`, 'MIN');
     }
   }
 }
@@ -149,7 +149,7 @@ function update_form() {
 function import_config() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
     return;
   }
 
@@ -168,7 +168,7 @@ function import_config() {
 function doImportShares() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
   if (!Source_Id) {
-    LogDebug("ERROR IMPORT: Source ID is empty.", 'MIN');
+    LogDebug("❌ ERROR IMPORT: Source ID is empty.", 'MIN');
     return;
     }
 
@@ -189,9 +189,9 @@ function doImportShares() {
   }
   else
   {
-    LogDebug(`ERROR IMPORT: ${SheetName} - ErrorValues - L1=${SheetName} or L2=${SheetName}: doImportShares`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L1=${SheetName} or L2=${SheetName}: doImportShares`, 'MIN');
   }
-  LogDebug(`SUCCESS IMPORT: Shares and FF`, 'MIN');
+  LogDebug(`✅ SUCCESS IMPORT: Shares and FF`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////BASIC/////////////////////////////////////////////////////////////////////
@@ -232,37 +232,37 @@ function doImportBasic(SheetName) {
 
   const Source_Id = getConfigValue(SIR, 'Config');
   if (!Source_Id) {
-    LogDebug('ERROR IMPORT: Source ID. Aborting.', 'MIN');
+    LogDebug('❌ ERROR IMPORT: Source ID. Aborting.', 'MIN');
     return;
   }
 
   const cfg = basicImportMap[SheetName];
   if (!cfg) {
-    LogDebug(`ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
     return;
   }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);
   if (!sheet_sr) {
-    LogDebug(`ERROR IMPORT: Source sheet ${SheetName} not found in ${Source_Id}.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Source sheet ${SheetName} not found in ${Source_Id}.`, 'MIN');
     return;
   }
 
   const sheet_tr = fetchSheetByName(SheetName);
   if (!sheet_tr) {
-    LogDebug(`ERROR IMPORT: Target sheet ${SheetName} not found.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Target sheet ${SheetName} not found.`, 'MIN');
     return;
   }
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
     return;
   }
 
   const Check = sheet_sr.getRange("A5").getValue();
   if (Check === "") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - A5 is blank: doImportBasic.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - A5 is blank: doImportBasic.`, 'MIN');
     return;
   }
 
@@ -277,7 +277,7 @@ function doImportBasic(SheetName) {
   const Data_Header = sheet_sr.getRange(1, 1, 1, LC).getValues();
   sheet_tr.getRange(1, 1, 1, LC).setValues(Data_Header);
 
-  LogDebug(`SUCCESS IMPORT: ${SheetName}.`, 'MIN');
+  LogDebug(`✅ SUCCESS IMPORT: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////FINANCIAL////////////////////////////////////////////////////////////////////
@@ -302,37 +302,37 @@ function doImportFinancial(SheetName) {
 
   const Source_Id  = getConfigValue(SIR, 'Config');
   if (!Source_Id) {
-    LogDebug("ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.", 'MIN');
+    LogDebug("❌ ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.", 'MIN');
     return;
   }
 
   const cfg = financialImportMap[SheetName];
   if (!cfg) {
-    LogDebug(`ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: No import schema defined for "${SheetName}".`, 'MIN');
     return;
   }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);
   if (!sheet_sr) {
-    LogDebug(`ERROR IMPORT: "${SheetName}" not found in source ${Source_Id}.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: "${SheetName}" not found in source ${Source_Id}.`, 'MIN');
     return;
   }
 
   const sheet_tr = fetchSheetByName(SheetName);
   if (!sheet_tr) {
-    LogDebug(`ERROR IMPORT: Target sheet "${SheetName}" not found.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: Target sheet "${SheetName}" not found.`, 'MIN');
     return;
   }
 
   const Import = getConfigValue(cfg.flag, 'Config');
   if (Import !== "TRUE") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - IMPORT is set to FALSE.`, 'MIN');
     return;
   }
 
   const Check = sheet_sr.getRange(cfg.checkCell).getValue();
   if (Check === "") {
-    LogDebug(`ERROR IMPORT: ${SheetName} - ${cfg.checkCell} is blank: doImportFinancial.`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ${cfg.checkCell} is blank: doImportFinancial.`, 'MIN');
     return;
   }
 
@@ -346,7 +346,7 @@ function doImportFinancial(SheetName) {
   sheet_tr.getRange(1, cfg.dataOffset.colStart, LR, width)
           .setValues(data);
 
-  LogDebug(`SUCCESS IMPORT: ${SheetName}.`, 'MIN');
+  LogDebug(`✅ SUCCESS IMPORT: ${SheetName}.`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT TEMPLATE/////////////////////////////////////////////////////////////////////

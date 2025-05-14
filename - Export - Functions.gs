@@ -22,10 +22,10 @@ function setSheetID() {
   const ss_tr    = SpreadsheetApp.openById(Data_Id);
   const sheet_tr = ss_tr.getSheetByName('Relação');
   if (!sheet_tr) {
-    LogDebug('Target sheet not found: Relação', 'MIN');
+    LogDebug('🔎Target sheet not found: Relação', 'MIN');
     return;
   }
-  LogDebug('Found Relação sheet, searching for ticket...', 'MIN');
+  LogDebug('🔍 Found Relação sheet, searching for ticket...', 'MIN');
 
   // 4) Find your ticket in column A
   const search = sheet_tr
@@ -34,10 +34,10 @@ function setSheetID() {
     .findNext();
 
   if (!search) {
-    LogDebug(`Ticket "${TKT}" not found in Relação sheet`, 'MIN');
+    LogDebug(`🔎Ticket "${TKT}" not found in Relação sheet`, 'MIN');
     return;
   }
-  LogDebug(`Ticket "${TKT}" found at row ${search.getRow()}`, 'MIN');
+  LogDebug(`🔍Ticket "${TKT}" found at row ${search.getRow()}`, 'MIN');
 
   // 5) Check your combined condition
   if (bgcolor == colour) {
@@ -50,9 +50,9 @@ function setSheetID() {
     LogDebug('Conditions met: EXP is TRUE and SHI is not TRUE — setting Sheet ID', 'MIN');
     search.offset(0, 11).setValue(Sheet_Id);
     search.offset(0, 12).setValue(SNAME(3));
-    LogDebug(`Sheet ID ${Sheet_Id} written to Relação!`, 'MIN');
+    LogDebug(`📝 Sheet ID ${Sheet_Id} written to Relação!`, 'MIN');
   } else {
-    LogDebug(`Skipping write: EXP="${EXP}", SHI="${SHI}" — need EXP=="TRUE" && SHI!="TRUE"`, 'MIN');
+    LogDebug(`🖋️ Skipping write: EXP="${EXP}", SHI="${SHI}" — need EXP=="TRUE" && SHI!="TRUE"`, 'MIN');
   }
 }
 
@@ -85,7 +85,7 @@ function doClearSheetID() {
   {
     search.offset(0, 11, 1, 2).clearContent();
 
-    LogDebug('Sheet ID Cleared', 'MIN');
+    LogDebug('🧽 Sheet ID Cleared', 'MIN');
   }
 };
 

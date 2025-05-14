@@ -98,7 +98,7 @@ function doSaveBasic(SheetName) {
 
   const cfg = saveTable.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`ERROR SAVE: ${SheetName} - No entry in saveTable: doSaveBasic`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in saveTable: doSaveBasic`, 'MIN');
     return;
   }
 
@@ -109,7 +109,7 @@ function doSaveBasic(SheetName) {
   if (cfg.conditions(vals)) {
     cfg.handler(sheet_sr, SheetName, Save, Edit);
   } else {
-    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - Conditions arent met on doSaveBasic`, 'MIN');
   }
 }
 
@@ -211,13 +211,13 @@ function doSaveFinancial(SheetName) {
   const cfg = Object.values(financialMap)
                     .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`ERROR SAVE: ${SheetName} - No entry in financialMap: doSaveFinancial`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in financialMap: doSaveFinancial`, 'MIN');
     return;
   }
 
   const Save = getConfigValue(cfg.saveKey);
   if (Save !== "TRUE") {
-    LogDebug(`ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE on config is set to FALSE`, 'MIN');
     return;
   }
 
@@ -244,12 +244,12 @@ function doSaveFinancial(SheetName) {
     const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
     const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
     if (!valid) {
-      LogDebug(`ERROR SAVE: ${SheetName} - Checks failed: ${JSON.stringify(checkVals)}`, 'MID');
+      LogDebug(`❌ ERROR SAVE: ${SheetName} - Checks failed: ${JSON.stringify(checkVals)}`, 'MID');
       return;
     }
   }
   if (cfg.conditions && !cfg.conditions(sheet_sr)) {
-    LogDebug(`ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met on doSaveFinancial`, 'MIN');
     return;
   }
 
@@ -263,7 +263,7 @@ function doSaveFinancial(SheetName) {
     }
   }
   else {
-    LogDebug(`ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid on doSaveFinancial`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid on doSaveFinancial`, 'MIN');
     return;
   }
 }
@@ -330,9 +330,9 @@ function doSaveProv(Prov_Values) {
       targetRange.setValues(Data);
     }
 
-    LogDebug(`SUCCESS SAVE: ${Prov_Values.name}.`, 'MIN');
+    LogDebug(`✅ SUCCESS SAVE: ${Prov_Values.name}.`, 'MIN');
   } else {
-    LogDebug(`ERROR SAVE: ${Prov_Values.name}, ${Prov_Values.checkCell} != ${Prov_Values.expectedValue}`, 'MIN');
+    LogDebug(`❌ ERROR SAVE: ${Prov_Values.name}, ${Prov_Values.checkCell} != ${Prov_Values.expectedValue}`, 'MIN');
   }
 }
 
@@ -348,6 +348,8 @@ function doGetProventos() {
   const base64Params = Utilities.base64Encode(data);
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
 
+  LogDebug(`SAVE: Proventos`, 'MIN');
+
   LogDebug(`URL: ${url}`, 'MIN');
 
   let responseText;
@@ -356,12 +358,12 @@ function doGetProventos() {
     responseText = response.getContentText().trim();
     LogDebug(`API Response: ${responseText}`, 'MIN');
   } catch (error) {
-    LogDebug(`ERROR: Failed to fetch API response. ${error}`, 'MIN');
+    LogDebug(`❌ ERROR: Failed to fetch API response. ${error}`, 'MIN');
     return;
   }
 
   if (!responseText) {
-    LogDebug("ERROR: Empty response from API.", 'MIN');
+    LogDebug(`❌ ERROR: Empty response from API.`, 'MIN');
     return;
   }
 
@@ -369,12 +371,12 @@ function doGetProventos() {
   try {
     content = JSON.parse(responseText);
   } catch (error) {
-    LogDebug(`ERROR: Failed to parse JSON response. ${error}`, 'MIN');
+    LogDebug(`❌ ERROR: Failed to parse JSON response. ${error}`, 'MIN');
     return;
   }
 
   if (!content || !content[0]) {
-    LogDebug("ERROR: No data returned from API.", 'MIN');
+    LogDebug(`❌ ERROR: No data returned from API.`, 'MIN');
     return;
   }
 
@@ -425,7 +427,7 @@ function fillSection(
   // Blank slate: clear and title
   sheet.getRange(clearRange).clearContent();
   sheet.getRange(titleCell).setValue(titleText);
-  LogDebug(`${titleText}: Cleared ${clearRange} and set title`, 'MID');
+  LogDebug(`${titleText}: ℹ️ Cleared ${clearRange} and set title`, 'MID');
 
   // Prepare filtered rows
   const rows = items
@@ -433,7 +435,7 @@ function fillSection(
     .map(mapRow)
     .filter((row, idx) => {
       const ok = validateRow(items[idx], row);
-      if (!ok) LogDebug(`${titleText}: Skipping invalid row #${idx}`, 'MAX');
+      if (!ok) LogDebug(`${titleText}: ⚠️ Skipping invalid row #${idx}`, 'MAX');
       return ok;
     });
 
@@ -442,10 +444,10 @@ function fillSection(
     sheet.getRange(headerRange).setValues([headers]);
     LogDebug(`${titleText}: Wrote headers at ${headerRange}`, 'MID');
 
-    LogDebug(`${titleText}: Writing ${rows.length} rows`, 'MIN');
+    LogDebug(`${titleText}: 💾 Writing ${rows.length} rows`, 'MIN');
     sheet.getRange(startRow, colStart, rows.length, colCount).setValues(rows);
   } else {
-    LogDebug(`${titleText}: No valid rows — header not written`, 'MIN');
+    LogDebug(`${titleText}: ⚠️ No valid rows — header not written`, 'MIN');
   }
   return rows.length;
 }
@@ -538,6 +540,9 @@ function doGetCodeCVM() {
   const data = JSON.stringify({ issuingCompany: ticker, language });
   const base64Params = Utilities.base64Encode(data);
 
+
+  LogDebug(`GET Code CVM`, 'MIN');
+
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
   LogDebug(`URL: ${url}`, 'MIN');
 
@@ -545,25 +550,25 @@ function doGetCodeCVM() {
   try {
     const response = UrlFetchApp.fetch(url);
     responseText = response.getContentText().trim();
-    LogDebug(`API Response: ${responseText}`, 'MIN');
+    LogDebug(`API Response: ${responseText}`, 'MID');
   } catch (error) {
-    LogDebug(`ERROR: Failed to fetch API response. ${error}`, 'MIN');
+    LogDebug(`❌ ERROR: Failed to fetch API response. ${error}`, 'MIN');
     return;
   }
 
   if (!responseText) {
-    LogDebug("ERROR: Empty response from API.", 'MIN');
+    LogDebug(`❌ ERROR: Empty response from API.`, 'MIN');
   }
 
   let content;
   try {
     content = JSON.parse(responseText);
   } catch (error) {
-    LogDebug(`ERROR: Failed to parse JSON response. ${error}`, 'MIN');
+    LogDebug(`❌ ERROR: Failed to parse JSON response. ${error}`, 'MIN');
   }
 
   if (!content || !content[0]) {
-    LogDebug("ERROR: No data returned from API.", 'MIN');
+    LogDebug(`❌ ERROR: No data returned from API.`, 'MIN');
   }
 
   const codeCVM = content[0]?.codeCVM || 'N/A';
@@ -591,12 +596,12 @@ function doSaveShares() {
       const Data = sheet_sr.getRange("M1:M2").getValues();
       sheet_sr.getRange("L1:L2").setValues(Data);
 
-      LogDebug(`SUCCESS SAVE: Shares and FF`, 'MIN');
+      LogDebug(`✅ SUCCESS SAVE: Shares and FF`, 'MIN');
     } else {
-      LogDebug(`ERROR SAVE: Invalid values in M1/M2`, 'MIN');
+      LogDebug(`❌ ERROR SAVE: Invalid values in M1/M2`, 'MIN');
     }
   } catch (error) {
-    LogDebug(`ERROR in doSaveShares: ${error.message}`, 'MIN');
+    LogDebug(`❌ ERROR in doSaveShares: ${error.message}`, 'MIN');
   }
 }
 
