@@ -71,6 +71,14 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit) {
   processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportBasic);
 }
 
+/**
+ * Like processSaveBasic, but also trims the sheet for Swing.
+ */
+function processSaveSwing(sheet_sr, SheetName, Save, Edit) {
+  processSaveBasic(sheet_sr, SheetName, Save, Edit, doExportBasic);
+  doTrimSheet(SheetName);
+}
+
 function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
   processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportExtra);
 }

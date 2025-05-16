@@ -153,6 +153,26 @@
   const DBK = "V32"    // DBK = Edit to Block              // Tab: Config, Settings
   const DAF = "V34"    // DAF = Edit to After              // Tab: Config, Settings
 
+/////////////////////////////////////////////////////////////////////Hide/////////////////////////////////////////////////////////////////////
+
+  const HTR = "X4"     // HTR = Hide to Swing              // Tab: Config, Settings
+  const HOP = "X6"     // HOP = Hide to Option             // Tab: Config, Settings
+  const HBT = "X8"     // HBT = Hide to BTC                // Tab: Config, Settings
+  const HTE = "X10"    // HTE = Hide to Termo              // Tab: Config, Settings
+  const HFU = "X12"    // HFU = Hide to Fund               // Tab: Config, Settings
+
+  const HBL = "X15"    // HBL = Hide to BLC                // Tab: Config, Settings
+  const HDE = "X17"    // HDE = Hide to DRE                // Tab: Config, Settings
+  const HFL = "X19"    // HFL = Hide to FLC                // Tab: Config, Settings
+  const HDV = "X21"    // HDV = Hide to DVA                // Tab: Config, Settings
+
+  const HFT = "X24"    // HFT = Hide to Future             // Tab: Config, Settings
+  const HRT = "X26"    // HRT = Hide to Right              // Tab: Config, Settings
+  const HWT = "X28"    // HWT = Hide to Warrant            // Tab: Config, Settings
+  const HRC = "X30"    // HRC = Hide to Receipt            // Tab: Config, Settings
+  const HBK = "X32"    // HBK = Hide to Block              // Tab: Config, Settings
+  const HAF = "X34"    // HAF = Hide to After              // Tab: Config, Settings
+
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 
   const ACT = "B3"     // SET = Settings                   // Tab: Settings

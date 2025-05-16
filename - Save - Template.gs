@@ -17,7 +17,7 @@ function doSaveBasic(SheetName) {
         if (Class === 'STOCK')     return b2 != 0 && c2 > 0;
         return Class.match(/BDR|ETF|ADR/) && c2 > 0;
       },
-      handler: processSaveBasic
+      handler: processSaveSwing
     },
     {
       names: [OPCOES],

@@ -125,7 +125,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         return Value;  // short‑circuit if only pulling from Settings
       }
     } catch (e) {
-      LogDebug(`⚠️ Acronym ${Acronym} not found in Settings`, "MIN");
+      LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, "MIN");
     }
   }
 
@@ -137,7 +137,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         Value = null;
       }
     } catch (e) {
-      LogDebug(`⚠️ Acronym ${Acronym} not found in Config`, "MIN");
+      LogDebug(`⚠️ const ${Acronym} not found in Config: getConfigValue`, "MIN");
     }
   }
   return Value;
@@ -168,7 +168,6 @@ function setConfigValue(Acronym, value) {
     return false;
   }
 }
-
 
 /////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
 

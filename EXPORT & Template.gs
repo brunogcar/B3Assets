@@ -116,6 +116,14 @@ function doExportBasic(SheetName) {
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
   if (!sheet_tr) return;
 
+  const A2      = sheet_sr.getRange('A2').getValue();
+  const A5      = sheet_sr.getRange('A5').getValue();
+
+  if (ErrorValues.includes(A2) || A5 === '') {
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - A2 or A5 invalid (A2=${A2}, A5=${A5})`, 'MIN');
+    return;
+  }
+
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
