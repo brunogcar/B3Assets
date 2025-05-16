@@ -63,6 +63,14 @@ function doSaveBasic(SheetName) {
       handler: processSaveBasic
     },
     {
+      names: [FUTURE_1, FUTURE_2, FUTURE_3],
+      saveKey: SFT,
+      editKey: DFT,
+      checks: ['C2'],
+      conditions: ([c2]) => !ErrorValues.includes(c2),
+      handler: processSaveExtra
+    },
+    {
       names: [RIGHT_1, RIGHT_2],
       saveKey: SRT,
       editKey: DRT,
@@ -93,6 +101,14 @@ function doSaveBasic(SheetName) {
       checks: ['D2'],
       conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processSaveExtra
+    },
+    {
+      names: [AFTER],
+      saveKey: SAF,
+      editKey: DAF,
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
+      handler: processSaveBasic
     }
   ];
 

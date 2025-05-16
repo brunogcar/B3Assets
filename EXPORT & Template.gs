@@ -97,7 +97,13 @@ function doExportBasic(SheetName) {
       exportKey: EFU,                                                                   // EFU = Export to Fund
       checks: ['B2'],
       conditions: ([b2]) => !ErrorValues.includes(b2)
-    }
+    },
+    {
+      names: [AFTER],
+      exportKey: EAF,                                                                   // ETE = Export to Termo
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2)
+    },
   ];
 
   const cfg = exportMap.find(e => e.names.includes(SheetName));

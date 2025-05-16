@@ -74,7 +74,7 @@ function doImportBasics() {
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
     WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK
+    BLOCK, AFTER
   ];
   doImportGroup(SheetNames, doImportBasic, 'basic');
 }
@@ -229,6 +229,8 @@ const basicImportMap = {
   [WARRANT_13]: { flag: IWT },              // IWT = Import to WARRANT
 
   [BLOCK]:      { flag: IBK },              // IBK = Import to BLOCK
+
+  [AFTER]:      { flag: IAF },              // IBK = Import to BLOCK
 };
 
 function doImportBasic(SheetName) {

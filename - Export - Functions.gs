@@ -40,19 +40,12 @@ function setSheetID() {
   LogDebug(`🔍Ticket "${TKT}" found at row ${search.getRow()}`, 'MIN');
 
   // 5) Check your combined condition
-  const isMatch =
-    bgColor.toLowerCase().trim() === expectedBgColor.toLowerCase().trim() &&
-    fontColor.toLowerCase().trim() === expectedFontColor.toLowerCase().trim();
-
-  LogDebug(
-    `Match: ${
-       isMatch
-         ? '✅ Colors are correct'
-         : `❌ Expected BG="${expectedBgColor}", got BG="${bgColor}"; ` +
-         `Expected font="${expectedFontColor}", got font="${fontColor}"`
-    }`,
-    'MIN'
-  );
+  if (bgcolor == colour) {
+    LogDebug('✅ bgcolor matches expected colour', 'MIN');
+  } else {
+    LogDebug(`❌ bgcolor "${bgcolor}" does NOT match "${colour}"`, 'MIN');
+    return;  // Exit early if color doesn't match
+  }
 
   if (EXP == "TRUE" && SHI != "TRUE") {
     LogDebug('Conditions met: EXP is TRUE and SHI is not TRUE — setting Sheet ID', 'MIN');

@@ -28,6 +28,7 @@
   const WARRANT_12 = 'GAR_12';
   const WARRANT_13 = 'GAR_13';
   const BLOCK      = 'BLOCK';
+  const AFTER      = 'After';
 
   const BLC        = 'BLC';
   const Balanco    = 'Balanço';
@@ -90,6 +91,7 @@
   const EWT = "P28"    // EWT = Export to Warrant          // Tab: Config
   const ERC = "P30"    // ERC = Export to Receipt          // Tab: Config
   const EBK = "P32"    // EBK = Export to Block            // Tab: Config
+  const EAF = "P34"    // EAF = Export to After            // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Import/////////////////////////////////////////////////////////////////////
 
@@ -109,6 +111,7 @@
   const IWT = "R28"    // IWT = Import to Warrant          // Tab: Config, Settings
   const IRC = "R30"    // IRC = Import to Receipt          // Tab: Config, Settings
   const IBK = "R32"    // IBK = Import to Block            // Tab: Config, Settings
+  const IAF = "R34"    // IAF = Import to After            // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Save/////////////////////////////////////////////////////////////////////
 
@@ -128,6 +131,7 @@
   const SWT = "T28"    // SWT = Save to Warrant            // Tab: Config, Settings
   const SRC = "T30"    // SRC = Save to Receipt            // Tab: Config, Settings
   const SBK = "T32"    // SBK = Save to Block              // Tab: Config, Settings
+  const SAF = "T34"    // SAF = Save to After              // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Edit/////////////////////////////////////////////////////////////////////
 
@@ -147,6 +151,7 @@
   const DWT = "V28"    // DWT = Edit to Warrant            // Tab: Config, Settings
   const DRC = "V30"    // DRC = Edit to Receipt            // Tab: Config, Settings
   const DBK = "V32"    // DBK = Edit to Block              // Tab: Config, Settings
+  const DAF = "V34"    // DAF = Edit to After              // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
 

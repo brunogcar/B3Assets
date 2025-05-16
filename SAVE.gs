@@ -17,7 +17,7 @@ function doSaveAll() {
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
     WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK
+    BLOCK, AFTER
   ], doCheckDATA, doSaveBasic);
 
   doIsFormula();
@@ -57,7 +57,7 @@ function doSaveAllExtras() {
     RIGHT_1, RIGHT_2,
     RECEIPT_9, RECEIPT_10,
     WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK
+    BLOCK, AFTER
   ], doCheckDATA, doSaveBasic);
 
   SpreadsheetApp.flush();
@@ -112,7 +112,7 @@ function doSaveBasics() {
 /////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
 function doSaveExtras() {
-  const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK, AFTER];
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];

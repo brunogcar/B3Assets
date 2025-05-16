@@ -124,6 +124,13 @@ function doEditBasic(SheetName) {
       checks: ['D2'],
       conditions: ([d2]) => !ErrorValues.includes(d2),
       handler: processEditExtra
+    },
+      {
+      names: [AFTER],
+      editKey: DAF,                                          // DTE = Edit to Termo
+      checks: ['D2'],
+      conditions: ([d2]) => !ErrorValues.includes(d2),
+      handler: processEditBasic
     }
   ];
 
