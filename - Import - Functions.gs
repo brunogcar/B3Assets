@@ -18,10 +18,6 @@ function doAutorizeScript() {
 
 function checkAutorizeScript() {
   const sheet_co = fetchSheetByName('Config');
-  if (!sheet_co) {
-    LogDebug("Sheet 'Config' not found.", 'MIN');
-    return false;
-  }
 
   const cell = sheet_co.getRange("L2");
   const bgColor = cell.getBackground();                     // Get background color

@@ -2,7 +2,7 @@
 
 function getSheetID() {
   const sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
-  LogDebug(`Sheet ID not found: ${sheet_Id}`, 'MIN');
+  LogDebug(`Sheet ID: ${sheet_Id}`, 'MIN');
   return sheet_Id;
 };
 
@@ -12,8 +12,10 @@ function setSheetID() {
   const TKT     = getConfigValue(TKR, 'Config');   // TKR = Ticket Range
   const EXP     = getConfigValue(EXR, 'Config');   // EXR = Export
   const SHI     = getConfigValue(ICR, 'Config');   // ICR = Sheet ID
-  const bgcolor = getConfigValue(IDR, 'Config');   // IDR = ID Sheet
-  const colour  = '#d9ead3';
+
+  const sheet_co = fetchSheetByName('Config')
+  var bgcolor    = sheet_co.getRange(IDR).getBackground();
+  var colour     = '#d9ead3';
 
   // 2) Grab your active sheet’s ID
   const Sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();

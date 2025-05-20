@@ -602,21 +602,21 @@ function doSaveShares() {
   if (!sheet_sr) return;
 
   try {
-    let M1 = sheet_sr.getRange("M1").getValue();
-    let M2 = sheet_sr.getRange("M2").getValue();
+    let M5 = sheet_sr.getRange("M5").getValue();
+    let M6 = sheet_sr.getRange("M6").getValue();
 
     LogDebug(`SAVE: Shares and FF`, 'MIN');
 
-    if (!isNaN(M1) && !isNaN(M2) && !ErrorValues.includes(M1) && !ErrorValues.includes(M2)) {
-      M1 = Number(M1);
-      M2 = Number(M2);
+    if (!isNaN(M5) && !isNaN(M6) && !ErrorValues.includes(M5) && !ErrorValues.includes(M6)) {
+      M5 = Number(M5);
+      M6 = Number(M6);
 
-      const Data = sheet_sr.getRange("M1:M2").getValues();
+      const Data = sheet_sr.getRange("M5:M6").getValues();
       sheet_sr.getRange("L1:L2").setValues(Data);
 
       LogDebug(`✅ SUCCESS SAVE: Shares and FF`, 'MIN');
     } else {
-      LogDebug(`❌ ERROR SAVE: Invalid values in M1 ${M1} / M2 ${M2}`, 'MIN');
+      LogDebug(`❌ ERROR SAVE: Invalid values in M5 ${M5} / M6 ${M6}`, 'MIN');
     }
   } catch (error) {
     LogDebug(`❌ ERROR in doSaveShares: ${error.message}`, 'MIN');

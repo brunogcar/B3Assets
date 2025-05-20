@@ -38,12 +38,12 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   if (A2 > A1 || A2 > A5) {
     // Save header and body
+    const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
+    sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
+
     const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
     sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
     sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
-
-    const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
-    sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
 
     LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
@@ -75,7 +75,7 @@ function processSaveBasic(sheet_sr, SheetName, Save, Edit) {
  * Like processSaveBasic, but also trims the sheet for Swing.
  */
 function processSaveSwing(sheet_sr, SheetName, Save, Edit) {
-  processSaveBasic(sheet_sr, SheetName, Save, Edit, doExportBasic);
+  processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportBasic);
   doTrimSheet(SheetName);
 }
 
