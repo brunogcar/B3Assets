@@ -169,6 +169,111 @@ function setConfigValue(Acronym, value) {
   }
 }
 
+/////////////////////////////////////////////////////////////////////Check Dates/////////////////////////////////////////////////////////////////////
+
+/**
+ * Reads and validates the “New” and “Old” date values from both target (TR) and source (SR) sheets.
+ *
+ * @param {Sheet}      sheet_tr   The “target” sheet (ticker sheet).
+ * @param {Sheet}      sheet_sr   The “source” sheet (template sheet).
+ * @param {Object}     cfg        The financialMap entry for this sheet.
+ * @param {string}     SheetName  The sheet’s name (for logging).
+ * @param {string}     action     Either "SAVE" or "EDIT" (for clearer logging).
+ *
+ * @returns {{New_tr: Date, Old_tr: Date, New_sr: Date, Old_sr: Date}|null}
+ *   Returns the four parsed Date objects if all are valid.
+ *   If any is invalid, logs which one(s) and returns null.
+ */
+function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
+  // 1) Read TR dates
+  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
+  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
+  LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
+
+  const [New_tr, Old_tr] = doFinancialDateHelper([raw_New_tr, raw_Old_tr]);
+
+  // 2) Read SR dates (conditional old-date column)
+  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
+  const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
+  const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
+  LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
+  const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
+
+  // 3) Validate each Date using isValidDate()
+  const dateNames  = ['New_tr','Old_tr','New_sr','Old_sr'];
+  const dateValues = [New_tr,  Old_tr,  New_sr,  Old_sr];
+
+  const badDates = [];
+  for (let i = 0; i < dateValues.length; i++) {
+    if (!isValidDate(dateValues[i])) {
+      badDates.push(`${dateNames[i]}='${dateValues[i]}'`);
+    }
+  }
+  if (badDates.length) {
+    // Example log: “❌ ERROR SAVE: BalanceSheet2019 – Invalid date(s): New_sr='-', Old_tr='foo'”
+    LogDebug(
+      `❌ ERROR ${action}: ${SheetName} - Invalid date(s): ${badDates.join(', ')}`,
+      'MID'
+    );
+    return null;
+  }
+
+  // 4) Everything’s valid—return parsed Dates
+  return { New_tr, Old_tr, New_sr, Old_sr };
+}
+
+/**
+ * @param {Date|string} dateCandidate
+ * @returns {boolean} true if `dateCandidate` is a valid Date or parseable string
+ */
+function isValidDate(dateCandidate) {
+  // If it’s already a Date, check .valueOf()
+  if (dateCandidate instanceof Date) {
+    return !isNaN(dateCandidate.valueOf());
+  }
+  // If it’s a string, try to convert
+  const parsed = new Date(dateCandidate);
+  return !isNaN(parsed.valueOf());
+}
+
+/////////////////////////////////////////////////////////////////////Compare Columns/////////////////////////////////////////////////////////////////////
+
+/**
+ * Compares two single‐column ranges (same number of rows) and returns an array of differences.
+ *
+ * @param {Sheet}   sheetA    The “source” sheet (where updated values live).
+ * @param {Sheet}   sheetB    The “target” sheet (where current values live).
+ * @param {number}  colA      Column index (1-based) in sheetA.
+ * @param {number}  colB      Column index (1-based) in sheetB.
+ * @param {number}  lastRow   Number of rows to compare (starting at row 1).
+ *
+ * @return {Array<{row: number, value: any}>}
+ *   An array of objects, one per row where sheetA ≠ sheetB:
+ *   – `row`: the 1-based row index
+ *   – `value`: the sheetA value at that row/column
+ *
+ * Example:
+ *   //   If sheetA!A1:A3 = [10, 20, 30]
+ *   //   and sheetB!B1:B3 = [10, 25, 30]
+ *   //   getColumnDifferences(sheetA, sheetB, 1, 2, 3)
+ *   //   → [ {row: 2, value: 20} ]
+ */
+function getColumnDifferences(sheetA, sheetB, colA, colB, lastRow) {
+  // Read both columns in one go each, then flatten to 1-D arrays
+  const valuesA = sheetA.getRange(1, colA, lastRow, 1).getValues().flat();
+  const valuesB = sheetB.getRange(1, colB, lastRow, 1).getValues().flat();
+  const diffs   = [];
+
+  // Compare row by row
+  for (let i = 0; i < lastRow; i++) {
+    if (valuesA[i] !== valuesB[i]) {
+      diffs.push({ row: i + 1, value: valuesA[i] });
+    }
+  }
+
+  return diffs;
+}
+
 /////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
 
 function arraysAreEqual(arr1, arr2) {

@@ -108,8 +108,8 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     return;
   }
 
-  const LR        = sheet_sr.getLastRow();
-  const LC        = cfg.recurse ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
+  const LR = sheet_sr.getLastRow();
+  const LC = cfg.recurse ? sheet_tr.getLastColumn() : sheet_sr.getLastColumn();
 
   let doSave = false;
   let doEdit = false;
@@ -155,11 +155,9 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
 
   // 3) EDIT branch
   if (doEdit) {
-    const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
-    const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
-    const src = edit_sr.getValues().flat();
-    const trg = edit_tr.getValues().flat();
-    if (src.some((v,i) => v !== trg[i])) {
+    // Compare the two columns in one shot:
+    const diffs = getColumnDifferences(sheet_sr, sheet_tr, cfg.col_src, cfg.col_trg, LR);
+    if (diffs.length) {
       LogDebug(`🏷️ Detected edits: ${SheetName}`, 'MID');
       doEditFinancial(SheetName);
     } else {

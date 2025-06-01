@@ -177,17 +177,12 @@ function doEditFinancial(SheetName) {
     return;
   }
 
-  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
-  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
-  LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
-  const [New_tr, Old_tr] = doFinancialDateHelper([raw_New_tr, raw_Old_tr]);
-
-  // — Read SR dates (with conditional old‐date column) —
-  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
-  const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
-  const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
-  LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
-  const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
+  // ─── Read & validate dates via helper ───────────────────────────
+  const dates = extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, 'EDIT');
+  if (!dates) {
+    return;
+  }
+  const { New_tr, Old_tr, New_sr, Old_sr } = dates;
 
   LogDebug(`[${SheetName}] ⏳ EDIT DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
 
@@ -197,9 +192,7 @@ function doEditFinancial(SheetName) {
     return;
   }
 
-  const validNewDate = New_sr.valueOf() !== "-" && New_sr.valueOf() !== "";
-
-  if (validNewDate) {
+  if (isValidDate(New_sr)) {
   processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
     // Recurse if needed
     if (cfg.recurse) {

@@ -87,19 +87,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   }
 
   if (doEdit) {
-    const edit_sr = sheet_sr.getRange(1, cfg.col_src, LR, 1);
-    const edit_tr = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
-
-    const values_sr = edit_sr.getValues();
-    const values_tr = edit_tr.getValues();
-
-    const updates = [];
-    values_sr.forEach((row, i) => {
-      const vSr = row[0], vTr = values_tr[i][0];
-      if (vSr !== vTr) {
-        updates.push({ row: i+1, value: vSr });
-      }
-    });
+    const updates = getColumnDifferences(sheet_sr, sheet_tr, cfg.col_src, cfg.col_trg, LR);
 
     if (updates.length === 0) {
       LogDebug(`🏷️ No edits detected: ${SheetName}`, 'MID');
@@ -110,7 +98,8 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     updates.forEach(u => {
       sheet_tr.getRange(u.row, cfg.col_trg).setValue(u.value);
     });
-    LogDebug(`Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
+    LogDebug(`🔄 Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
+
     if (cfg.recurse) {
       doExportFinancial(SheetName);
     }
