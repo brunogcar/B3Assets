@@ -2,9 +2,9 @@
 /////////////////////////////////////////////////////////////////////IMPORT/////////////////////////////////////////////////////////////////////
 
 function Import(){
-  // Check if L2 has the expected colors
+  // Check if L6 has the expected colors
   if (!checkAutorizeScript()) {
-    LogDebug("Import aborted: L2 does not have the correct background and font colors.", 'MIN');
+    LogDebug("Import aborted: L6 does not have the correct background and font colors.", 'MIN');
     return;
   }
 
@@ -177,8 +177,8 @@ function doImportShares() {
     }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
-    var L1 = sheet_sr.getRange("L1").getValue();
-    var L2 = sheet_sr.getRange("L2").getValue();
+    var L5 = sheet_sr.getRange("L5").getValue();
+    var L6 = sheet_sr.getRange("L6").getValue();
   const sheet_tr = fetchSheetByName('DATA');                                          // Target Sheet
   if (!sheet_tr) return;
 
@@ -186,14 +186,14 @@ function doImportShares() {
 
   LogDebug(`IMPORT: Shares and FF`, 'MIN');
 
-  if (!ErrorValues.includes(L1) && !ErrorValues.includes(L2))
+  if (!ErrorValues.includes(L5) && !ErrorValues.includes(L6))
   {
-    var Data = sheet_sr.getRange("L1:L2").getValues();
-    sheet_tr.getRange("L1:L2").setValues(Data);
+    var Data = sheet_sr.getRange("L5:L6").getValues();
+    sheet_tr.getRange("L5:L6").setValues(Data);
   }
   else
   {
-    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L1=${L1} or L2=${L2}: doImportShares`, 'MIN');
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L5=${L5} or L6=${L6}: doImportShares`, 'MIN');
   }
   LogDebug(`✅ SUCCESS IMPORT: Shares and FF`, 'MIN');
 }

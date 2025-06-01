@@ -36,7 +36,19 @@ function onOpen()
       .addItem('Save Future',    'menuSaveFuture')
       .addItem('Save Fund',      'menuSaveFund')
       .addSeparator()
-      .addItem('Save Balanço (BLC - DRE - FLC - DVA)','doSaveFinancials')
+      .addItem('Save Extra (RIGH - RECEIPT - WARRANT - BLOCK - After)', 'doSaveExtras')
+      .addSeparator()
+      .addItem('Save RIGHT_1',     'menuSaveDRT_1')
+      .addItem('Save RIGHT_2',     'menuSaveDRT_2')
+      .addItem('Save RECEIPT_9',   'menuSaveRCB_9')
+      .addItem('Save RECEIPT_10',  'menuSaveRCB_10')
+      .addItem('Save WARRANT_11',  'menuSaveGAR_11')
+      .addItem('Save WARRANT_12',  'menuSaveGAR_12')
+      .addItem('Save WARRANT_13',  'menuSaveGAR_13')
+      .addItem('Save BLOCK',       'menuSaveBLOCK')
+      .addItem('Save After',       'menuSaveAFTER')
+      .addSeparator()
+      .addItem('Save Financials (BLC - DRE - FLC - DVA)','doSaveFinancials')
       .addSeparator()
       .addSubMenu
       (ui.createMenu('BLC')
@@ -283,6 +295,16 @@ function menuSaveBTC()        { doSaveBasic(BTC);}
 function menuSaveTermo()      { doSaveBasic(TERMO);}
 function menuSaveFuture()     { doSaveBasic(FUTURE);}
 function menuSaveFund()       { doSaveBasic(FUND);}
+
+function menuSaveDRT_1()      { doSaveBasic(RIGHT_1);}
+function menuSaveDRT_2()      { doSaveBasic(RIGHT_2);}
+function menuSaveRCB_9()      { doSaveBasic(RECEIPT_9);}
+function menuSaveRCB_10()     { doSaveBasic(RECEIPT_10);}
+function menuSaveGAR_11()     { doSaveBasic(WARRANT_11);}
+function menuSaveGAR_12()     { doSaveBasic(WARRANT_12);}
+function menuSaveGAR_13()     { doSaveBasic(WARRANT_13);}
+function menuSaveBLOCK()      { doSaveBasic(BLOCK);}
+function menuSaveAFTER()      { doSaveBasic(AFTER);}
 
 function menuSaveBLC()        { doSaveFinancial(BLC);}
 function menuSaveBalanco()    { doSaveFinancial(Balanco);}

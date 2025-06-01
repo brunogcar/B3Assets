@@ -23,7 +23,7 @@ function doExportBasics() {
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doExportExtras() {
-  const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK, AFTER];
   doExportGroup(SheetNames, doExportExtra, 'extra');
 }
 
@@ -128,7 +128,7 @@ function doExportBasic(SheetName) {
   if (!cfg.conditions(vals)) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
 
-    if (SheetName === OPCOES) {
+    if (SheetName === OPCOES && [1, 16].includes(new Date().getDate())) {
      tryCleanOpcaoExportRow(sheet_tr, TKT);
     }
     return;
