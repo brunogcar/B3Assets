@@ -217,6 +217,7 @@ function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
     );
     return null;
   }
+  LogDebug(`[${SheetName}] ⏳ ${action} DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
 
   // 4) Everything’s valid—return parsed Dates
   return { New_tr, Old_tr, New_sr, Old_sr };

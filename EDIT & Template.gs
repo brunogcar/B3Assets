@@ -150,8 +150,6 @@ function doEditBasic(SheetName) {
   }
 }
 
-
-
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doEditFinancial(SheetName) {
@@ -183,8 +181,6 @@ function doEditFinancial(SheetName) {
     return;
   }
   const { New_tr, Old_tr, New_sr, Old_sr } = dates;
-
-  LogDebug(`[${SheetName}] ⏳ EDIT DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
 
   // Row-specific conditions on source template
   if (cfg.conditions && !cfg.conditions(sheet_sr)) {

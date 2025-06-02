@@ -253,8 +253,6 @@ function doSaveFinancial(SheetName) {
   // Destructure the validated Date objects
   const { New_tr, Old_tr, New_sr, Old_sr } = dates;
 
-  LogDebug(`[${SheetName}] ⏳ SAVE DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
-
   if (cfg.checks) {
     const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
     const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
@@ -607,7 +605,7 @@ function doSaveShares() {
       M6 = Number(M6);
 
       const Data = sheet_sr.getRange("M5:M6").getValues();
-      sheet_sr.getRange("L1:L2").setValues(Data);
+      sheet_sr.getRange("L5:L6").setValues(Data);
 
       LogDebug(`✅ SUCCESS SAVE: Shares and FF`, 'MIN');
     } else {
