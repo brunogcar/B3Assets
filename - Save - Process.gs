@@ -127,7 +127,7 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   }
 
   if (!doSave && !doEdit) {
-    LogDebug(`SKIP Save and EDIT`, 'MID');
+    LogDebug(`⏩ SKIP ${SheetName}: no SAVE/EDIT condition met`, 'MID');
     return;
   }
 
@@ -158,10 +158,10 @@ function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     // Compare the two columns in one shot:
     const diffs = getColumnDifferences(sheet_sr, sheet_tr, cfg.col_src, cfg.col_trg, LR);
     if (diffs.length) {
-      LogDebug(`🏷️ Detected edits: ${SheetName}`, 'MID');
+      LogDebug(`✏️ EDIT Detected: ${SheetName}`, 'MID');
       doEditFinancial(SheetName);
     } else {
-      LogDebug(`🏷️ No edits needed: ${SheetName}`, 'MID');
+      LogDebug(`🏷️ EDIT not needed: ${SheetName}`, 'MID');
     }
   }
 }

@@ -82,7 +82,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
   if (New_sr.valueOf() === New_tr.valueOf()) {
     doEdit = true;
   } else {
-    LogDebug(`⚠️ WARNING EDIT: Skipping: dates differ (SR:${New_sr} vs TR:${New_tr})`, 'MIN');
+    LogDebug(`⚠️ EDIT WARNING: Skipping as dates differ (SR:${New_sr} vs TR:${New_tr})`, 'MIN');
     return;
   }
 
@@ -90,7 +90,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     const updates = getColumnDifferences(sheet_sr, sheet_tr, cfg.col_src, cfg.col_trg, LR);
 
     if (updates.length === 0) {
-      LogDebug(`🏷️ No edits detected: ${SheetName}`, 'MID');
+      LogDebug(`🏷️ EDIT not detected: ${SheetName}`, 'MID');
       return;
     }
 
@@ -98,7 +98,7 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
     updates.forEach(u => {
       sheet_tr.getRange(u.row, cfg.col_trg).setValue(u.value);
     });
-    LogDebug(`🔄 Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
+    LogDebug(`✏️ EDIT Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
 
     if (cfg.recurse) {
       doExportFinancial(SheetName);
