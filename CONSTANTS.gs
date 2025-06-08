@@ -2,7 +2,7 @@
 
   const ErrorValues = ['#NULL!', '#DIV/0!', '#VALUE!', '#REF!', '#NAME?', '#NUM!', '#N/A', '#ERROR!', 'Loading!', '', '-', null];
 
-/////////////////////////////////////////////////////////////////////sheetName/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////SheetNames/////////////////////////////////////////////////////////////////////
 
   const PROV       = 'Prov';
 
@@ -38,6 +38,14 @@
   const Fluxo      = 'Fluxo';
   const DVA        = 'DVA';
   const Valor      = 'Valor';
+
+  const SheetsBasic         = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUND];
+  const SheetsExtra         = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetsFinancial     = [BLC, DRE, FLC, DVA];
+  const SheetsFinancialFull = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
+
+  //“all the non-financial” sheets
+  const SheetsBasicAndExtra = SheetsBasic.concat(SheetsExtra);                //just in case if i want to replace [...SheetsBasic,...SheetsExtra]
 
 /////////////////////////////////////////////////////////////////////Ranges/////////////////////////////////////////////////////////////////////
 

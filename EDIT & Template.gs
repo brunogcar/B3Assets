@@ -17,21 +17,21 @@ function doEditGroup(SheetNames, editFunction, label) {
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doEditBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
+  const SheetNames = SheetsBasic;
   doEditGroup(SheetNames, doEditSheet, 'basic');
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doEditExtras() {
-  const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetNames = SheetsExtra;
   doEditGroup(SheetNames, doEditSheet, 'extra');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doEditFinancials() {
-  const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
+  const SheetNames = SheetsFinancialFull;
   doEditGroup(SheetNames, doEditFinancial, 'financial');
 }
 

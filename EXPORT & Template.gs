@@ -16,21 +16,21 @@ function doExportGroup(SheetNames, exportFunction, label) {
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doExportBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
+  const SheetNames = SheetsBasic;
   doExportGroup(SheetNames, doExportBasic, 'basic');
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doExportExtras() {
-  const SheetNames = [FUTURE, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK, AFTER];
+  const SheetNames = SheetsExtra;
   doExportGroup(SheetNames, doExportExtra, 'extra');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doExportFinancials() {
-  const SheetNames = [BLC, DRE, FLC, DVA];
+  const SheetNames = SheetsFinancial;
   doExportGroup(SheetNames, doExportFinancial, 'financial');
 }
 

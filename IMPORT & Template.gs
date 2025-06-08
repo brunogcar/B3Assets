@@ -68,21 +68,14 @@ function doImportGroup(SheetNames, importFunction, label) {
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 
 function doImportBasics() {
-  const SheetNames = [
-    SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND,
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
-    RIGHT_1, RIGHT_2,
-    RECEIPT_9, RECEIPT_10,
-    WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK, AFTER
-  ];
+  const SheetNames = [...SheetsBasic,...SheetsExtra];
   doImportGroup(SheetNames, doImportBasic, 'basic');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
 
 function doImportFinancials() {
-  const SheetNames = [BLC, Balanco, DRE, Resultado, FLC, Fluxo, DVA, Valor];
+  const SheetNames = SheetsFinancialFull;
   doImportGroup(SheetNames, doImportFinancial, 'financial');
 }
 

@@ -78,16 +78,7 @@ function doFinancialDateHelper(dateArr) {
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
 
 function doCheckDATAS() {
-  const SheetNames = [
-    SWING_4, SWING_12, SWING_52,
-    PROV, OPCOES, BTC, TERMO, FUND,
-    BLC, DRE, FLC, DVA,
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
-    RIGHT_1, RIGHT_2,
-    RECEIPT_9, RECEIPT_10,
-    WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK
-  ];
+  const SheetNames = [...SheetsBasic,...SheetsExtra];
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];

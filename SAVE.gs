@@ -5,20 +5,12 @@ function doSaveAll() {
 
   SpreadsheetApp.flush();
 
-  doSaveGroup([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
+  doSaveGroup(SheetsFinancial, doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doProventos();
 
-  doSaveGroup([
-    OPCOES, BTC, TERMO,
-    FUND, SWING_4, SWING_12, SWING_52,
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
-    RIGHT_1, RIGHT_2,
-    RECEIPT_9, RECEIPT_10,
-    WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK, AFTER
-  ], doCheckDATA, doSaveBasic);
+  doSaveGroup([...SheetsBasic,...SheetsExtra], doCheckDATA, doSaveBasic);
 
   doIsFormula();
   doDisableSheets();
@@ -33,10 +25,7 @@ function doSaveAllBasics() {
 
   SpreadsheetApp.flush();
 
-  doSaveGroup([
-    OPCOES, BTC, TERMO,
-    FUND, SWING_4, SWING_12, SWING_52
-    ], doCheckDATA, doSaveBasic);
+  doSaveGroup(SheetsBasic, doCheckDATA, doSaveBasic);
 
   doSaveShares();
   doExportProventos();
@@ -52,13 +41,7 @@ function doSaveAllBasics() {
 function doSaveAllExtras() {
   Logger.log(SNAME(2));
 
-  doSaveGroup([
-    FUTURE, FUTURE_1, FUTURE_2, FUTURE_3,
-    RIGHT_1, RIGHT_2,
-    RECEIPT_9, RECEIPT_10,
-    WARRANT_11, WARRANT_12, WARRANT_13,
-    BLOCK, AFTER
-  ], doCheckDATA, doSaveBasic);
+  doSaveGroup(SheetsExtra, doCheckDATA, doSaveBasic);
 
   SpreadsheetApp.flush();
 
@@ -78,7 +61,7 @@ function doSaveAllFinancials() {
 
   SpreadsheetApp.flush();
 
-  doSaveGroup([BLC, DRE, FLC, DVA], doCheckDATA, doSaveFinancial);
+  doSaveGroup(SheetsFinancial, doCheckDATA, doSaveFinancial);
 
   doSaveShares();
   doExportProventos();
@@ -99,7 +82,7 @@ function doSaveAllFinancials() {
 /////////////////////////////////////////////////////////////////////BASICS/////////////////////////////////////////////////////////////////////
 
 function doSaveBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND];
+  const SheetNames = SheetsBasic;
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
@@ -112,7 +95,7 @@ function doSaveBasics() {
 /////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
 function doSaveExtras() {
-  const SheetNames = [FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK, AFTER];
+  const SheetNames = SheetsExtra;
 
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
@@ -124,7 +107,7 @@ function doSaveExtras() {
 /////////////////////////////////////////////////////////////////////DATAS/////////////////////////////////////////////////////////////////////
 
 function doSaveFinancials() {
-  const SheetNames = [BLC, DRE, FLC, DVA];                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
+  const SheetNames = SheetsFinancial;                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
   const sheet_up = fetchSheetByName(`UPDATE`);
   const ACTV = sheet_up.getRange(`B3`).getValue();

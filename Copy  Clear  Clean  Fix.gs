@@ -46,7 +46,7 @@ function doCopyFinancial(SheetName) {
 
 
 function doClearBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
+  const SheetNames = [...SheetsBasic,...SheetsExtra];
 
   _doGroup(SheetNames, doClearBasic, "Clearing", "cleared", "basic");
 }
@@ -67,7 +67,7 @@ function doClearBasic(SheetName) {
 }
 
 function doClearFinancials() {
-  const SheetNames = [BLC, DRE, FLC, DVA];
+  const SheetNames = SheetsFinancial;
 
   _doGroup(SheetNames, doClearFinancial, "Clearing", "cleared", "financial");
 }
@@ -146,7 +146,7 @@ function doRecycleTrade() {
 /////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
 
 function doCleanBasics() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUND, FUTURE, FUTURE_1, FUTURE_2, FUTURE_3, RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13];
+  const SheetNames = [...SheetsBasic,...SheetsExtra];
 
   _doGroup(SheetNames, doCleanBasic, "Cleaning", "cleaned", "basic");
 }
@@ -178,6 +178,7 @@ function fixSplit() {
   fixOptionsSplit();
   fixBTCSplit();
   fixTermoSplit();
+  fixAfterSplit();
   fixFundSplit();
   fixFUTPlusSplits();
   fixEXTRASplits();
@@ -268,6 +269,14 @@ function fixTermoSplit() {
     { from: 'I',           op: 'div' }
   ]);
 }
+//-------------------------------------------------------------------After-------------------------------------------------------------------//
+function fixAfterSplit() {
+  processSplitBlocks(AFTER, 'Z4', 'Y4', [
+    { from: 'B', to: 'C',  op: 'mul' },
+    { from: 'P', to: 'S',  op: 'mul' },
+    { from: 'D',           op: 'div' }
+  ]);
+}
 //-------------------------------------------------------------------Future-------------------------------------------------------------------//
 
 function fixFutureSplit() {
@@ -291,7 +300,7 @@ function fixFUTPlusSplits() {
 }
 //-------------------------------------------------------------------Extra-------------------------------------------------------------------//
 function fixEXTRASplits() {
-  const SheetNames = [RIGHT_1, RIGHT_2, RECEIPT_9, RECEIPT_10, WARRANT_11, WARRANT_12, WARRANT_13, BLOCK];
+  const SheetNames = SheetsExtra;
   SheetNames.forEach(name => {
     processSplitBlocks(name, 'Z4', 'Y4', [
       { from: 'B', to: 'C', op: 'mul' },
