@@ -108,9 +108,9 @@ function doCheckDATA(SheetName) {
   const cfg = {
     [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:"DEFAULT", cells: null },
     [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, forceHide:HOP,       cells: null },
-    [SWING_4]:    { sheetVar: sheet_d, cell:  "B3",       toggleHide: false, classSheet: true,  forceHide:HTR ,       cells: null },
-    [SWING_12]:   { sheetVar: sheet_d, cell:  "B3",       toggleHide: false, classSheet: true,  forceHide:HTR ,       cells: null },
-    [SWING_52]:   { sheetVar: sheet_d, cell:  "B3",       toggleHide: false, classSheet: true,  forceHide:HTR ,       cells: null },
+    [SWING_4]:    { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
+    [SWING_12]:   { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
+    [SWING_52]:   { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
     [BTC]:        { sheetVar: sheet_d, cell:  "B7",        toggleHide: false, classSheet: false, forceHide:HBT,       cells: null },
     [TERMO]:      { sheetVar: sheet_d, cell:  "B28",       toggleHide: false, classSheet: false, forceHide:HTE,       cells: null },
     [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, forceHide:HFU,       cells: null },

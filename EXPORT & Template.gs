@@ -143,14 +143,22 @@ function doExportBasic(SheetName) {
   const LC = sheet_sr.getLastColumn();
   let filtered;
   if (SheetName === FUND) {
-    const row = sheet_sr.getRange(2, 1, 1, LC).getValues()[0];
+    const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+
     filtered = row.map((v, i) => {
-      // keep date cols 1–2 and beyond BJ (col 62), else filter
+      // keep date cols 1–2 and beyond BJ (col 62) as-is
       if (i < 2 || i >= 62) return v;
-      return (v > Minimum && v < Maximum) ? v : '';
+
+      // if it’s not a number, leave it alone
+      if (typeof v !== 'number') return v;
+
+      // keep values inside [Minimum, Maximum], blank out everything else
+      return (v >= Minimum && v <= Maximum)
+        ? v
+        : '';
     });
   } else {
-    filtered = sheet_sr.getRange(2, 1, 1, LC).getValues()[0];
+    filtered = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
   }
   processExport(TKT, [filtered], sheet_tr, SheetName);
 }

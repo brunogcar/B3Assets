@@ -1,33 +1,38 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////MENU FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-function import_15x_to_16x()
+function import_Upgrade()
 {
-  Logger.log('Import: import_15x_to_16x');
+  Logger.log('Import: import_16x_to_17x');
 
   import_config();
 
   doImportProventos();
 
-  doImportShares();
+  doImportShares_Upgrade()();
 
-  doImportFinancial(BLC);
-  doImportFinancial(Balanco);
-  doImportFinancial(DRE);
-  doImportFinancial(Resultado);
-  doImportFinancial(FLC);
-  doImportFinancial(Fluxo);
-  doImportFinancial(DVA);
-  doImportFinancial(Valor);
+//  import_Upgrade_Sheets();
+  doImportBasics();
+  doImportFinancials();
 
-//  doImportBasic(SWING_4);
-  doImport_SWING_12_to_SWING_4();
+  deleteRowByDisplayDate_OPCOES();
+
+  doCheckTriggers();
+  update_form();
+
+// doCleanZeros();
+};
+
+function import_Upgrade_Sheets()
+{
+  doImportBasic(SWING_4);
   doImportBasic(SWING_12);
   doImportBasic(SWING_52);
   doImportBasic(OPCOES);
   doImportBasic(BTC);
   doImportBasic(TERMO);
   doImportBasic(FUND);
+  doImportBasic(AFTER);
 
   doImportBasic(FUTURE);
   doImportBasic(FUTURE_1);
@@ -43,69 +48,77 @@ function import_15x_to_16x()
   doImportBasic(WARRANT_13);
   doImportBasic(BLOCK);
 
-  doCheckTriggers();
-  update_form();
-
-// doCleanZeros();
-};
+  doImportFinancial(BLC);
+  doImportFinancial(Balanco);
+  doImportFinancial(DRE);
+  doImportFinancial(Resultado);
+  doImportFinancial(FLC);
+  doImportFinancial(Fluxo);
+  doImportFinancial(DVA);
+  doImportFinancial(Valor);
+}
 
 /////////////////////////////////////////////////////////////////////IMPORT FUNCTIONS/////////////////////////////////////////////////////////////////////
 
-
-
-/////////////////////////////////////////////////////////////////////IMPORT AND COPY SHEET/////////////////////////////////////////////////////////////////////
-
-function doImport_SWING_12_to_SWING_4()
-{
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
+function doImportShares_Upgrade() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) {
-    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
+
+  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
+  const L1 = sheet_sr.getRange("L1").getValue();
+  const L2 = sheet_sr.getRange("L2").getValue();
+  const sheet_tr = fetchSheetByName('DATA');                                          // Target Sheet
+  if (!sheet_tr) return;
+
+    var SheetName = sheet_tr.getName()
+
+  LogDebug(`IMPORT: Shares and FF`, 'MIN');
+
+  if (!ErrorValues.includes(L1) && !ErrorValues.includes(L2)) {
+    // read the block L1:L2, then write it into L5:L6
+    const Data = sheet_sr.getRange("L1:L2").getValues();
+    sheet_tr.getRange("L5:L6").setValues(Data);
+  }
+  else
+  {
+    LogDebug(`❌ ERROR IMPORT: ${SheetName} - ErrorValues - L1=${L1} or L2=${L2}: doImportShares`, 'MIN');
+  }
+  LogDebug(`✅ SUCCESS IMPORT: Shares and FF`, 'MIN');
+}
+
+function deleteRowByDisplayDate_OPCOES() {
+  const ss      = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet   = ss.getSheetByName('Opções');
+  if (!sheet) throw new Error('Sheet “Opções” not found');
+
+  const targetDisplay = '30/05/2025';
+  LogDebug(`🔍 Looking for display-value ${targetDisplay} in Opções!A5:A`, 'MIN');
+
+  const LR = sheet.getLastRow();
+  if (LR < 5) {
+    LogDebug(`⚠️ No data rows (LR=${LR}); nothing to delete.`, 'MID');
     return;
   }
 
-  const ss_sr = SpreadsheetApp.openById(Source_Id);
-  const sheet_sr = ss_sr.getSheetByName(SWING_12);                                    // Source Sheet (Trade)
+  // Grab all displayed values in A5:A
+  const displays = sheet
+    .getRange(5, 1, LR - 4, 1)
+    .getDisplayValues()
+    .flat();
 
-  LogDebug(`Import: Trade to Swing Sheets`, 'MIN');
-
-  // Check if the source sheet exists
-  if (!sheet_sr) {
-    LogDebug(`❌ ERROR IMPORT: Trade sheet does not exist in the source spreadsheet.`, 'MIN');
-    return;
+  let deletedCount = 0;
+  // Loop backwards so row numbers stay valid as we delete
+  for (let i = displays.length - 1; i >= 0; i--) {
+    if (displays[i] === targetDisplay) {
+      const rowNum = i + 5;  // because array starts at A5
+      sheet.deleteRow(rowNum);
+      deletedCount++;
+      LogDebug(`✅ Deleted row ${rowNum} (display="${targetDisplay}")`, 'MIN');
+    }
   }
-
-  // Split handling for SWING_4 and (SWING_12, SWING_52)
-  const targetSheets = [
-    {
-      name: SWING_4,
-      sourceRanges: ['A5:D125', 'Y5:Y125', 'X5:X125', 'S5:V125'],                                             // Add source ranges specific to SWING_4
-      targetRanges: ['A5:D125', 'E5:E125', 'F5:F125', 'V5:Y125']                                              // Corresponding target ranges
-    }
-  ];
-
-  targetSheets.forEach(config => {
-    let targetSheet = ss.getSheetByName(config.name);
-
-    if (!targetSheet) {
-      LogDebug(`${config.name} sheet does not exist.`, 'MIN');
-    }
-
-    // Loop through source and target ranges
-    config.sourceRanges.forEach((sourceRange, index) => {
-      const targetRange = config.targetRanges[index];
-
-      // Fetch data from source range
-      const data = sheet_sr.getRange(sourceRange).getValues();
-
-      // Clear and set data in the target range
-      targetSheet.getRange(targetRange).clearContent();
-      targetSheet.getRange(targetRange).setValues(data);
-
-      LogDebug(`SUCCESS IMPORT. Data from 'Trade' (${sourceRange}) copied to '${config.name}' (${targetRange}).`, 'MIN');
-    });
-  });
+  if (deletedCount === 0) {
+    LogDebug(`❌ No matches for ${targetDisplay}; nothing deleted.`, 'MIN');
+  }
+  LogDebug(`🗑️ Finished deletions: ${deletedCount} row(s) removed.`, 'MID');
 }
 
 /////////////////////////////////////////////////////////////////////IMPORT UPGRADE/////////////////////////////////////////////////////////////////////

@@ -13,6 +13,7 @@
   const OPCOES     = 'Opções';
   const BTC        = 'BTC';
   const TERMO      = 'Termo';
+  const AFTER      = 'After';
   const FUND       = 'Fund';
 
   const FUTURE     = 'Future';
@@ -28,7 +29,6 @@
   const WARRANT_12 = 'GAR_12';
   const WARRANT_13 = 'GAR_13';
   const BLOCK      = 'BLOCK';
-  const AFTER      = 'After';
 
   const BLC        = 'BLC';
   const Balanco    = 'Balanço';

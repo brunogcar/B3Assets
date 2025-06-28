@@ -29,7 +29,7 @@ function Import(){
     }
     else if (Option == 2)
     {
-      import_15x_to_16x();
+      import_Upgrade();
     }
     else
     {
@@ -92,10 +92,6 @@ function doImportProv(ProvName){
   LogDebug(`IMPORT: ${ProvName}`, 'MIN');
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) {
-    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
-    return;
-    }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
   const sheet_tr = fetchSheetByName('Prov');
@@ -145,10 +141,6 @@ function update_form() {
 
 function import_config() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) {
-    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
-    return;
-  }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');       // Source Sheet
   {
@@ -164,10 +156,6 @@ function import_config() {
 
 function doImportShares() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
-  if (!Source_Id) {
-    LogDebug(`❌ ERROR IMPORT: Source ID is empty.`, 'MIN');
-    return;
-    }
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
     var L5 = sheet_sr.getRange("L5").getValue();
@@ -230,14 +218,10 @@ function doImportBasic(SheetName) {
   LogDebug(`IMPORT: ${SheetName}`, 'MIN');
 
   const Source_Id = getConfigValue(SIR, 'Config');
-  if (!Source_Id) {
-    LogDebug('❌ ERROR IMPORT: Source ID. Aborting.', 'MIN');
-    return;
-  }
 
   const cfg = basicImportMap[SheetName];
   if (!cfg) {
-    LogDebug(`🚩 ERROR IMPORT: ${SheetName} - No entry in basicImportMap: doImportShares`, 'MIN');
+    LogDebug(`🚩 ERROR IMPORT: ${SheetName} - No entry in basicImportMap: doImportBasic`, 'MIN');
     return;
   }
 
@@ -300,10 +284,6 @@ function doImportFinancial(SheetName) {
   LogDebug(`IMPORT: ${SheetName}`, 'MIN');
 
   const Source_Id  = getConfigValue(SIR, 'Config');
-  if (!Source_Id) {
-    LogDebug(`❌ ERROR IMPORT: Missing Config/Settings/Source ID. Aborting.`, 'MIN');
-    return;
-  }
 
   const cfg = financialImportMap[SheetName];
   if (!cfg) {

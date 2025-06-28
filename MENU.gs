@@ -235,6 +235,7 @@ function onOpen()
         .addItem('Export Termo',     'menuExportTermo')
         .addItem('Export Future',    'menuExportFuture')
         .addItem('Export Fund',      'menuExportFund')
+        .addItem('Export After',     'menuExportAfter')
         .addSeparator()
         .addItem('Export Balanço (BLC - DRE - FLC - DVA)', 'doExportFinancials')
         .addSeparator()
@@ -394,6 +395,7 @@ function menuExportBTC()      { doExportBasic(BTC);}
 function menuExportTermo()    { doExportBasic(TERMO);}
 function menuExportFuture()   { doExportBasic(FUTURE);}
 function menuExportFund()     { doExportBasic(FUND);}
+function menuExportAfter()    { doExportBasic(AFTER);}
 
 function menuExportBLC()      { doExportFinancial(BLC);}
 function menuExportDRE()      { doExportFinancial(DRE);}

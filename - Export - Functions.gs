@@ -147,7 +147,7 @@ function doIsInfoExported() {
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 
 function doClearExportAll() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND, BLC, DRE, FLC, DVA];
+  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUTURE, FUND, BLC, DRE, FLC, DVA, 'Right', 'Receipt', 'Warrant'];
 
   _doGroup(SheetNames, doClearExport, "Clearing", "cleared", "");
 }
@@ -159,7 +159,6 @@ function doClearExport(SheetName) {
     LogDebug(`❌ ERROR EXPORT: ${Target_Id} Target ID is empty.`, 'MIN');
     return;
   }
-
   const ss_tr = SpreadsheetApp.openById(Target_Id);                               // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                               // Target sheet
   if (!sheet_tr) {
@@ -167,25 +166,16 @@ function doClearExport(SheetName) {
     return;
   }
 
-  let success = false;                                                            // Initialize success flag to false
-
-  var search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder(TKT).findNext();
-
   LogDebug(`CLEAR EXPORT: ${SheetName}`, 'MIN');
 
-  if (search)
-  {
-    search.offset(0, 0, 1, sheet_tr.getLastColumn()).clearContent();
+  var search = sheet_tr.getRange("A2:A" + sheet_tr.getLastRow()).createTextFinder( TKT.slice(0,4) ).findAll();
 
-    success = true; // Set the success flag to true if data was cleared
-  }
-  if (success)
-  {
-    LogDebug(`✅ SUCCESS CLEAR EXPORT: ${SheetName}`, 'MIN');
-  }
-  else
-  {
-    LogDebug(`❌ ERROR CLEAR EXPORT: ${SheetName} | Didn't find Ticket: ${TKT}`, 'MIN');
+  if (search.length) {
+    search.forEach(cell => {cell.offset(0, 0, 1, sheet_tr.getLastColumn()).clearContent();
+    });
+    LogDebug(`✅ SUCCESS CLEAR EXPORT: ${SheetName} | Cleared ${matches.length} rows`, 'MIN');
+  } else {
+    LogDebug(`❌ ERROR CLEAR EXPORT: ${SheetName} | No cells containing ${TKT.slice(0,4)}`, 'MIN');
   }
 }
 

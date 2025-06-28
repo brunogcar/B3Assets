@@ -516,7 +516,7 @@ function SNAME(option) {
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
 function doCleanZeros() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, FUTURE, FUND];
+  const SheetNames = SheetsBasic;
 
   for (let idx = 0; idx < SheetNames.length; idx++) {
     const SheetName = SheetNames[idx];
