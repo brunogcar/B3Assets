@@ -47,7 +47,7 @@ const triggerMap = {
   ],
   BDR:   [{ fn: 'doSaveAllBasics', hour: 20 }],
   ETF:   [{ fn: 'doSaveAllBasics', hour: 20 }],
-  ADR:   [{ fn: 'doSaveSWING',     hour: 20 }],
+  ADR:   [{ fn: 'doSaveSWING',     hour: 20 }],    // doSaveSWING on MENU.gs
 };
 
 // Compare two sets for equality

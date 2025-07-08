@@ -390,7 +390,11 @@ function doDeleteSheets() {
     'Balanço Passivo',
     'Demonstração',
     'Fluxo de Caixa',
-    'Demonstração do Valor Adicionado'
+    'Demonstração do Valor Adicionado',
+    'DATA',
+    'OPT',
+    'Info',
+    'Comunicados'
   ];
 
   for (const Name of SheetNames) {

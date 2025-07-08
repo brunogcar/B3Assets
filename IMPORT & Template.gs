@@ -18,7 +18,30 @@ function Import(){
 
   if (Option === "AUTO")
   {
-    import_Current();
+    // open the source spreadsheet & sheet
+    const ss_s    = SpreadsheetApp.openById(Source_Id);
+    const sheet_s = ss_s.getSheetByName('Index');                                // Source Sheet
+    if (!sheet_s) {
+      LogDebug(`❌ ERROR IMPORT: sheet_s not found in source.`, 'MIN');
+      return;
+    }
+
+    // read the trigger cell
+    const triggerCell = 'K1';
+    const cellValue   = sheet_s.getRange(triggerCell).getDisplayValue();
+
+    // define your “old” vs “new” markers
+    const OLD_MARKER = '';
+    const NEW_MARKER = 'Inflação';
+
+    if (cellValue === NEW_MARKER) {
+      import_Current();
+    } else if (cellValue === OLD_MARKER) {
+      import_Upgrade();
+    } else {
+      LogDebug(`❌ AUTO mode: unexpected value '${cellValue}' in ${triggerCell}. Aborting import.`, 'MIN');
+      return;
+    }
   }
   else
   {

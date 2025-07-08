@@ -9,7 +9,7 @@ function import_Upgrade()
 
   doImportProventos();
 
-  doImportShares_Upgrade()();
+  doImportShares_Upgrade();
 
 //  import_Upgrade_Sheets();
   doImportBasics();

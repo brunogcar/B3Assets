@@ -34,18 +34,14 @@ function onOpen()
       .addItem('Save BTC',       'menuSaveBTC')
       .addItem('Save Termo',     'menuSaveTermo')
       .addItem('Save Future',    'menuSaveFuture')
+      .addItem('Save BLOCK',     'menuSaveBLOCK')
       .addItem('Save Fund',      'menuSaveFund')
       .addSeparator()
-      .addItem('Save Extra (RIGH - RECEIPT - WARRANT - BLOCK - After)', 'doSaveExtras')
+      .addItem('Save Extra (RIGH - RECEIPT - WARRANT - After)', 'doSaveExtras')
       .addSeparator()
-      .addItem('Save RIGHT_1',     'menuSaveDRT_1')
-      .addItem('Save RIGHT_2',     'menuSaveDRT_2')
-      .addItem('Save RECEIPT_9',   'menuSaveRCB_9')
-      .addItem('Save RECEIPT_10',  'menuSaveRCB_10')
-      .addItem('Save WARRANT_11',  'menuSaveGAR_11')
-      .addItem('Save WARRANT_12',  'menuSaveGAR_12')
-      .addItem('Save WARRANT_13',  'menuSaveGAR_13')
-      .addItem('Save BLOCK',       'menuSaveBLOCK')
+      .addItem('Save RIGHT',     'doSaveRIGHT')
+      .addItem('Save RECEIPT',   'doSaveRECEIPT')
+      .addItem('Save WARRANT',  'doSaveWARRANT')
       .addItem('Save After',       'menuSaveAFTER')
       .addSeparator()
       .addItem('Save Financials (BLC - DRE - FLC - DVA)','doSaveFinancials')
@@ -296,6 +292,7 @@ function menuSaveOpcoes()     { doSaveBasic(OPCOES);}
 function menuSaveBTC()        { doSaveBasic(BTC);}
 function menuSaveTermo()      { doSaveBasic(TERMO);}
 function menuSaveFuture()     { doSaveBasic(FUTURE);}
+function menuSaveBLOCK()      { doSaveBasic(BLOCK);}
 function menuSaveFund()       { doSaveBasic(FUND);}
 
 function menuSaveDRT_1()      { doSaveBasic(RIGHT_1);}
@@ -305,7 +302,6 @@ function menuSaveRCB_10()     { doSaveBasic(RECEIPT_10);}
 function menuSaveGAR_11()     { doSaveBasic(WARRANT_11);}
 function menuSaveGAR_12()     { doSaveBasic(WARRANT_12);}
 function menuSaveGAR_13()     { doSaveBasic(WARRANT_13);}
-function menuSaveBLOCK()      { doSaveBasic(BLOCK);}
 function menuSaveAFTER()      { doSaveBasic(AFTER);}
 
 function menuSaveBLC()        { doSaveFinancial(BLC);}
@@ -329,14 +325,14 @@ function menuEditFuture()     { doEditBasic(FUTURE);}
 function menuEditFund()       { doEditBasic(FUND);}
 
 
-function menuEditBLC()        {doEditFinancial(BLC);}
-function menuEditBalanco()    {doEditFinancial(Balanco);}
-function menuEditDRE()        {doEditFinancial(DRE);}
-function menuEditResultado()  {doEditFinancial(Resultado);}
-function menuEditFLC()        {doEditFinancial(FLC);}
-function menuEditFluxo()      {doEditFinancial(Fluxo);}
-function menuEditDVA()        {doEditFinancial(DVA);}
-function menuEditValor()      {doEditFinancial(Valor);}
+function menuEditBLC()        { doEditFinancial(BLC);}
+function menuEditBalanco()    { doEditFinancial(Balanco);}
+function menuEditDRE()        { doEditFinancial(DRE);}
+function menuEditResultado()  { doEditFinancial(Resultado);}
+function menuEditFLC()        { doEditFinancial(FLC);}
+function menuEditFluxo()      { doEditFinancial(Fluxo);}
+function menuEditDVA()        { doEditFinancial(DVA);}
+function menuEditValor()      { doEditFinancial(Valor);}
 
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
 
@@ -404,6 +400,9 @@ function menuExportDVA()      { doExportFinancial(DVA);}
 
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////
 
-function doSaveSWING()      { doSaveBasic(SWING_4); doSaveBasic(SWING_12); doSaveBasic(SWING_52);}
+function doSaveSWING()        { doSaveBasic(SWING_4); doSaveBasic(SWING_12); doSaveBasic(SWING_52);}
+function doSaveRIGHT()        { doSaveBasic(RIGHT_1); doSaveBasic(RIGHT_2);}
+function doSaveRECEIPT()      { doSaveBasic(RECEIPT_9); doSaveBasic(RECEIPT_10);}
+function doSaveWARRANT()      { doSaveBasic(WARRANT_11); doSaveBasic(WARRANT_12); doSaveBasic(WARRANT_13);}
 
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////

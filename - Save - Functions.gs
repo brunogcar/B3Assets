@@ -106,7 +106,7 @@ function doCheckDATA(SheetName) {
   LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
 
   const cfg = {
-    [PROV]:       { sheetVar: sheet_p, cell:  "B3",        toggleHide: false, classSheet: false, forceHide:"DEFAULT", cells: null },
+    [PROV]:       { sheetVar: sheet_p, cell:  "B4",        toggleHide: false, classSheet: false, forceHide:"DEFAULT", cells: null },
     [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, forceHide:HOP,       cells: null },
     [SWING_4]:    { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
     [SWING_12]:   { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },

@@ -171,7 +171,6 @@ function doExportExtra(SheetName) {
   const sheet_sr = fetchSheetByName(SheetName);
   if (!sheet_sr) return;
 
-  const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) {
     LogDebug(`❌ EXPORT: Target ID is empty.`, 'MIN');
@@ -187,6 +186,8 @@ function doExportExtra(SheetName) {
 
   var Export = getConfigValue(target_co[SheetName]) || FALSE;
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
+  var TKT = sheet_sr.getRange('M2').getValue();                                      // Ticker
+
   var A = sheet_sr.getRange("A2").getValue();                                        // Data
   var B = sheet_sr.getRange("B2").getValue();                                        // Cotação
   var C = sheet_sr.getRange("C2").getValue();                                        // PM
