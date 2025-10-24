@@ -109,7 +109,7 @@ function doSaveExtras() {
 function doSaveFinancials() {
   const SheetNames = SheetsFinancial;                             //Balanço, Resultado, Fluxo and Valor are saved after parent SheetNames
 
-  const sheet_up = fetchSheetByName(`UPDATE`);
+  const sheet_up = getSheet(`UPDATE`);
   const ACTV = sheet_up.getRange(`B3`).getValue();
   const SOMA = sheet_up.getRange(`K8`).getValue();
 

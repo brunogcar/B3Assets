@@ -40,7 +40,7 @@ function doEditFinancials() {
 function doEditBasic(SheetName) {
   LogDebug(`EDIT: ${SheetName}`, 'MIN');
 
-  const sheet_sr = fetchSheetByName(SheetName);
+  const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
   Utilities.sleep(2500);
 
@@ -162,11 +162,11 @@ function doEditFinancial(SheetName) {
     return;
   }
 
-  const sheet_sr = fetchSheetByName(cfg.sh_sr);
+  const sheet_sr = getSheet(cfg.sh_sr);
   if (!sheet_sr) return;
   const sheet_tr = cfg.sh_tr === cfg.sh_sr
     ? sheet_sr
-    : fetchSheetByName(cfg.sh_tr);
+    : getSheet(cfg.sh_tr);
   if (!sheet_tr) return;
 
   const Edit = getConfigValue(cfg.editKey);

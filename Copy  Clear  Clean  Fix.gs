@@ -11,7 +11,7 @@ function doClearAll() {
 /////////////////////////////////////////////////////////////////////COPY/////////////////////////////////////////////////////////////////////
 
 function doCopyBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
+  const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   var LR = sheet.getLastRow();
@@ -52,7 +52,7 @@ function doClearBasics() {
 }
 
 function doClearBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
+  const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   var LR = sheet.getLastRow();
@@ -73,7 +73,7 @@ function doClearFinancials() {
 }
 
 function doClearFinancial(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
+  const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   LogDebug(`Clear: ${SheetName}`, 'MIN');
@@ -114,7 +114,7 @@ function doClearFinancial(SheetName) {
 
 
 function doClearProventos() {
-  const sheet = fetchSheetByName(PROV);
+  const sheet = getSheet(PROV);
   if (!sheet) return;
 
   var LR = sheet.getLastRow();
@@ -126,7 +126,7 @@ function doClearProventos() {
 /////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
 
 function doRecycleTrade() {
-  const sheet = fetchSheetByName(TRADE);
+  const sheet = getSheet(TRADE);
   if (!sheet) return;
 
     var LR = sheet.getLastRow();
@@ -152,7 +152,7 @@ function doCleanBasics() {
 }
 
 function doCleanBasic(SheetName) {
-  const sheet = fetchSheetByName(SheetName);
+  const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   LogDebug(`CLEAN: ${SheetName}`, 'MIN');
@@ -197,7 +197,7 @@ function fixSplit() {
  *   - op:   `"mul"` (default) or `"div"`
  */
 function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
-  const sheet = fetchSheetByName(SheetName);
+  const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   const M  = sheet.getRange(multiplierA1).getValue();

@@ -2,7 +2,7 @@
 /////////////////////////////////////////////////////////////////////Autorize/////////////////////////////////////////////////////////////////////
 
 function doAutorizeScript() {
-  const sheet_co = fetchSheetByName('Config');
+  const sheet_co = getSheet('Config');
   if (!sheet_co) {
     LogDebug("Sheet 'Config' not found.", 'MIN');
     return;
@@ -17,7 +17,7 @@ function doAutorizeScript() {
 }
 
 function checkAutorizeScript() {
-  const sheet_co = fetchSheetByName('Config');
+  const sheet_co = getSheet('Config');
 
   const cell = sheet_co.getRange("L2");
   const bgColor = cell.getBackground();                     // Get background color
@@ -136,7 +136,7 @@ function getSheetTriggersHandle() {
 }
 
 function writeTriggersToSheet() {
-  const sheet = fetchSheetByName('Config');
+  const sheet = getSheet('Config');
   if (!sheet) return;
 
   const triggers = getSheetTriggersHandle();

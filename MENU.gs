@@ -77,9 +77,14 @@ function onOpen()
       .addSeparator()
       .addItem('Edit Grafics (Swing - Opções - BTC - Termo - Futuro - Fund)', 'doEditBasics')
       .addSeparator()
-      .addItem('Edit Swing 4',    'menuEditSwing_4')
-      .addItem('Edit Swing 12',   'menuEditSwing_12')
-      .addItem('Edit Swing 52',   'menuEditSwing_52')
+      .addSubMenu
+      (ui.createMenu('Edit Swing')
+        .addItem('Edit Swing', 'doEditSWING')
+        .addSeparator()
+        .addItem('Edit Swing 4',    'menuEditSwing_4')
+        .addItem('Edit Swing 12',   'menuEditSwing_12')
+        .addItem('Edit Swing 52',   'menuEditSwing_52')
+      )
       .addItem('Edit Opções',     'menuEditOpcoes')
       .addItem('Edit BTC',        'menuEditBTC')
       .addItem('Edit Termo',      'menuEditTermo')
@@ -223,9 +228,14 @@ function onOpen()
         .addSeparator()
         .addItem('Export Graphics (Swing - Options - BTC - Future - Fund)', 'doExportBasics')
         .addSeparator()
-        .addItem('Export Swing 4',   'menuExportSwing_4')
-        .addItem('Export Swing 12',  'menuExportSwing_12')
-        .addItem('Export Swing 52',  'menuExportSwing_52')
+        .addSubMenu
+        (ui.createMenu('Export Swing')
+          .addItem('Export Swing', 'doExportSWING')
+          .addSeparator()
+          .addItem('Export Swing 4',   'menuExportSwing_4')
+          .addItem('Export Swing 12',  'menuExportSwing_12')
+          .addItem('Export Swing 52',  'menuExportSwing_52')
+        )
         .addItem('Export Opções',    'menuExportOpcoes')
         .addItem('Export BTC',       'menuExportBTC')
         .addItem('Export Termo',     'menuExportTermo')
@@ -401,6 +411,8 @@ function menuExportDVA()      { doExportFinancial(DVA);}
 /////////////////////////////////////////////////////////////////////OTHER/////////////////////////////////////////////////////////////////////
 
 function doSaveSWING()        { doSaveBasic(SWING_4); doSaveBasic(SWING_12); doSaveBasic(SWING_52);}
+function doEditSWING()        { doEditBasic(SWING_4); doEditBasic(SWING_12); doEditBasic(SWING_52);}
+function doExportSWING()      { doExportBasic(SWING_4); doExportBasic(SWING_12); doExportBasic(SWING_52);}
 function doSaveRIGHT()        { doSaveBasic(RIGHT_1); doSaveBasic(RIGHT_2);}
 function doSaveRECEIPT()      { doSaveBasic(RECEIPT_9); doSaveBasic(RECEIPT_10);}
 function doSaveWARRANT()      { doSaveBasic(WARRANT_11); doSaveBasic(WARRANT_12); doSaveBasic(WARRANT_13);}

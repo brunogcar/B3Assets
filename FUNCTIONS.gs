@@ -8,16 +8,26 @@
  * @param {string} msg     The message to log.
  * @param {"MIN"|"MID"|"MAX"} level  How verbose this message is.
  */
+let _DBG_CACHE = null;
+
 function LogDebug(msg, level = "MIN") {
-  // Define verbosity order
   const ORDER = ["MIN", "MID", "MAX"];
+  // lazy fetch / cache dbgLevel; refresh if cache is null
+  if (_DBG_CACHE === null) {
+    const dbgVal = runSafely(() => getConfigValue(DBG, 'Config'), 'LogDebug:getConfigValue');      // DBG = "L12"
+    _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : "MIN";
+  }
+  const dbgLevel = _DBG_CACHE;
+  if (ORDER.indexOf(dbgLevel) < 0) _DBG_CACHE = "MIN"; // fallback if invalid
 
-  // Read the current debug setting (cell L12 on your Config sheet)
-  const dbgLevel = getConfigValue(DBG, 'Config');  // DBG = "L12"
-
-  // Only log if the message’s level is at or below the configured level
-  if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
-    Logger.log(msg);
+  try {
+    if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
+      // Prefer Logger.log so Apps Script IDE shows messages
+      Logger.log(msg);
+    }
+  } catch (e) {
+    // last resort
+    console.log(msg);
   }
 }
 
@@ -74,10 +84,81 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
  * @param {string} SheetName - The exact name of the sheet to fetch.
  * @returns {GoogleAppsScript.Spreadsheet.Sheet | null} - The Sheet object if found; otherwise, null.
  */
-function fetchSheetByName(SheetName) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SheetName);
-  if (!sheet) { LogDebug(`⚠️ Sheet not found: ${SheetName}`, "MIN"); return null; }
-  return sheet;
+const _SHEET_CACHE = {};                           // SheetName -> Sheet
+
+function getSheet(SheetName, forceRefresh = false) {
+  if (!SheetName) return null;
+  try {
+    if (!forceRefresh && _SHEET_CACHE[SheetName]) return _SHEET_CACHE[SheetName];
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss ? ss.getSheetByName(SheetName) : null;
+    if (sh) {
+      _SHEET_CACHE[SheetName] = sh;
+      LogDebug(`✅ Sheet found: ${SheetName}`, "MAX");
+      return sh;
+    } else {
+      LogDebug(`⚠️ Sheet not found: ${SheetName}`, "MIN");
+      return null;
+    }
+  } catch (err) {
+    LogDebug(`❌ getSheet ERROR for "${SheetName}": ${err && err.message ? err.message : err}`, "MIN");
+    return null;
+  }
+}
+
+/**
+ * Clear sheet cache (call when sheets are added/renamed programmatically).
+ */
+function clearSheetCache() {
+  for (const k in _SHEET_CACHE) delete _SHEET_CACHE[k];
+}
+
+/**
+ * Safe getValues wrapper; returns empty array if range invalid.
+ * @param {Sheet} sh
+ * @param {number} row
+ * @param {number} col
+ * @param {number} numRows
+ * @param {number} numCols
+ */
+function getValuesSafe(sh, r, c, numRows, numCols) {
+  if (!sh) return [];
+  if (numRows <= 0 || numCols <= 0) return [];
+  try {
+    return sh.getRange(r, c, numRows, numCols).getValues();
+  } catch (e) {
+    LogDebug(`getValuesSafe failed: ${e.message}`, "MIN");
+    return [];
+  }
+}
+
+/**
+ * Safe setValues wrapper with a small guard.
+ */
+function setValuesSafe(sh, r, c, values) {
+  if (!sh) return false;
+  if (!Array.isArray(values) || values.length === 0) return false;
+  try {
+    sh.getRange(r, c, values.length, values[0].length).setValues(values);
+    return true;
+  } catch (e) {
+    LogDebug(`setValuesSafe failed: ${e.message}`, "MIN");
+    return false;
+  }
+}
+
+/**
+ * Utility to run a function with error handling and consistent logging.
+ * @param {function():any} fn
+ * @param {string} ctx
+ */
+function runSafely(fn, ctx) {
+  try {
+    return fn();
+  } catch (e) {
+    LogDebug(`Error in ${ctx}: ${e && e.message ? e.message : e}`, "MIN");
+    return null;
+  }
 }
 
 /**
@@ -101,8 +182,8 @@ function fetchSheetByName(SheetName) {
  */
 function getConfigValue(Acronym, Source = 'Both') {
   // Only fetch the sheets you need
-  const sheet_se = (Source !== 'Config')   ? fetchSheetByName('Settings') : null;
-  const sheet_co = (Source !== 'Settings') ? fetchSheetByName('Config')   : null;
+  const sheet_se = (Source !== 'Config')   ? getSheet('Settings') : null;
+  const sheet_co = (Source !== 'Settings') ? getSheet('Config')   : null;
 
   // If we needed Settings but didn't get it, bail
   if (Source !== 'Config' && !sheet_se) { LogDebug('⚠️ Settings sheet not found', "MIN");
@@ -152,7 +233,7 @@ function getConfigValue(Acronym, Source = 'Both') {
  */
 function setConfigValue(Acronym, value) {
   // Fetch the Config sheet
-  const sheet_co = fetchSheetByName('Config');
+  const sheet_co = getSheet('Config');
   if (!sheet_co) {
     LogDebug(`⚠️ Config sheet not found; cannot set ${Acronym}`, "MIN");
     return false;
@@ -292,7 +373,7 @@ function arraysAreEqual(arr1, arr2) {
 
 function doSettings() {
   const Class    = getConfigValue(IST, 'Config');                                       // IST = Is Stock?
-  const sheet = fetchSheetByName('Settings');
+  const sheet = getSheet('Settings');
   if (!sheet) return;
 
   const Activate = getConfigValue(ACT, 'Settings');                                     // ACT = Activate
@@ -365,7 +446,7 @@ function copypasteSheets() {
   for (const Name of SheetNames) {
     LogDebug(`copypasteSheets: Processing sheet "${Name}"`, 'MID');
 
-    const sheet = fetchSheetByName(Name);
+    const sheet = getSheet(Name);
     if (!sheet) {
       LogDebug(`copypasteSheets: Sheet not found, skipping "${Name}"`, 'MID');
       continue;
@@ -390,17 +471,13 @@ function doDeleteSheets() {
     'Balanço Passivo',
     'Demonstração',
     'Fluxo de Caixa',
-    'Demonstração do Valor Adicionado',
-    'DATA',
-    'OPT',
-    'Info',
-    'Comunicados'
+    'Demonstração do Valor Adicionado'
   ];
 
   for (const Name of SheetNames) {
     LogDebug(`doDeleteSheets: Attempting to delete "${Name}"`, 'MID');
 
-    const sheet = fetchSheetByName(Name);
+    const sheet = getSheet(Name);
     if (!sheet) {
       LogDebug(`doDeleteSheets: Sheet not found, skipping "${Name}"`, 'MID');
       continue;
@@ -443,6 +520,9 @@ function moveSpreadsheetToARQUIVO() {
 /////////////////////////////////////////////////////////////////////DELETE/////////////////////////////////////////////////////////////////////
 
 function doDelete() {
+  copypasteSheets();
+  doDeleteSheets();
+
   doDeleteTriggers();
   moveSpreadsheetToBACKUP();
   revokeOwnAccess();
@@ -524,7 +604,7 @@ function doCleanZeros() {
 
   for (let idx = 0; idx < SheetNames.length; idx++) {
     const SheetName = SheetNames[idx];
-    const sheet     = fetchSheetByName(SheetName);
+    const sheet     = getSheet(SheetName);
     if (!sheet) continue;
 
     const LR = sheet.getLastRow();
@@ -554,7 +634,7 @@ function doCleanZeros() {
 function doDeleteZeroOptions() {
   LogDebug(`DELETE: 0 values from call put / blank values from ratios: ${OPCOES}`, "MIN");
 
-  const sheet = fetchSheetByName(OPCOES);
+  const sheet = getSheet(OPCOES);
   if (!sheet) return;
 
   const lastRow = sheet.getLastRow();
@@ -606,7 +686,7 @@ function tryCleanOpcaoExportRow(sheet_tr, TKT) {
 function normalizeFund() {
   LogDebug(`NORMALIZE: Values: ${FUND}`, "MIN");
 
-  const sheet = fetchSheetByName(FUND);
+  const sheet = getSheet(FUND);
   if (!sheet) return;
 
   const MINIMUM = getConfigValue(MIN, 'Settings');
@@ -614,7 +694,7 @@ function normalizeFund() {
 
   const lastRow = sheet.getLastRow();
   const lastCol = sheet.getLastColumn();
-  const rowStart = 3;
+  const rowStart = 5;
   const colStart = 4;  // D
   const colEnd   = 61; // BI
 
@@ -646,7 +726,7 @@ function reverseColumns() {
   const SheetName = sheet.getName();
   LogDebug(`reverseColumns: Starting: "${SheetName}"`, 'MIN');
 
-  const active = fetchSheetByName(SheetName);
+  const active = getSheet(SheetName);
   if (!active) {
     LogDebug(`reverseColumns: "${SheetName}" not found`, 'MIN');
     return;
@@ -670,7 +750,7 @@ function reverseRows() {
   const SheetName = sheet.getName();
   LogDebug(`reverseRows: Starting: "${SheetName}"`, 'MIN');
 
-  const active = fetchSheetByName(SheetName);
+  const active = getSheet(SheetName);
   if (!active) {
     LogDebug(`reverseRows: "${SheetName}" not found`, 'MIN');
     return;
@@ -692,12 +772,80 @@ function reverseRows() {
 /////////////////////////////////////////////////////////////////////RESTORE Functions/////////////////////////////////////////////////////////////////////
 
 function doRestoreFundExport() {
-  const sheet_co = fetchSheetByName('Config');
+  const sheet_co = getSheet('Config');
   if (!sheet_co) return;
 
   var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';
 
     sheet_co.getRange(EFU).setValue(Value);                                 // EFU = Export to Fund
+}
+
+/////////////////////////////////////////////////////////////////////fixNumericFormatting Function/////////////////////////////////////////////////////////////////////
+
+function fixNumericFormatting() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const SheetNames = [
+    'Balanço Ativo',
+    'Balanço Passivo',
+    'Demonstração',
+    'Fluxo de Caixa',
+    'Demonstração do Valor Adicionado'
+  ];
+
+  LogDebug('🧹 Starting cleanup: correcting numeric formatting issues', 'MIN');
+
+  for (const name of SheetNames) {
+    const sheet = ss.getSheetByName(name);
+    if (!sheet) {
+      LogDebug(`⚠️ Sheet not found: ${name}`, 'MID');
+      continue;
+    }
+
+    const LR = sheet.getLastRow();
+    const LC = sheet.getLastColumn();
+    if (LR < 5 || LC < 1) continue; // skip if no data
+
+    const range = sheet.getRange(5, 1, LR - 4, LC);
+    const data = range.getValues();
+
+    let fixedCount = 0;
+
+    for (let r = 0; r < data.length; r++) {
+      for (let c = 0; c < data[r].length; c++) {
+        const val = data[r][c];
+
+        // 1️⃣ Fix text numbers with thousands separators (e.g. "54.334.248")
+        if (typeof val === 'string' && /^\-?\d{1,3}(\.\d{3})+$/.test(val)) {
+          const cleaned = parseFloat(val.replace(/\./g, ''));
+          data[r][c] = cleaned;
+          fixedCount++;
+          continue;
+        }
+
+        // 2️⃣ Fix numeric values that look like they were treated as decimals
+        if (typeof val === 'number' && Math.abs(val) > 0 && Math.abs(val) < 10000 && val % 1 !== 0) {
+          // Check if the fractional part is large enough to indicate a missing thousand separator
+          const fraction = Math.abs(val) % 1;
+          if (fraction > 0.1 && fraction < 0.999) {  // e.g., 462.764 or -22.501
+            const scaled = Math.round(val * 1000);
+            if (Math.abs(scaled) > Math.abs(val) * 10) { // sanity check
+              data[r][c] = scaled;
+              fixedCount++;
+            }
+          }
+        }
+      }
+    }
+
+    if (fixedCount > 0) {
+      range.setValues(data);
+      LogDebug(`✅ ${name}: ${fixedCount} values corrected`, 'MIN');
+    } else {
+      LogDebug(`ℹ️ ${name}: No corrections needed`, 'MID');
+    }
+  }
+
+  LogDebug('🎯 Cleanup completed for all sheets.', 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////Unicode emoji or symbol/////////////////////////////////////////////////////////////////////

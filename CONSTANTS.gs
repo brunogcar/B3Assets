@@ -63,6 +63,9 @@
   const TDR = "D22"    // TDR = Target ID                  // Tab: Config
   const DIR = "D25"    // DIR = DATA Source ID             // Tab: Config
 
+  const MG1 = "D31"    // MG1 = Merge Source ID 1          // Tab: Config
+  const MG2 = "D34"    // MG2 = Merge Source ID 2          // Tab: Config
+
   const ICR = "F13"    // ICR = Sheet ID Check             // Tab: Config
   const IER = "F16"    // IER = ID Exported?               // Tab: Config
 

@@ -18,7 +18,7 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   const SheetNamesToSave = [];
   for (let i = 0; i < SheetNames.length; i++) {
     const Name = SheetNames[i];
-    const sheet = fetchSheetByName(Name);
+    const sheet = getSheet(Name);
     if (!sheet) return;
 
     if (checkCallback(Name) === "TRUE") {
@@ -93,15 +93,15 @@ function doCheckDATAS() {
 /////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doCheckDATA(SheetName) {
-  const sheet_sr = fetchSheetByName(SheetName);    // Source sheet
-  const sheet_i  = fetchSheetByName('Index');      // Index sheet
-  const sheet_d  = fetchSheetByName('DATA');       // DATA sheet
-  const sheet_p  = fetchSheetByName(PROV);         // PROV sheet
-  const sheet_o  = fetchSheetByName('OPT');        // OPT sheet
-  const sheet_b  = fetchSheetByName(Balanco);      // Balanco sheet
-  const sheet_r  = fetchSheetByName(Resultado);    // Resultado sheet
-  const sheet_f  = fetchSheetByName(Fluxo);        // Fluxo sheet
-  const sheet_v  = fetchSheetByName(Valor);        // Valor sheet
+  const sheet_sr = getSheet(SheetName);    // Source sheet
+  const sheet_i  = getSheet('Index');      // Index sheet
+  const sheet_d  = getSheet('DATA');       // DATA sheet
+  const sheet_p  = getSheet(PROV);         // PROV sheet
+  const sheet_o  = getSheet('OPT');        // OPT sheet
+  const sheet_b  = getSheet(Balanco);      // Balanco sheet
+  const sheet_r  = getSheet(Resultado);    // Resultado sheet
+  const sheet_f  = getSheet(Fluxo);        // Fluxo sheet
+  const sheet_v  = getSheet(Valor);        // Valor sheet
 
   LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
 
@@ -260,7 +260,7 @@ function doTrim() {
 function doTrimSheet(SheetName) {
   LogDebug(`TRIM: ${SheetName}`, 'MIN');
 
-  const sheet_sr = fetchSheetByName(SheetName);
+  const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
 
   const LR = sheet_sr.getLastRow();
@@ -299,7 +299,7 @@ function doTrimSheet(SheetName) {
  * - Fetching *all* sheets using `getSheets()`
  * - Deleting sheets using `ss.deleteSheet(sheet)`
  *
- * These operations go beyond simply fetching a sheet by name (which `fetchSheetByName()` handles),
+ * These operations go beyond simply fetching a sheet by name (which `getSheet()` handles),
  * so we must declare `const ss = SpreadsheetApp.getActiveSpreadsheet();` here directly.
  *
  * - STOCK: hides specific sheets listed in `Hidden`.
@@ -309,7 +309,7 @@ function doTrimSheet(SheetName) {
  */
 function doDisableSheets() {
   const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove
-  const sheet_co = fetchSheetByName('Config');
+  const sheet_co = getSheet('Config');
   if (!sheet_co) return;
 
   const Class = getConfigValue(IST, 'Config');                     // IST = asset class
@@ -376,8 +376,8 @@ function doDisableSheets() {
 /////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
 
 function hideConfig() {
-  const sheet_sr = fetchSheetByName(`Settings`);                        // Source sheet
-  const sheet_co = fetchSheetByName(`Config`);                          // Config sheet
+  const sheet_sr = getSheet(`Settings`);                        // Source sheet
+  const sheet_co = getSheet(`Config`);                          // Config sheet
 
   var Hide_Config = sheet_co.getRange(HCR).getDisplayValue();            // HCR = Hide Config Range
 

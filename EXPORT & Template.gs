@@ -52,7 +52,7 @@ function doExportBasic(SheetName) {
     return;
   }
 
-  const sheet_sr = fetchSheetByName(SheetName);
+  const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
 
   const exportMap = [
@@ -113,7 +113,7 @@ function doExportBasic(SheetName) {
   }
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
-  const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use getSheet, because gets data from diferent spreadsheet
   if (!sheet_tr) return;
 
   const A2      = sheet_sr.getRange('A2').getValue();
@@ -168,7 +168,7 @@ function doExportBasic(SheetName) {
 function doExportExtra(SheetName) {
   LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
-  const sheet_sr = fetchSheetByName(SheetName);
+  const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
 
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
@@ -261,11 +261,11 @@ function doExportFinancial(SheetName) {
     return;
   }
 
-  const sheet_sr = fetchSheetByName('Index');
+  const sheet_sr = getSheet('Index');
   if (!sheet_sr) return;
 
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
-  const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use fetchSheetByName, because gets data from diferent spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use getSheet, because gets data from diferent spreadsheet
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
@@ -371,7 +371,7 @@ processExport(TKT, Data, sheet_tr, SheetName);
 /////////////////////////////////////////////////////////////////////INFO/////////////////////////////////////////////////////////////////////
 
 function doExportInfo() {
-  const sheet_in = fetchSheetByName('Info');
+  const sheet_in = getSheet('Info');
   if (!sheet_in) return;
 
   var SheetName = sheet_in.getName();
@@ -425,10 +425,10 @@ function doExportInfo() {
 /////////////////////////////////////////////////////////////////////PROVENTOS/////////////////////////////////////////////////////////////////////
 
 function doExportProventos() {
-  const sheet_pv = fetchSheetByName(PROV);
+  const sheet_pv = getSheet(PROV);
   if (!sheet_pv) return;
 
-  const sheet_ix = fetchSheetByName('Index');
+  const sheet_ix = getSheet('Index');
   if (!sheet_ix) return;
 
   if (!sheet_ix || !sheet_pv) return;
@@ -495,7 +495,7 @@ function doExportProventos() {
     return;
   }
 
-  var nonExportValues = Data[0].slice(3, 7);                                              // From index 3 (E) to index 7 (not inclusive), i.e. columns E through H.
+  var nonExportValues = Data[0].slice(4, 7);                                              // From index 4 (F) to index 7 (not inclusive), i.e. columns F through H.
   var isBlankOrZero = nonExportValues.some(value => value === "" || value === 0);         // nonExportValues.every to select ALL
 
   if (isBlankOrZero) {

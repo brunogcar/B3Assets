@@ -13,7 +13,7 @@ function setSheetID() {
   const EXP     = getConfigValue(EXR, 'Config');   // EXR = Export
   const SHI     = getConfigValue(ICR, 'Config');   // ICR = Sheet ID
 
-  const sheet_co = fetchSheetByName('Config')
+  const sheet_co = getSheet('Config')
   var bgcolor    = sheet_co.getRange(IDR).getBackground();
   var colour     = '#d9ead3';
 
@@ -129,7 +129,7 @@ function doIsInfoExported() {
   const EXP = getConfigValue(EXR, 'Config');                                      // EXR = Exported?
 
   if (EXP === "TRUE") {
-    const sheet_in = fetchSheetByName('Info');
+    const sheet_in = getSheet('Info');
     if (!sheet_in) return;
 
     const Range = sheet_in.getRange(TIR).getValues();                              // TIR = Tab Info Range
@@ -147,7 +147,7 @@ function doIsInfoExported() {
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 
 function doClearExportAll() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUTURE, FUND, BLC, DRE, FLC, DVA, 'Right', 'Receipt', 'Warrant'];
+  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUTURE, FUND, 'Poventos', BLC, DRE, FLC, DVA, 'Right', 'Receipt', 'Warrant'];
 
   _doGroup(SheetNames, doClearExport, "Clearing", "cleared", "");
 }

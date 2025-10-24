@@ -2,7 +2,7 @@
 
 function doSaveBasic(SheetName) {
   LogDebug(`SAVE: ${SheetName}`, 'MIN');
-  const sheet_sr = fetchSheetByName(SheetName);
+  const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
   Utilities.sleep(2500); // 2.5 secs
 
@@ -221,7 +221,7 @@ const financialMap = {
 function doSaveFinancial(SheetName) {
   LogDebug(`SAVE: ${SheetName}`, 'MIN');
 
-  const sheet_up = fetchSheetByName('UPDATE');
+  const sheet_up = getSheet('UPDATE');
   if (!sheet_up) return;
 
   const cfg = Object.values(financialMap)
@@ -237,11 +237,11 @@ function doSaveFinancial(SheetName) {
     return;
   }
 
-  const sheet_sr = fetchSheetByName(cfg.sh_sr);
+  const sheet_sr = getSheet(cfg.sh_sr);
   if (!sheet_sr) return;
   const sheet_tr = cfg.sh_tr === cfg.sh_sr
     ? sheet_sr
-    : fetchSheetByName(cfg.sh_tr);
+    : getSheet(cfg.sh_tr);
   if (!sheet_tr) return;
 
 // ─── Read & validate dates via helper ───────────────────────────
@@ -312,10 +312,10 @@ function doSaveProventos() {
 }
 
 function doSaveProv(Prov_Values) {
-  const sheet_sr = fetchSheetByName('Prov_');
+  const sheet_sr = getSheet('Prov_');
   if (!sheet_sr) return;
 
-  const sheet_tr = fetchSheetByName('Prov');
+  const sheet_tr = getSheet('Prov');
   if (!sheet_tr) return;
 
   const checkValue = sheet_sr.getRange(Prov_Values.checkCell).getDisplayValue().trim();
@@ -348,7 +348,7 @@ function doSaveProv(Prov_Values) {
 }
 
 function doGetProventos() {
-  const sheet_tr = fetchSheetByName('Prov_');
+  const sheet_tr = getSheet('Prov_');
   if (!sheet_tr) return;
 
   const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
@@ -541,7 +541,7 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 /////////////////////////////////////////////////////////////////////CodeCVM/////////////////////////////////////////////////////////////////////
 
 function doGetCodeCVM() {
-  const sheet_tr = fetchSheetByName('Info');
+  const sheet_tr = getSheet('Info');
   if (!sheet_tr) return;
 
   const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
@@ -591,7 +591,7 @@ function doGetCodeCVM() {
 /////////////////////////////////////////////////////////////////////SAVE AND SHARES TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doSaveShares() {
-  const sheet_sr = fetchSheetByName('DATA');
+  const sheet_sr = getSheet('DATA');
   if (!sheet_sr) return;
 
   try {
