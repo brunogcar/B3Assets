@@ -55,7 +55,7 @@ function doExportBasic(SheetName) {
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
 
-  const exportMap = [
+  const basicExportMap = [
     {
       names: [SWING_4, SWING_12, SWING_52],
       exportKey: ETR,                                                                   // ETR = Export to Swing
@@ -106,9 +106,9 @@ function doExportBasic(SheetName) {
     },
   ];
 
-  const cfg = exportMap.find(e => e.names.includes(SheetName));
+  const cfg = basicExportMap.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`❌ ERROR EXPORT: ${SheetName} - No entry in exportMap: doExportBasic`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - No entry in basicExportMap: doExportBasic`, 'MIN');
     return;
   }
 
@@ -143,20 +143,12 @@ function doExportBasic(SheetName) {
   const LC = sheet_sr.getLastColumn();
   let filtered;
   if (SheetName === FUND) {
+    const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
+    const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
+
     const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+    filtered = filterFundRow(row, Minimum, Maximum);                                  // function in Save - Fuynction
 
-    filtered = row.map((v, i) => {
-      // keep date cols 1–2 and beyond BJ (col 62) as-is
-      if (i < 2 || i >= 62) return v;
-
-      // if it’s not a number, leave it alone
-      if (typeof v !== 'number') return v;
-
-      // keep values inside [Minimum, Maximum], blank out everything else
-      return (v >= Minimum && v <= Maximum)
-        ? v
-        : '';
-    });
   } else {
     filtered = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
   }

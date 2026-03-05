@@ -44,7 +44,7 @@ function doEditBasic(SheetName) {
   if (!sheet_sr) return;
   Utilities.sleep(2500);
 
-  const editTable = [
+  const basicEditMap = [
     {
       names: [SWING_4, SWING_12, SWING_52],
       editKey: DTR,                                          // DTR = Edit to Swing
@@ -134,9 +134,9 @@ function doEditBasic(SheetName) {
     }
   ];
 
-  const cfg = editTable.find(e => e.names.includes(SheetName));
+  const cfg = basicEditMap.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in editTable: doEditBasic`, 'MIN');
+    LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in basicEditMap: doEditBasic`, 'MIN');
     return;
   }
 
@@ -144,6 +144,15 @@ function doEditBasic(SheetName) {
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
 
   if (cfg.conditions(vals)) {
+    if (SheetName === FUND) {
+      const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
+      const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
+      const LC = sheet_sr.getLastColumn();
+
+      const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+      sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
+    }
     cfg.handler(sheet_sr, SheetName, Edit);
   } else {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: doEditBasic`, 'MIN');

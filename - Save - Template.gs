@@ -6,7 +6,7 @@ function doSaveBasic(SheetName) {
   if (!sheet_sr) return;
   Utilities.sleep(2500); // 2.5 secs
 
-  const saveTable = [
+  const basicSaveMap = [
     {
       names: [SWING_4, SWING_12, SWING_52],
       saveKey: STR,
@@ -112,9 +112,9 @@ function doSaveBasic(SheetName) {
     }
   ];
 
-  const cfg = saveTable.find(e => e.names.includes(SheetName));
+  const cfg = basicSaveMap.find(e => e.names.includes(SheetName));
   if (!cfg) {
-    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in saveTable: doSaveBasic`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in basicSaveMap: doSaveBasic`, 'MIN');
     return;
   }
 
@@ -123,6 +123,15 @@ function doSaveBasic(SheetName) {
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
 
   if (cfg.conditions(vals)) {
+    if (SheetName === FUND) {
+      const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
+      const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
+      const LC = sheet_sr.getLastColumn();
+
+      const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+      sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
+    }
     cfg.handler(sheet_sr, SheetName, Save, Edit);
   } else {
     LogDebug(`🚩 ERROR SAVE: ${SheetName} - Conditions arent met: doSaveBasic`, 'MIN');
@@ -131,7 +140,7 @@ function doSaveBasic(SheetName) {
 
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
-const financialMap = {
+const financialSaveMap = {
   BLC: {
     saveKey: SBL,   editKey: DBL,
     sh_sr: Balanco, sh_tr: BLC,   recurse: true,
@@ -224,10 +233,10 @@ function doSaveFinancial(SheetName) {
   const sheet_up = getSheet('UPDATE');
   if (!sheet_up) return;
 
-  const cfg = Object.values(financialMap)
+  const cfg = Object.values(financialSaveMap)
                     .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in financialMap: doSaveFinancial`, 'MIN');
+    LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in financialSaveMap: doSaveFinancial`, 'MIN');
     return;
   }
 

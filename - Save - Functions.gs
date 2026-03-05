@@ -246,6 +246,25 @@ function processCheckDATA(sheet_sr, SheetName, Check, hideSetting) {
   return result;
 }
 
+/////////////////////////////////////////////////////////////////////FILTER FUND/////////////////////////////////////////////////////////////////////
+
+function filterFundRow(row, Minimum, Maximum) {
+  return row.map((v, i) => {
+
+    // keep columns A-B (0-1) and >= BJ (index 62)
+    if (i < 2 || i >= 62) return v;
+
+    // non numeric values stay unchanged
+    if (typeof v !== 'number') return v;
+
+    // keep values inside range
+    return (v >= Minimum && v <= Maximum)
+      ? v
+      : '';
+
+  });
+}
+
 /////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
 
 function doTrim() {
