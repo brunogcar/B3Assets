@@ -256,7 +256,7 @@ function doSaveFinancial(SheetName) {
   if (cfg.checks) {
     const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
     const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
-    if (!valid) {
+    if (!valid) { 
       LogDebug(`❌ ERROR SAVE: ${SheetName} - Checks failed: ${JSON.stringify(checkVals)}`, 'MID');
       return;
     }

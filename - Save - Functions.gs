@@ -27,9 +27,9 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   }
 
   const totalSheets = SheetNamesToSave.length;
-  if (totalSheets === 0) {
-    LogDebug(`No valid data found. Skipping save operation.`, 'MIN');
-    return;
+  if (totalSheets === 0) { 
+    LogDebug(`No valid data found. Skipping save operation.`, 'MIN'); 
+    return; 
   }
 
   SpreadsheetApp.flush();
@@ -173,7 +173,6 @@ function doCheckDATA(SheetName) {
     Check = cfg.sheetVar.getRange(cfg.cell).getValue();
   }
 
-
   let hideOpt;
   if (typeof cfg.forceHide === 'boolean') {
     hideOpt = cfg.forceHide ? 'TRUE' : 'FALSE';
@@ -228,7 +227,12 @@ function applyVisibility(sheet_sr, SheetName, result, hideSetting) {
       LogDebug(`🔒 HIDDEN: ${SheetName}`, 'MIN');
     }
   } else {
-    if (sheet_sr.isSheetHidden()) {
+    const a5 = sheet_sr.getRange("A5").getValue();
+    if (a5 === "") {
+      sheet_sr.hideSheet();
+      LogDebug(`🔒 HIDDEN (A5 empty): ${SheetName}`, 'MIN');
+    }
+    else if (sheet_sr.isSheetHidden()) {
       sheet_sr.showSheet();
       LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
     }

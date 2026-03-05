@@ -18,21 +18,21 @@ function LogDebug(msg, level = "MIN") {
     _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : "MIN";
   }
   const dbgLevel = _DBG_CACHE;
-  if (ORDER.indexOf(dbgLevel) < 0) _DBG_CACHE = "MIN"; // fallback if invalid
+  if (!ORDER.includes(dbgLevel)) _DBG_CACHE = "MIN";                                               // fallback if invalid
 
   try {
     if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
       // Prefer Logger.log so Apps Script IDE shows messages
       Logger.log(msg);
     }
-  } catch (e) {
+  } catch {
     // last resort
     console.log(msg);
   }
 }
 
 /**
- * Generic batch‐runner for sheet operations (edit/export/import).
+ * Generic batch‐runner for sheet operations (save/edit/export/import).
  *
  * @param {string[]} SheetNames         List of sheet‐name constants.
  * @param {function(string):void} fn    Operation to perform on each sheet.
@@ -69,7 +69,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     }
   }
   LogDebug(
-      `💾 ` +
+      `💾 ` + 
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
     , "MAX");

@@ -425,8 +425,8 @@ function doMergeFinancials() {
 
 function doMergeFinancials() {
   try {
-    const Merge_Id_1 = getConfigValue(MG1, 'Config');
-    const Merge_Id_2 = getConfigValue(MG2, 'Config');
+    const Merge_Id_1 = getConfigValue(MG1, 'Config'); 
+    const Merge_Id_2 = getConfigValue(MG2, 'Config'); 
 
     if (!Merge_Id_1 || !Merge_Id_2) {
       LogDebug(`❌ ERROR MERGE: MG1 or MG2 is empty.`, 'MIN');
@@ -506,8 +506,8 @@ function doMergeFinancials() {
 
 function doCheckMergeFinancials() {
   try {
-    const Merge_Id_1 = getConfigValue(MG1, 'Config');
-    const Merge_Id_2 = getConfigValue(MG2, 'Config');
+    const Merge_Id_1 = getConfigValue(MG1, 'Config'); 
+    const Merge_Id_2 = getConfigValue(MG2, 'Config'); 
 
     if (!Merge_Id_1 || !Merge_Id_2) {
       LogDebug(`❌ ERROR COMPARE: MG1 or MG2 is empty.`, 'MIN');

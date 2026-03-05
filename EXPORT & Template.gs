@@ -123,7 +123,7 @@ function doExportBasic(SheetName) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - A2 or A5 invalid (A2=${A2}, A5=${A5})`, 'MIN');
     return;
   }
-
+  
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
