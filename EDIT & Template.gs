@@ -42,7 +42,7 @@ function doEditBasic(SheetName) {
 
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
-  Utilities.sleep(2500);
+  SpreadsheetApp.flush()
 
   const basicEditMap = [
     {
@@ -148,9 +148,10 @@ function doEditBasic(SheetName) {
       const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
       const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
       const LC = sheet_sr.getLastColumn();
-
       const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+
       const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+
       sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
     }
     cfg.handler(sheet_sr, SheetName, Edit);

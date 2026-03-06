@@ -4,7 +4,7 @@ function doSaveBasic(SheetName) {
   LogDebug(`SAVE: ${SheetName}`, 'MIN');
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
-  Utilities.sleep(2500); // 2.5 secs
+  SpreadsheetApp.flush()
 
   const basicSaveMap = [
     {
@@ -127,9 +127,10 @@ function doSaveBasic(SheetName) {
       const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
       const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
       const LC = sheet_sr.getLastColumn();
-
       const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+
       const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+
       sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
     }
     cfg.handler(sheet_sr, SheetName, Save, Edit);

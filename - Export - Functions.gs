@@ -173,7 +173,7 @@ function doClearExport(SheetName) {
   if (search.length) {
     search.forEach(cell => {cell.offset(0, 0, 1, sheet_tr.getLastColumn()).clearContent();
     });
-    LogDebug(`✅ SUCCESS CLEAR EXPORT: ${SheetName} | Cleared ${matches.length} rows`, 'MIN');
+    LogDebug(`✅ SUCCESS CLEAR EXPORT: ${SheetName} | Cleared ${search.length} rows`, 'MIN');
   } else {
     LogDebug(`❌ ERROR CLEAR EXPORT: ${SheetName} | No cells containing ${TKT.slice(0,4)}`, 'MIN');
   }
