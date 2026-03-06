@@ -638,33 +638,66 @@ function doDeleteZeroOptions() {
   if (!sheet) return;
 
   const lastRow = sheet.getLastRow();
+  const startRow = 5;
 
-  for (let row = lastRow; row > 4; row--) {
-    try {
-      const C = sheet.getRange(row, 3).getValue();
-      const E = sheet.getRange(row, 5).getValue();
-      const H = sheet.getRange(row, 8).getDisplayValue().trim();
-      const I = sheet.getRange(row, 9).getDisplayValue().trim();
-      const J = sheet.getRange(row,10).getDisplayValue().trim();
+  if (lastRow < startRow) {
+    LogDebug(`[doDeleteZeroOptions] No rows to scan in ${OPCOES}`, "MIN");
+    return;
+  }
 
-      const zeroCE   = (C === 0 || E === 0);
-      const allBlank = (H === "" && I === "" && J === "");
+  // Read block once (A:J)
+  const block = sheet.getRange(startRow, 1, lastRow - (startRow - 1), 10).getValues();
 
-      if (zeroCE || allBlank) {
-        // Decide the reason for logging
-        let reason;
-        if (zeroCE) {
-          reason = `zero in C or E (C=${C}, E=${E})`;
-        } else {
-          reason = `blank H/I/J (H='${H}', I='${I}', J='${J}')`;
-        }
-        LogDebug(`[doDeleteZeroOptions] Deleting row ${row} due to ${reason}`, "MIN");
-        sheet.deleteRow(row);
+  const rowsToDelete = [];
+
+  for (let r = 0; r < block.length; r++) {
+
+    const C = block[r][2];
+    const E = block[r][4];
+
+    const H = (block[r][7] || '').toString().trim();
+    const I = (block[r][8] || '').toString().trim();
+    const J = (block[r][9] || '').toString().trim();
+
+    const zeroCE   = (C === 0 || E === 0);
+    const allBlank = (H === "" && I === "" && J === "");
+
+    if (zeroCE || allBlank) {
+
+      const rowIndex = r + startRow;
+
+      let reason;
+      if (zeroCE) {
+        reason = `zero in C or E (C=${C}, E=${E})`;
+      } else {
+        reason = `blank H/I/J (H='${H}', I='${I}', J='${J}')`;
       }
-    } catch (err) {
-      LogDebug(`[doDeleteZeroOptions] Error: row ${row}: ${err}`, "MIN");
+
+      LogDebug(
+        `[doDeleteZeroOptions] Deleting row ${rowIndex} due to ${reason}`,
+        "MIN"
+      );
+
+      rowsToDelete.push(rowIndex);
     }
   }
+
+  if (!rowsToDelete.length) {
+    LogDebug(`[doDeleteZeroOptions] No rows deleted from ${OPCOES}`, "MIN");
+    return;
+  }
+
+  // Delete bottom → top to avoid shifting issues
+  rowsToDelete.sort((a, b) => b - a);
+
+  for (const row of rowsToDelete) {
+    sheet.deleteRow(row);
+  }
+
+  LogDebug(
+    `[doDeleteZeroOptions] Deleted ${rowsToDelete.length} rows from ${OPCOES}`,
+    "MIN"
+  );
 }
 
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
