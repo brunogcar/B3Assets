@@ -160,7 +160,7 @@ function doCleanBasic(SheetName) {
   var LR = sheet.getLastRow();
   var LC = sheet.getLastColumn();
 
-  sheet.getRange(5, 1, LR, LC).setValue('');
+  sheet.getRange(5, 1, LR, LC).clearContent();
   sheet.createTextFinder("-").matchEntireCell(true).replaceAllWith("");
   sheet.createTextFinder("0").matchEntireCell(true).replaceAllWith("");
   sheet.createTextFinder("0,00").matchEntireCell(true).replaceAllWith("");
