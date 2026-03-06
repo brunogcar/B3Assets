@@ -3,15 +3,15 @@
 function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   if (Save !== "TRUE") {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, "MIN");
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, 'MIN');
     return;
   }
 
   const LR = sheet_sr.getLastRow();
   const LC = sheet_sr.getLastColumn();
 
-  // Read rows 1–5, columns A–LC once
-  const data = sheet_sr.getRange(1,1,5,LC).getValues();
+  // Read the entire sheet once
+  const data = sheet_sr.getRange(1,1,LR,LC).getValues();
 
   const A1 = data[0][0];
   const A2 = data[1][0];
@@ -27,7 +27,7 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   const Header = [data[1]];
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, "MIN");
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, 'MIN');
     return;
   }
 
@@ -36,20 +36,20 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
     sheet_sr.getRange(5,1,1,LC).setValues(Header);
     sheet_sr.getRange(1,1,1,LC).setValues(Header);
 
-    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, "MIN");
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
     return;
   }
 
   if (A2 > A1 || A2 > A5) {
     // Save Header and Body
-    const Body = sheet_sr.getRange(5,1,LR-4,LC).getValues();
+    const Body = data.slice(4);
 
     sheet_sr.getRange(6,1,Body.length,LC).setValues(Body);
     sheet_sr.getRange(5,1,1,LC).setValues(Header);
     sheet_sr.getRange(1,1,1,LC).setValues(Header);
 
-    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, "MIN");
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
     return;
   }
@@ -63,13 +63,13 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
     if (Edit === "TRUE") {
       doEditBasic(SheetName);
     } else {
-      LogDebug(`❌ ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, "MIN");
+      LogDebug(`❌ ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     }
 
     return;
   }
 
-  LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: processSaveGeneric`, "MIN");
+  LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: processSaveGeneric`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////

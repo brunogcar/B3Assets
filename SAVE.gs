@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////MENU/////////////////////////////////////////////////////////////////////
 
 function doSaveAll() {
-  Logger.log(SNAME(2));
+  LogDebug(SNAME(2), 'MIN');
 
   SpreadsheetApp.flush();
 
@@ -21,7 +21,7 @@ function doSaveAll() {
 
 //-------------------------------------------------------------------BASICS-------------------------------------------------------------------//
 function doSaveAllBasics() {
-  Logger.log(SNAME(2));
+  LogDebug(SNAME(2), 'MIN');
 
   SpreadsheetApp.flush();
 
@@ -39,7 +39,7 @@ function doSaveAllBasics() {
 }
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 function doSaveAllExtras() {
-  Logger.log(SNAME(2));
+  LogDebug(SNAME(2), 'MIN');
 
   doSaveGroup(SheetsExtra, doCheckDATA, doSaveBasic);
 
@@ -57,7 +57,7 @@ function doSaveAllExtras() {
 }
 //-------------------------------------------------------------------DATAS-------------------------------------------------------------------//
 function doSaveAllFinancials() {
-  Logger.log(SNAME(2));
+  LogDebug(SNAME(2), 'MIN');
 
   SpreadsheetApp.flush();
 

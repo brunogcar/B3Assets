@@ -3,22 +3,22 @@
 
 /**
  * Conditional debug logger based on Config‑tab cell DBG.
- * DBG cell must contain one of: "MIN", "MID", or "MAX".
+ * DBG cell must contain one of: 'MIN', 'MID', or 'MAX'.
  *
  * @param {string} msg     The message to log.
- * @param {"MIN"|"MID"|"MAX"} level  How verbose this message is.
+ * @param {'MIN'|'MID'|'MAX'} level  How verbose this message is.
  */
 let _DBG_CACHE = null;
 
-function LogDebug(msg, level = "MIN") {
-  const ORDER = ["MIN", "MID", "MAX"];
+function LogDebug(msg, level = 'MIN') {
+  const ORDER = ['MIN', 'MID', 'MAX'];
   // lazy fetch / cache dbgLevel; refresh if cache is null
   if (_DBG_CACHE === null) {
     const dbgVal = runSafely(() => getConfigValue(DBG, 'Config'), 'LogDebug:getConfigValue');      // DBG = "L12"
-    _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : "MIN";
+    _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : 'MIN';
   }
   const dbgLevel = _DBG_CACHE;
-  if (!ORDER.includes(dbgLevel)) _DBG_CACHE = "MIN";                                               // fallback if invalid
+  if (!ORDER.includes(dbgLevel)) _DBG_CACHE = 'MIN';                                               // fallback if invalid
 
   try {
     if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
@@ -51,28 +51,28 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
   const totalSheets = SheetNames.length;
   let count = 0;
 
-  LogDebug(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`, "MAX");
+  LogDebug(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`, 'MAX');
 
   for (let i = 0; i < totalSheets; i++) {
     const SheetName = SheetNames[i];
     count++;
     const progress = Math.round((count / totalSheets) * 100);
 
-    LogDebug(`[⏳ ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, "MAX");
+    LogDebug(`[⏳ ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, 'MAX');
 
     try {
       fn(SheetName);
-      LogDebug(`[🆗 ${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, "MAX");
+      LogDebug(`[🆗 ${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, 'MAX');
 
     } catch (error) {
-      LogDebug(`[🛑 ${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, "MAX");
+      LogDebug(`[🛑 ${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, 'MAX');
     }
   }
   LogDebug(
       `💾 ` + 
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
-    , "MAX");
+    , 'MAX');
 }
 
 /**
@@ -84,26 +84,26 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
  * @param {string} SheetName - The exact name of the sheet to fetch.
  * @returns {GoogleAppsScript.Spreadsheet.Sheet | null} - The Sheet object if found; otherwise, null.
  */
-const _SHEET_CACHE = {};                           // SheetName -> Sheet
+const _SS_CACHE = SpreadsheetApp.getActiveSpreadsheet();
+const _SHEET_CACHE = {};
 
 function getSheet(SheetName, forceRefresh = false) {
+
   if (!SheetName) return null;
-  try {
-    if (!forceRefresh && _SHEET_CACHE[SheetName]) return _SHEET_CACHE[SheetName];
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sh = ss ? ss.getSheetByName(SheetName) : null;
-    if (sh) {
-      _SHEET_CACHE[SheetName] = sh;
-      LogDebug(`✅ Sheet found: ${SheetName}`, "MAX");
-      return sh;
-    } else {
-      LogDebug(`⚠️ Sheet not found: ${SheetName}`, "MIN");
-      return null;
-    }
-  } catch (err) {
-    LogDebug(`❌ getSheet ERROR for "${SheetName}": ${err && err.message ? err.message : err}`, "MIN");
-    return null;
+
+  if (!forceRefresh && _SHEET_CACHE[SheetName])
+    return _SHEET_CACHE[SheetName];
+
+  const sh = _SS_CACHE.getSheetByName(SheetName);
+
+  if (sh) {
+    _SHEET_CACHE[SheetName] = sh;
+    LogDebug(`✅ Sheet found: ${SheetName}`, "MAX");
+  } else {
+    LogDebug(`⚠️ Sheet not found: ${SheetName}`, "MIN");
   }
+
+  return sh;
 }
 
 /**
@@ -127,7 +127,7 @@ function getValuesSafe(sh, r, c, numRows, numCols) {
   try {
     return sh.getRange(r, c, numRows, numCols).getValues();
   } catch (e) {
-    LogDebug(`getValuesSafe failed: ${e.message}`, "MIN");
+    LogDebug(`getValuesSafe failed: ${e.message}`, 'MIN');
     return [];
   }
 }
@@ -142,7 +142,7 @@ function setValuesSafe(sh, r, c, values) {
     sh.getRange(r, c, values.length, values[0].length).setValues(values);
     return true;
   } catch (e) {
-    LogDebug(`setValuesSafe failed: ${e.message}`, "MIN");
+    LogDebug(`setValuesSafe failed: ${e.message}`, 'MIN');
     return false;
   }
 }
@@ -156,7 +156,7 @@ function runSafely(fn, ctx) {
   try {
     return fn();
   } catch (e) {
-    LogDebug(`Error in ${ctx}: ${e && e.message ? e.message : e}`, "MIN");
+    LogDebug(`Error in ${ctx}: ${e && e.message ? e.message : e}`, 'MIN');
     return null;
   }
 }
@@ -186,11 +186,11 @@ function getConfigValue(Acronym, Source = 'Both') {
   const sheet_co = (Source !== 'Settings') ? getSheet('Config')   : null;
 
   // If we needed Settings but didn't get it, bail
-  if (Source !== 'Config' && !sheet_se) { LogDebug('⚠️ Settings sheet not found', "MIN");
+  if (Source !== 'Config' && !sheet_se) { LogDebug('⚠️ Settings sheet not found', 'MIN');
     return null;
   }
   // If we needed Config but didn't get it, bail
-  if (Source !== 'Settings' && !sheet_co) { LogDebug('⚠️ Config sheet not found', "MIN");
+  if (Source !== 'Settings' && !sheet_co) { LogDebug('⚠️ Config sheet not found', 'MIN');
     return null;
   }
 
@@ -206,7 +206,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         return Value;  // short‑circuit if only pulling from Settings
       }
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, "MIN");
+      LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, 'MIN');
     }
   }
 
@@ -218,7 +218,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         Value = null;
       }
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Config: getConfigValue`, "MIN");
+      LogDebug(`⚠️ const ${Acronym} not found in Config: getConfigValue`, 'MIN');
     }
   }
   return Value;
@@ -235,17 +235,17 @@ function setConfigValue(Acronym, value) {
   // Fetch the Config sheet
   const sheet_co = getSheet('Config');
   if (!sheet_co) {
-    LogDebug(`⚠️ Config sheet not found; cannot set ${Acronym}`, "MIN");
+    LogDebug(`⚠️ Config sheet not found; cannot set ${Acronym}`, 'MIN');
     return false;
   }
 
   try {
     // Write the value
     sheet_co.getRange(Acronym).setValue(value);
-    LogDebug(`🆗 Wrote value "${value}" to Config!${Acronym}`, "MID");
+    LogDebug(`🆗 Wrote value "${value}" to Config!${Acronym}`, 'MID');
     return true;
   } catch (e) {
-    LogDebug(`🛑 Failed to write ${Acronym} to Config: ${e.message}`, "MIN");
+    LogDebug(`🛑 Failed to write ${Acronym} to Config: ${e.message}`, 'MIN');
     return false;
   }
 }
@@ -632,7 +632,7 @@ function doCleanZeros() {
 }
 
 function doDeleteZeroOptions() {
-  LogDebug(`DELETE: 0 values from call put / blank values from ratios: ${OPCOES}`, "MIN");
+  LogDebug(`DELETE: 0 values from call put / blank values from ratios: ${OPCOES}`, 'MIN');
 
   const sheet = getSheet(OPCOES);
   if (!sheet) return;
@@ -641,7 +641,7 @@ function doDeleteZeroOptions() {
   const startRow = 5;
 
   if (lastRow < startRow) {
-    LogDebug(`[doDeleteZeroOptions] No rows to scan in ${OPCOES}`, "MIN");
+    LogDebug(`[doDeleteZeroOptions] No rows to scan in ${OPCOES}`, 'MIN');
     return;
   }
 
@@ -675,7 +675,7 @@ function doDeleteZeroOptions() {
 
       LogDebug(
         `[doDeleteZeroOptions] Deleting row ${rowIndex} due to ${reason}`,
-        "MIN"
+        'MIN'
       );
 
       rowsToDelete.push(rowIndex);
@@ -683,7 +683,7 @@ function doDeleteZeroOptions() {
   }
 
   if (!rowsToDelete.length) {
-    LogDebug(`[doDeleteZeroOptions] No rows deleted from ${OPCOES}`, "MIN");
+    LogDebug(`[doDeleteZeroOptions] No rows deleted from ${OPCOES}`, 'MIN');
     return;
   }
 
@@ -696,12 +696,12 @@ function doDeleteZeroOptions() {
 
   LogDebug(
     `[doDeleteZeroOptions] Deleted ${rowsToDelete.length} rows from ${OPCOES}`,
-    "MIN"
+    'MIN'
   );
 }
 
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
-  LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet: ${sheet_tr}`, "MIN");
+  LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet: ${sheet_tr}`, 'MIN');
 
   const colA = sheet_tr.getRange(2, 1, sheet_tr.getLastRow() - 1).getValues();     // only column A, skip header
   const rowIndex = colA.findIndex(row => row[0] === TKT);
@@ -710,14 +710,14 @@ function tryCleanOpcaoExportRow(sheet_tr, TKT) {
     const rowNum = rowIndex + 2;                                                   // +2 because we started from row 2
     const colCount = sheet_tr.getLastColumn();
     sheet_tr.getRange(rowNum, 1, 1, colCount).clearContent();
-    LogDebug(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from exported sheet ${sheet_tr}.`, "MIN");
+    LogDebug(`EXPORT CLEAN: OPCOES - Row for ticket ${TKT} cleaned from exported sheet ${sheet_tr}.`, 'MIN');
   } else {
-    LogDebug(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found: ${sheet_tr}.`, "MIN");
+    LogDebug(`EXPORT CLEAN: OPCOES - Ticket ${TKT} not found: ${sheet_tr}.`, 'MIN');
   }
 }
 
 function normalizeFund() {
-  LogDebug(`NORMALIZE: Values: ${FUND}`, "MIN");
+  LogDebug(`NORMALIZE: Values: ${FUND}`, 'MIN');
 
   const sheet = getSheet(FUND);
   if (!sheet) return;
@@ -749,7 +749,7 @@ function normalizeFund() {
   sheet.getRange(rowStart, colStart, Block.length, Block[0].length)
        .setValues(Block);
 
-  LogDebug(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`, "MIN");
+  LogDebug(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
