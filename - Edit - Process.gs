@@ -1,19 +1,23 @@
 /////////////////////////////////////////////////////////////////////PROCESS EDIT/////////////////////////////////////////////////////////////////////
 
 function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
-  const LC = sheet_sr.getLastColumn();
-
-  const A1 = sheet_sr.getRange("A1").getValue();
-  const A2 = sheet_sr.getRange("A2").getValue();
-  const A5 = sheet_sr.getRange("A5").getValue();
 
   if (Edit !== "TRUE") {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, "MIN");
     return;
   }
 
+  const LC = sheet_sr.getLastColumn();
+
+  // Read rows 1–5 once
+  const data = sheet_sr.getRange(1,1,5,LC).getValues();
+
+  const A1 = data[0][0];
+  const A2 = data[1][0];
+  const A5 = data[4][0];
+
   if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, "MIN");
     return;
   }
 
@@ -24,24 +28,25 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
 
   if (
     A2 >= A5 || A2 >= A1 ||
-    ErrorValues.includes(A1) || ErrorValues.includes(A5)
+    ErrorValues.includes(A1) ||
+    ErrorValues.includes(A5)
   ) {
+
     const condition = (SheetName === FUND);
     const columnCount = condition ? LC : LC - 4;
 
-    const Data_Header = sheet_sr.getRange(2, 1, 1, columnCount).getValues();
-    sheet_sr.getRange(5, 1, 1, columnCount).setValues(Data_Header);
-    sheet_sr.getRange(1, 1, 1, columnCount).setValues(Data_Header);
+    const Header = [data[1].slice(0, columnCount)];
 
-    LogDebug(`✅ SUCCESS EDIT: ${SheetName}.`, 'MIN');
+    sheet_sr.getRange(5,1,1,columnCount).setValues(Header);
+    sheet_sr.getRange(1,1,1,columnCount).setValues(Header);
+
+    LogDebug(`✅ SUCCESS EDIT: ${SheetName}.`, "MIN");
     exportFn(SheetName);
     return;
   }
 
-  // Final fallback
-  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: processEditGeneric`, 'MIN');
+  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: processEditGeneric`, "MIN");
 }
-
 
 /////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
 

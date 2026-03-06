@@ -1,68 +1,75 @@
 /////////////////////////////////////////////////////////////////////PROCESS SAVE/////////////////////////////////////////////////////////////////////
 
 function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
+
+  if (Save !== "TRUE") {
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, "MIN");
+    return;
+  }
+
   const LR = sheet_sr.getLastRow();
   const LC = sheet_sr.getLastColumn();
 
-  const A1 = sheet_sr.getRange("A1").getValue();
-  const A2 = sheet_sr.getRange("A2").getValue();
-  const A5 = sheet_sr.getRange("A5").getValue();
+  // Read rows 1–5, columns A–LC once
+  const data = sheet_sr.getRange(1,1,5,LC).getValues();
 
-  const Row1 = sheet_sr.getRange(1, 2, 1, 1).getValues()[0];
-  const Row2 = sheet_sr.getRange(2, 2, 1, 1).getValues()[0];
-  const Row5 = sheet_sr.getRange(5, 2, 1, 1).getValues()[0];
+  const A1 = data[0][0];
+  const A2 = data[1][0];
+  const A5 = data[4][0];
 
-  // Handle SAVE = FALSE early
-  if (Save !== "TRUE") {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - SAVE is set to FALSE`, 'MIN');
-    return;
-  }
-
-  // Handle invalid A2 early
-  if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, 'MIN');
-    return;
-  }
+  // Full row comparisons starting from column B
+  const Row1 = data[0].slice(1);
+  const Row2 = data[1].slice(1);
+  const Row5 = data[4].slice(1);
 
   const IsEqual = Row2.some((val, i) => val === Row1[i] || val === Row5[i]);
 
+  const Header = [data[1]];
+
+  if (ErrorValues.includes(A2)) {
+    LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, "MIN");
+    return;
+  }
+
   if (A5 === "") {
-    // Save only header
-    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
-    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
-    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
+    // Save only Header
+    sheet_sr.getRange(5,1,1,LC).setValues(Header);
+    sheet_sr.getRange(1,1,1,LC).setValues(Header);
+
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, "MIN");
     exportFn(SheetName);
     return;
   }
 
   if (A2 > A1 || A2 > A5) {
-    // Save header and body
-    const Data_Body = sheet_sr.getRange(5, 1, LR - 4, LC).getValues();
-    sheet_sr.getRange(6, 1, Data_Body.length, LC).setValues(Data_Body);
+    // Save Header and Body
+    const Body = sheet_sr.getRange(5,1,LR-4,LC).getValues();
 
-    const Data_Header = sheet_sr.getRange(2, 1, 1, LC).getValues();
-    sheet_sr.getRange(5, 1, 1, LC).setValues(Data_Header);
-    sheet_sr.getRange(1, 1, 1, LC).setValues(Data_Header);
+    sheet_sr.getRange(6,1,Body.length,LC).setValues(Body);
+    sheet_sr.getRange(5,1,1,LC).setValues(Header);
+    sheet_sr.getRange(1,1,1,LC).setValues(Header);
 
-    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, 'MIN');
+    LogDebug(`✅ SUCCESS SAVE: ${SheetName}.`, "MIN");
     exportFn(SheetName);
     return;
   }
 
   if (
     ((A2 === A5 || A2 === A1) && IsEqual) ||
-    ErrorValues.includes(A1) || ErrorValues.includes(A5)
+    ErrorValues.includes(A1) ||
+    ErrorValues.includes(A5)
   ) {
+
     if (Edit === "TRUE") {
       doEditBasic(SheetName);
     } else {
-      LogDebug(`❌ ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, 'MIN');
+      LogDebug(`❌ ERROR SAVE: ${SheetName} - EDIT is set to FALSE`, "MIN");
     }
+
     return;
   }
 
-  LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: processSaveGeneric`, 'MIN');
+  LogDebug(`❌ ERROR SAVE: ${SheetName} - Conditions arent met: processSaveGeneric`, "MIN");
 }
 
 /////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
