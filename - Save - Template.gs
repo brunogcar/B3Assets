@@ -357,55 +357,100 @@ function doSaveProv(Prov_Values) {
   }
 }
 
-function doGetProventos() {
-  const sheet_tr = getSheet('Prov_');
-  if (!sheet_tr) return;
+function fetchB3Data(ticker) {
 
-  const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
-  const ticker   = TKT.substring(0, 4);
   const language = 'pt-br';
 
-  const data = JSON.stringify({ issuingCompany: ticker, language });
-  const base64Params = Utilities.base64Encode(data);
+  const payload = JSON.stringify({
+    issuingCompany: ticker,
+    language: language
+  });
+
+  const base64Params = Utilities.base64Encode(payload);
+
   const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
 
-  LogDebug(`SAVE: Proventos`, 'MIN');
+  LogDebug(`B3 API URL: ${url}`, 'MID');
 
-  LogDebug(`URL: ${url}`, 'MIN');
+  const cache = CacheService.getScriptCache();
+  const cacheKey = `B3_${ticker}`;
+
+  const cached = cache.get(cacheKey);
+
+  if (cached) {
+    LogDebug(`B3 API cache hit: ${ticker}`, 'MID');
+    return JSON.parse(cached);
+  }
 
   let responseText;
+
   try {
-    const response = UrlFetchApp.fetch(url);
+
+    const response = UrlFetchApp.fetch(url, {
+      method: "get",
+      muteHttpExceptions: true
+    });
+
+    const status = response.getResponseCode();
+
+    if (status !== 200) {
+      LogDebug(`❌ ERROR: B3 API returned HTTP ${status}`, 'MIN');
+      return null;
+    }
+
     responseText = response.getContentText().trim();
-    LogDebug(`API Response: ${responseText}`, 'MIN');
+
   } catch (error) {
-    LogDebug(`❌ ERROR: Failed to fetch API response. ${error}`, 'MIN');
-    return;
+
+    LogDebug(`❌ ERROR: Failed to fetch B3 API. ${error}`, 'MIN');
+    return null;
+
   }
 
   if (!responseText) {
-    LogDebug(`❌ ERROR: Empty response from API.`, 'MIN');
-    return;
+    LogDebug(`❌ ERROR: Empty response from B3 API.`, 'MIN');
+    return null;
   }
 
   let content;
+
   try {
     content = JSON.parse(responseText);
   } catch (error) {
     LogDebug(`❌ ERROR: Failed to parse JSON response. ${error}`, 'MIN');
-    return;
+    return null;
   }
 
   if (!content || !content[0]) {
     LogDebug(`❌ ERROR: No data returned from API.`, 'MIN');
-    return;
+    return null;
   }
+
+  // cache for 1 hour
+  cache.put(cacheKey, JSON.stringify(content), 3600);
+
+  return content;
+
+}
+
+function doGetProventos() {
+
+  const sheet_tr = getSheet('Prov_');
+  if (!sheet_tr) return;
+
+  const TKT = getConfigValue(TKR, 'Config');
+  const ticker = TKT.substring(0, 4);
+
+  LogDebug(`SAVE: Proventos`, 'MIN');
+
+  const content = fetchB3Data(ticker);
+  if (!content) return;
 
   fillCashDividends(sheet_tr, content[0]?.cashDividends || []);
   fillStockDividends(sheet_tr, content[0]?.stockDividends || []);
   fillSubscriptions(sheet_tr, content[0]?.subscriptions || []);
-}
 
+}
 
 /**
  * Generic function to fill a titled table section with header and data rows.
@@ -551,51 +596,24 @@ function fillSubscriptions(sheet_tr, subscriptions) {
 /////////////////////////////////////////////////////////////////////CodeCVM/////////////////////////////////////////////////////////////////////
 
 function doGetCodeCVM() {
+
   const sheet_tr = getSheet('Info');
   if (!sheet_tr) return;
 
-  const TKT      = getConfigValue(TKR, 'Config');                     // TKR = Ticket Range
-  const ticker   = TKT.substring(0, 4);
-  const language = 'pt-br';
-
-  const data = JSON.stringify({ issuingCompany: ticker, language });
-  const base64Params = Utilities.base64Encode(data);
-
+  const TKT = getConfigValue(TKR, 'Config');
+  const ticker = TKT.substring(0, 4);
 
   LogDebug(`GET Code CVM`, 'MIN');
 
-  const url = `https://sistemaswebb3-listados.b3.com.br/listedCompaniesProxy/CompanyCall/GetListedSupplementCompany/${base64Params}`;
-  LogDebug(`URL: ${url}`, 'MIN');
-
-  let responseText;
-  try {
-    const response = UrlFetchApp.fetch(url);
-    responseText = response.getContentText().trim();
-    LogDebug(`API Response: ${responseText}`, 'MID');
-  } catch (error) {
-    LogDebug(`❌ ERROR: Failed to fetch API response. ${error}`, 'MIN');
-    return;
-  }
-
-  if (!responseText) {
-    LogDebug(`❌ ERROR: Empty response from API.`, 'MIN');
-  }
-
-  let content;
-  try {
-    content = JSON.parse(responseText);
-  } catch (error) {
-    LogDebug(`❌ ERROR: Failed to parse JSON response. ${error}`, 'MIN');
-  }
-
-  if (!content || !content[0]) {
-    LogDebug(`❌ ERROR: No data returned from API.`, 'MIN');
-  }
+  const content = fetchB3Data(ticker);
+  if (!content) return;
 
   const codeCVM = content[0]?.codeCVM || 'N/A';
+
   LogDebug(`Extracted codeCVM: ${codeCVM}`, 'MIN');
 
   sheet_tr.getRange("C3").setValue(codeCVM);
+
 }
 
 /////////////////////////////////////////////////////////////////////SAVE AND SHARES TEMPLATE/////////////////////////////////////////////////////////////////////
