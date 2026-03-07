@@ -3,7 +3,7 @@
 function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
 
   if (Edit !== "TRUE") {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, "MIN");
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - EDIT is set to FALSE`, 'MIN');
     return;
   }
 
@@ -17,7 +17,7 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   const A5 = data[4][0];
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, "MIN");
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, 'MIN');
     return;
   }
 
@@ -40,12 +40,12 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
     sheet_sr.getRange(5,1,1,columnCount).setValues(Header);
     sheet_sr.getRange(1,1,1,columnCount).setValues(Header);
 
-    LogDebug(`✅ SUCCESS EDIT: ${SheetName}.`, "MIN");
+    LogDebug(`✅ SUCCESS EDIT: ${SheetName}.`, 'MIN');
     exportFn(SheetName);
     return;
   }
 
-  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: processEditGeneric`, "MIN");
+  LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: processEditGeneric`, 'MIN');
 }
 
 /////////////////////////////////////////////////////////////////////PROCESS BASIC AND EXTRA/////////////////////////////////////////////////////////////////////
@@ -73,10 +73,10 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
  */
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
   const SheetName = sheet_tr.getSheetName();
-  const cfg       = Object.values(financialMap)
+  const cfg       = Object.values(financialSaveMap)
                             .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`🚩 No financialMap entry: ${SheetName}`, 'MIN');
+    LogDebug(`🚩 No financialSaveMap entry: ${SheetName}`, 'MIN');
     return;
   }
 

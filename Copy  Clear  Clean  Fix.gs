@@ -123,26 +123,6 @@ function doClearProventos() {
   sheet.getRange(PRV).clear({contentsOnly: true, skipFilteredRows: false});                             // PRV = Provento Range
 };
 
-/////////////////////////////////////////////////////////////////////ALTERNATIVE CLEAR/////////////////////////////////////////////////////////////////////
-
-function doRecycleTrade() {
-  const sheet = getSheet(TRADE);
-  if (!sheet) return;
-
-    var LR = sheet.getLastRow();
-    var LC = sheet.getLastColumn();
-
-  const AX = getConfigValue(PDT, 'Config');                                                               // PDT = Periodo de Trade
-  const AX_ = sheet.getRange("A" + AX ).getValue();
-
-//  Logger.log(AX_);
-
-  if( AX_ !== "" )
-  {
-    sheet.getRange(AX,1,LR,LC).clear({contentsOnly: true, skipFilteredRows: false});
-  }
-};
-
 /////////////////////////////////////////////////////////////////////CLEAN/////////////////////////////////////////////////////////////////////
 
 function doCleanBasics() {

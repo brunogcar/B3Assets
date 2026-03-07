@@ -19,7 +19,7 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   for (let i = 0; i < SheetNames.length; i++) {
     const Name = SheetNames[i];
     const sheet = getSheet(Name);
-    if (!sheet) return;
+    if (!sheet) continue;                                         // skip missing sheet
 
     if (checkCallback(Name) === "TRUE") {
       SheetNamesToSave.push(Name);

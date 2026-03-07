@@ -414,7 +414,7 @@ function doSettings() {
         if ( Other == 'CHECK')           { doCheckDATAS(); }                              // Check and hide or show Sheets
         if ( Other == 'PROV')            { doSaveProventos(); }
         if ( Other == 'SHARES')          { doSaveShares(); }
-        if ( Other == 'RIGHTS')          { doRestoreRight(); }
+        if ( Other == 'RIGHTS')          { doRestoreRight(); }                            // probably outdated - check for future removal
         if ( Other == 'ZEROS OPTIONS')   { doDeleteZeroOptions(); }
         if ( Other == 'NORM FUND')       { normalizeFund(); }
       }

@@ -41,9 +41,9 @@ function doSaveAllBasics() {
 function doSaveAllExtras() {
   LogDebug(SNAME(2), 'MIN');
 
-  doSaveGroup(SheetsExtra, doCheckDATA, doSaveBasic);
-
   SpreadsheetApp.flush();
+
+  doSaveGroup(SheetsExtra, doCheckDATA, doSaveBasic);
 
   doSaveShares();
   doExportProventos();
@@ -87,10 +87,9 @@ function doSaveBasics() {
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
     try { doSaveBasic(SheetName); }
-    catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
+    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
   }
 }
-
 
 /////////////////////////////////////////////////////////////////////EXTRAS/////////////////////////////////////////////////////////////////////
 
@@ -100,7 +99,7 @@ function doSaveExtras() {
   for (let i = 0; i < SheetNames.length; i++) {
     const SheetName = SheetNames[i];
     try { doSaveBasic(SheetName); }
-    catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
+    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
   }
 }
 
@@ -117,7 +116,7 @@ function doSaveFinancials() {
     for (let i = 0; i < SheetNames.length; i++) {
       const SheetName = SheetNames[i];
       try { doSaveFinancial(SheetName); }
-      catch (error) { Logger.log(`Error saving: ${SheetName}: ${error}`); }
+      catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
     }
   }
 }

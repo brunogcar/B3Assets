@@ -18,14 +18,14 @@ function doEditGroup(SheetNames, editFunction, label) {
 
 function doEditBasics() {
   const SheetNames = SheetsBasic;
-  doEditGroup(SheetNames, doEditSheet, 'basic');
+  doEditGroup(SheetNames, doEditBasic, 'basic');
 }
 
 //-------------------------------------------------------------------EXTRAS-------------------------------------------------------------------//
 
 function doEditExtras() {
   const SheetNames = SheetsExtra;
-  doEditGroup(SheetNames, doEditSheet, 'extra');
+  doEditGroup(SheetNames, doEditBasic, 'extra');
 }
 
 //-------------------------------------------------------------------FINANCIALS-------------------------------------------------------------------//
@@ -165,10 +165,10 @@ function doEditBasic(SheetName) {
 function doEditFinancial(SheetName) {
   LogDebug(`EDIT: ${SheetName}`, 'MIN');
 
-  const cfg = Object.values(financialMap)
+  const cfg = Object.values(financialSaveMap)
                     .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in financialMap: doEditFinancial`, 'MIN');
+    LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in financialSaveMap: doEditFinancial`, 'MIN');
     return;
   }
 

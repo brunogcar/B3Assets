@@ -108,10 +108,10 @@ function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
  */
 function processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
   const SheetName = sheet_tr ? sheet_tr.getSheetName() : sheet_sr.getSheetName();
-  const cfg       = Object.values(financialMap)
+  const cfg       = Object.values(financialSaveMap)
                             .find(c => c.sh_tr === SheetName);
   if (!cfg) {
-    LogDebug(`🚩 No financialMap entry: ${SheetName}`, 'MIN');
+    LogDebug(`🚩 No financialSaveMap entry: ${SheetName}`, 'MIN');
     return;
   }
 

@@ -145,8 +145,8 @@ function doExportBasic(SheetName) {
   if (SheetName === FUND) {
     const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
     const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
-
     const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
+
     filtered = filterFundRow(row, Minimum, Maximum);                                  // function in Save - Fuynction
 
   } else {
