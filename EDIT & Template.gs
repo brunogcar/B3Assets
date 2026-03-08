@@ -37,104 +37,110 @@ function doEditFinancials() {
 
 /////////////////////////////////////////////////////////////////////BASIC TEMPLATE/////////////////////////////////////////////////////////////////////
 
+const basicEditMap = [
+  {
+    names: [SWING_4, SWING_12, SWING_52],
+    editKey: DTR,
+    checks: ['C2'],
+    conditions: ([c2]) => {
+      const Class = getConfigValue(IST, 'Config');
+      return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(Class);
+    },
+    handler: processEditBasic
+  },
+  {
+    names: [OPCOES],
+    editKey: DOP,
+    checks: ['C2','E2'],
+    conditions: ([call, put]) => (call != 0 && put != 0 && call !== '' && put !== ''),
+    handler: processEditBasic
+  },
+  {
+    names: [BTC],
+    editKey: DBT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditBasic
+  },
+  {
+    names: [TERMO],
+    editKey: DTE,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditBasic
+  },
+  {
+    names: [FUND],
+    editKey: DFU,
+    checks: ['B2'],
+    conditions: ([b2]) => !ErrorValues.includes(b2),
+    handler: processEditBasic
+  },
+  {
+    names: [FUTURE],
+    editKey: DFT,
+    checks: ['C2','E2','G2'],
+    conditions: vals => vals.some(v => !ErrorValues.includes(v)),
+    handler: processEditBasic
+  },
+  {
+    names: [FUTURE_1, FUTURE_2, FUTURE_3],
+    editKey: DFT,
+    checks: ['C2'],
+    conditions: ([c2]) => !ErrorValues.includes(c2),
+    handler: processEditExtra
+  },
+  {
+    names: [RIGHT_1, RIGHT_2],
+    editKey: DRT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditExtra
+  },
+  {
+    names: [RECEIPT_9, RECEIPT_10],
+    editKey: DRC,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditExtra
+  },
+  {
+    names: [WARRANT_11, WARRANT_12, WARRANT_13],
+    editKey: DWT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditExtra
+  },
+  {
+    names: [BLOCK],
+    editKey: DBK,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditExtra
+  },
+  {
+    names: [AFTER],
+    editKey: DAF,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processEditBasic
+  }
+];
+
+const basicEditLookup = Object.fromEntries(
+  basicEditMap.flatMap(cfg =>
+    cfg.names.map(name => [name, cfg])
+  )
+);
+
 function doEditBasic(SheetName) {
   LogDebug(`EDIT: ${SheetName}`, 'MIN');
 
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
-  SpreadsheetApp.flush()
+//  SpreadsheetApp.flush()                                                              //   Utilities.sleep(2500); // 2.5 secs // called from doSaveAll() for exemple instead
 
-  const basicEditMap = [
-    {
-      names: [SWING_4, SWING_12, SWING_52],
-      editKey: DTR,                                          // DTR = Edit to Swing
-      checks: ['C2'],
-      conditions: ([c2]) => {
-        const Class = getConfigValue(IST, 'Config');       // IST = Is Stock?
-        return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(Class);
-      },
-      handler: processEditBasic
-    },
-    {
-      names: [OPCOES],
-      editKey: DOP,                                          // DOP = Edit to Option
-      checks: ['C2','E2'],
-      conditions: ([call, put]) => (call != 0 && put != 0 && call !== '' && put !== ''),
-      handler: processEditBasic
-    },
-    {
-      names: [BTC],
-      editKey: DBT,                                          // DBT = Edit to BTC
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditBasic
-    },
-    {
-      names: [TERMO],
-      editKey: DTE,                                          // DTE = Edit to Termo
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditBasic
-    },
-    {
-      names: [FUND],
-      editKey: DFU,                                          // DFU = Edit to Fund
-      checks: ['B2'],
-      conditions: ([b2]) => !ErrorValues.includes(b2),
-      handler: processEditBasic
-    },
-    {
-      names: [FUTURE],
-      editKey: DFT,                                          // DFT = Edit to Future
-      checks: ['C2','E2','G2'],
-      conditions: vals => vals.some(v => !ErrorValues.includes(v)),
-      handler: processEditBasic
-    },
-    {
-      names: [FUTURE_1, FUTURE_2, FUTURE_3],
-      editKey: DFT,                                          // DFT = Edit to Future
-      checks: ['C2'],
-      conditions: ([c2]) => !ErrorValues.includes(c2),
-      handler: processEditExtra
-    },
-    {
-      names: [RIGHT_1, RIGHT_2],
-      editKey: DRT,                                          // DRT = Edit to Right
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditExtra
-    },
-    {
-      names: [RECEIPT_9, RECEIPT_10],
-      editKey: DRC,                                          // DRC = Edit to Receipt
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditExtra
-    },
-    {
-      names: [WARRANT_11, WARRANT_12, WARRANT_13],
-      editKey: DWT,                                          // DWT = Edit to Warrant
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditExtra
-    },
-    {
-      names: [BLOCK],
-      editKey: DBK,                                          // DBK = Edit to Block
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditExtra
-    },
-      {
-      names: [AFTER],
-      editKey: DAF,                                          // DTE = Edit to Termo
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processEditBasic
-    }
-  ];
-
-  const cfg = basicEditMap.find(e => e.names.includes(SheetName));
+  const cfg = basicEditLookup[SheetName];
   if (!cfg) {
     LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in basicEditMap: doEditBasic`, 'MIN');
     return;
@@ -165,8 +171,7 @@ function doEditBasic(SheetName) {
 function doEditFinancial(SheetName) {
   LogDebug(`EDIT: ${SheetName}`, 'MIN');
 
-  const cfg = Object.values(financialSaveMap)
-                    .find(c => c.sh_tr === SheetName);
+  const cfg = financialSaveMap[SheetName];
   if (!cfg) {
     LogDebug(`🚩 ERROR EDIT: ${SheetName} - No entry in financialSaveMap: doEditFinancial`, 'MIN');
     return;

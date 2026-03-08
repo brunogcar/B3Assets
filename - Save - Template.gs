@@ -1,118 +1,124 @@
 /////////////////////////////////////////////////////////////////////SAVE BASICS/////////////////////////////////////////////////////////////////////
 
+const basicSaveMap = [
+  {
+    names: [SWING_4, SWING_12, SWING_52],
+    saveKey: STR,
+    editKey: DTR,
+    checks: ['B2','C2'],
+    conditions: ([b2, c2]) => {
+      const Class = getConfigValue(IST, 'Config');
+      if (Class === 'STOCK') return b2 != 0 && c2 > 0;
+      return Class.match(/BDR|ETF|ADR/) && c2 > 0;
+    },
+    handler: processSaveSwing
+  },
+  {
+    names: [OPCOES],
+    saveKey: SOP,
+    editKey: DOP,
+    checks: ['C2','E2','D2','F2','K3','N3'],
+    conditions: ([call, put,call_PM, put_PM, diff_simples, diff_composto]) =>
+      call && put &&
+      (call_PM || put_PM) &&
+      (diff_simples || diff_composto),
+    handler: processSaveBasic
+  },
+  {
+    names: [BTC],
+    saveKey: SBT,
+    editKey: DBT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveBasic
+  },
+  {
+    names: [TERMO],
+    saveKey: STE,
+    editKey: DTE,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveBasic
+  },
+  {
+    names: [FUND],
+    saveKey: SFU,
+    editKey: DFU,
+    checks: ['B2'],
+    conditions: ([b2]) => !ErrorValues.includes(b2),
+    handler: processSaveBasic
+  },
+  {
+    names: [FUTURE],
+    saveKey: SFT,
+    editKey: DFT,
+    checks: ['C2','E2','G2'],
+    conditions: vals => vals.some(v => !ErrorValues.includes(v)),
+    handler: processSaveBasic
+  },
+  {
+    names: [FUTURE_1, FUTURE_2, FUTURE_3],
+    saveKey: SFT,
+    editKey: DFT,
+    checks: ['C2'],
+    conditions: ([c2]) => !ErrorValues.includes(c2),
+    handler: processSaveExtra
+  },
+  {
+    names: [RIGHT_1, RIGHT_2],
+    saveKey: SRT,
+    editKey: DRT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveExtra
+  },
+  {
+    names: [RECEIPT_9, RECEIPT_10],
+    saveKey: SRC,
+    editKey: DRC,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveExtra
+  },
+  {
+    names: [WARRANT_11, WARRANT_12, WARRANT_13],
+    saveKey: SWT,
+    editKey: DWT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveExtra
+  },
+  {
+    names: [BLOCK],
+    saveKey: SBK,
+    editKey: DBK,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveExtra
+  },
+  {
+    names: [AFTER],
+    saveKey: SAF,
+    editKey: DAF,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2),
+    handler: processSaveBasic
+  }
+];
+
+const basicSaveLookup = Object.fromEntries(
+  basicSaveMap.flatMap(cfg =>
+    cfg.names.map(name => [name, cfg])
+  )
+);
+
 function doSaveBasic(SheetName) {
   LogDebug(`SAVE: ${SheetName}`, 'MIN');
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
-  SpreadsheetApp.flush()
+//  SpreadsheetApp.flush()                                                              //   Utilities.sleep(2500); // 2.5 secs // called from doSaveAll() for exemple instead
 
-  const basicSaveMap = [
-    {
-      names: [SWING_4, SWING_12, SWING_52],
-      saveKey: STR,
-      editKey: DTR,
-      checks: ['B2','C2'],
-      conditions: ([b2, c2]) => {
-        const Class = getConfigValue(IST, 'Config');
-        if (Class === 'STOCK')     return b2 != 0 && c2 > 0;
-        return Class.match(/BDR|ETF|ADR/) && c2 > 0;
-      },
-      handler: processSaveSwing
-    },
-    {
-      names: [OPCOES],
-      saveKey: SOP,
-      editKey: DOP,
-      checks: ['C2','E2','D2','F2','K3','N3'],
-      conditions: ([call, put,call_PM, put_PM, diff_simples, diff_composto]) =>
-        call && put &&
-        (call_PM || put_PM) &&
-        (diff_simples || diff_composto),
-      handler: processSaveBasic
-    },
-    {
-      names: [BTC],
-      saveKey: SBT,
-      editKey: DBT,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveBasic
-    },
-    {
-      names: [TERMO],
-      saveKey: STE,
-      editKey: DTE,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveBasic
-    },
-    {
-      names: [FUND],
-      saveKey: SFU,
-      editKey: DFU,
-      checks: ['B2'],
-      conditions: ([b2]) => !ErrorValues.includes(b2),
-      handler: processSaveBasic
-    },
-    {
-      names: [FUTURE],
-      saveKey: SFT,
-      editKey: DFT,
-      checks: ['C2','E2','G2'],
-      conditions: vals => vals.some(v => !ErrorValues.includes(v)),
-      handler: processSaveBasic
-    },
-    {
-      names: [FUTURE_1, FUTURE_2, FUTURE_3],
-      saveKey: SFT,
-      editKey: DFT,
-      checks: ['C2'],
-      conditions: ([c2]) => !ErrorValues.includes(c2),
-      handler: processSaveExtra
-    },
-    {
-      names: [RIGHT_1, RIGHT_2],
-      saveKey: SRT,
-      editKey: DRT,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveExtra
-    },
-    {
-      names: [RECEIPT_9, RECEIPT_10],
-      saveKey: SRC,
-      editKey: DRC,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveExtra
-    },
-    {
-      names: [WARRANT_11, WARRANT_12, WARRANT_13],
-      saveKey: SWT,
-      editKey: DWT,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveExtra
-    },
-    {
-      names: [BLOCK],
-      saveKey: SBK,
-      editKey: DBK,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveExtra
-    },
-    {
-      names: [AFTER],
-      saveKey: SAF,
-      editKey: DAF,
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2),
-      handler: processSaveBasic
-    }
-  ];
-
-  const cfg = basicSaveMap.find(e => e.names.includes(SheetName));
+  const cfg = basicSaveLookup[SheetName];
   if (!cfg) {
     LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in basicSaveMap: doSaveBasic`, 'MIN');
     return;
@@ -234,8 +240,7 @@ function doSaveFinancial(SheetName) {
   const sheet_up = getSheet('UPDATE');
   if (!sheet_up) return;
 
-  const cfg = Object.values(financialSaveMap)
-                    .find(c => c.sh_tr === SheetName);
+  const cfg = financialSaveMap[SheetName];
   if (!cfg) {
     LogDebug(`🚩 ERROR SAVE: ${SheetName} - No entry in financialSaveMap: doSaveFinancial`, 'MIN');
     return;
@@ -266,7 +271,7 @@ function doSaveFinancial(SheetName) {
   if (cfg.checks) {
     const checkVals = cfg.checks.map(a => sheet_up.getRange(a).getValue());
     const valid = checkVals.every(v => (v >= 90 && v <= 92) || v === 0 || v > 40000);
-    if (!valid) { 
+    if (!valid) {
       LogDebug(`❌ ERROR SAVE: ${SheetName} - Checks failed: ${JSON.stringify(checkVals)}`, 'MID');
       return;
     }
@@ -314,8 +319,8 @@ function doSaveProventos() {
     _doGroup(
       [ Prov_Values.name ],            // sheetNames (1‑item array)
       () => doSaveProv(Prov_Values),   // callback uses full config object
-      "Saving",                // actionLabel
-      "saved",                 // resultLabel
+      "Saving",                        // actionLabel
+      "saved",                         // resultLabel
       Prov_Values.name                 // groupLabel ← your per‑item name
     );
   }

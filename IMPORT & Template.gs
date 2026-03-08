@@ -163,6 +163,7 @@ function update_form() {
 /////////////////////////////////////////////////////////////////////Config/////////////////////////////////////////////////////////////////////
 
 function import_config() {
+  _DBG_CACHE = null;
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
 
   const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');       // Source Sheet

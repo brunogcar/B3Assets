@@ -61,7 +61,7 @@ function setsEqual(a, b) {
 function doCheckTriggers() {
   const Class       = getConfigValue(IST, 'Config');
   const desiredList = triggerMap[Class] || [];
-  
+
   // Only consider time-based triggers
   const existing    = ScriptApp.getProjectTriggers()
                         .filter(t => t.getEventType() === ScriptApp.EventType.CLOCK);

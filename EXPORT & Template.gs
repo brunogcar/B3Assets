@@ -36,6 +36,63 @@ function doExportFinancials() {
 
 /////////////////////////////////////////////////////////////////////SHEETS TEMPLATE/////////////////////////////////////////////////////////////////////
 
+const basicExportMap = [
+  {
+    names: [SWING_4, SWING_12, SWING_52],
+    exportKey: ETR,
+    checks: ['C2'],
+    conditions: ([c2]) => c2 > 0
+  },
+  {
+    names: [OPCOES],
+    exportKey: EOP,
+    checks: ['C2','E2'],
+    conditions: ([call, put]) => call != 0 && put != 0 && call !== '' && put !== ''
+  },
+  {
+    names: [BTC],
+    exportKey: EBT,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2)
+  },
+  {
+    names: [TERMO],
+    exportKey: ETE,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2)
+  },
+  {
+    names: [FUTURE],
+    exportKey: ETF,
+    checks: ['C2','E2','G2'],
+    conditions: vals => vals.some(v => !ErrorValues.includes(v))
+  },
+  {
+    names: [FUTURE_1, FUTURE_2, FUTURE_3],
+    exportKey: ETF,
+    checks: ['B2','C2'],
+    conditions: ([b2, c2]) => !ErrorValues.includes(b2) && c2 > 0
+  },
+  {
+    names: [FUND],
+    exportKey: EFU,
+    checks: ['B2'],
+    conditions: ([b2]) => !ErrorValues.includes(b2)
+  },
+  {
+    names: [AFTER],
+    exportKey: EAF,
+    checks: ['D2'],
+    conditions: ([d2]) => !ErrorValues.includes(d2)
+  }
+];
+
+const basicExportLookup = Object.fromEntries(
+  basicExportMap.flatMap(cfg =>
+    cfg.names.map(name => [name, cfg])
+  )
+);
+
 function doExportBasic(SheetName) {
   LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
@@ -43,9 +100,6 @@ function doExportBasic(SheetName) {
   const TKT       = getConfigValue(TKR, 'Config');                                   // TKR = Ticket Range
   const Target_Id = getConfigValue(TDR, 'Config');                                   // Target sheet ID
   if (!Target_Id) { LogDebug(`❌ ERROR EXPORT: Target ID is empty.`, 'MIN'); return; }
-
-  const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
-  const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
 
   if (Class !== 'STOCK') {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Class != STOCK (${Class}): doExportBasic`, 'MIN');
@@ -55,58 +109,7 @@ function doExportBasic(SheetName) {
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
 
-  const basicExportMap = [
-    {
-      names: [SWING_4, SWING_12, SWING_52],
-      exportKey: ETR,                                                                   // ETR = Export to Swing
-      checks: ['C2'],
-      conditions: ([c2]) => c2 > 0
-    },
-    {
-      names: [OPCOES],
-      exportKey: EOP,                                                                   // EOP = Export to Option
-      checks: ['C2','E2'],
-      conditions: ([call, put]) => call != 0 && put != 0 && call !== '' && put !== ''
-    },
-    {
-      names: [BTC],
-      exportKey: EBT,                                                                   // EBT = Export to BTC
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2)
-    },
-    {
-      names: [TERMO],
-      exportKey: ETE,                                                                   // ETE = Export to Termo
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2)
-    },
-    {
-      names: [FUTURE],
-      exportKey: ETF,                                                                   // ETF = Export to Future
-      checks: ['C2','E2','G2'],
-      conditions: vals => vals.some(v => !ErrorValues.includes(v))
-    },
-    {
-      names: [FUTURE_1, FUTURE_2, FUTURE_3],
-      exportKey: ETF,                                                                   // ETF = Export to Future
-      checks: ['B2','C2'],
-      conditions: ([b2, c2]) => !ErrorValues.includes(b2) && c2 > 0
-    },
-    {
-      names: [FUND],
-      exportKey: EFU,                                                                   // EFU = Export to Fund
-      checks: ['B2'],
-      conditions: ([b2]) => !ErrorValues.includes(b2)
-    },
-    {
-      names: [AFTER],
-      exportKey: EAF,                                                                   // ETE = Export to Termo
-      checks: ['D2'],
-      conditions: ([d2]) => !ErrorValues.includes(d2)
-    },
-  ];
-
-  const cfg = basicExportMap.find(e => e.names.includes(SheetName));
+  const cfg = basicExportLookup[SheetName];
   if (!cfg) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - No entry in basicExportMap: doExportBasic`, 'MIN');
     return;
@@ -123,7 +126,7 @@ function doExportBasic(SheetName) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - A2 or A5 invalid (A2=${A2}, A5=${A5})`, 'MIN');
     return;
   }
-  
+
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
@@ -157,6 +160,22 @@ function doExportBasic(SheetName) {
 
 /////////////////////////////////////////////////////////////////////EXTRA TEMPLATE/////////////////////////////////////////////////////////////////////
 
+const exportExtraConfig = {
+  target_co: {
+    [RIGHT_1]: ERT,  [RIGHT_2]: ERT,
+    [RECEIPT_9]: ERC, [RECEIPT_10]: ERC,
+    [WARRANT_11]: EWT, [WARRANT_12]: EWT, [WARRANT_13]: EWT,
+    [BLOCK]: EBK
+  },
+
+  target_sh: {
+    [RIGHT_1]: 'Right', [RIGHT_2]: 'Right',
+    [RECEIPT_9]: 'Receipt', [RECEIPT_10]: 'Receipt',
+    [WARRANT_11]: 'Warrant', [WARRANT_12]: 'Warrant', [WARRANT_13]: 'Warrant',
+    [BLOCK]: 'Block'
+  }
+};
+
 function doExportExtra(SheetName) {
   LogDebug(`EXPORT: ${SheetName}`, 'MIN');
 
@@ -169,33 +188,30 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  const target_co = {
-    [RIGHT_1]: ERT,  [RIGHT_2]: ERT,
-    [RECEIPT_9]: ERC, [RECEIPT_10]: ERC,
-    [WARRANT_11]: EWT, [WARRANT_12]: EWT, [WARRANT_13]: EWT,
-    [BLOCK]: EBK
-  };
-
-  var Export = getConfigValue(target_co[SheetName]) || FALSE;
+  var Export = getConfigValue(exportExtraConfig.target_co[SheetName], 'Config') || FALSE;
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
-  var TKT = sheet_sr.getRange('M2').getValue();                                      // Ticker
+  const row = sheet_sr.getRange("A2:O2").getValues()[0];
 
-  var A = sheet_sr.getRange("A2").getValue();                                        // Data
-  var B = sheet_sr.getRange("B2").getValue();                                        // Cotação
-  var C = sheet_sr.getRange("C2").getValue();                                        // PM
-  var D = sheet_sr.getRange("D2").getValue();                                        // Contratos
-  var E = sheet_sr.getRange("E2").getValue();                                        // Mínimo
-  var F = sheet_sr.getRange("F2").getValue();                                        // Máximo
-  var G = sheet_sr.getRange("G2").getValue();                                        // Volume
-  var H = sheet_sr.getRange("H2").getValue();                                        // Negócios
-  var I = sheet_sr.getRange("I2").getValue();                                        // Ratio
+  const [
+    A,      // Data
+    B,      // Cotação
+    C,      // PM
+    D,      // Contratos
+    E,      // Mínimo
+    F,      // Máximo
+    G,      // Volume
+    H,      // Negócios
+    I,      // Ratio
 
-  var N = sheet_sr.getRange("N2").getValue();                                        // Início
-  var O = sheet_sr.getRange("O2").getValue();                                        // Fim
+    J,      // Emissão
+    K,      // Preço
+    L,      // Diff
 
-  var J = sheet_sr.getRange("J2").getValue();                                        // Emissão
-  var K = sheet_sr.getRange("K2").getValue();                                        // Preço
-  var L = sheet_sr.getRange("L2").getValue();                                        // Diff
+    TKT,    // Ticker
+
+    N,      // Início
+    O       // Fim
+  ] = row;
 
   var Range = [B, C, D, E, F, G, H, I];
 
@@ -225,15 +241,8 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  const target_sh = {
-    [RIGHT_1]: 'Right', [RIGHT_2]: 'Right',
-    [RECEIPT_9]: 'Receipt', [RECEIPT_10]: 'Receipt',
-    [WARRANT_11]: 'Warrant', [WARRANT_12]: 'Warrant', [WARRANT_13]: 'Warrant',
-    [BLOCK]: 'Block'
-  };
-
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                                   // Target spreadsheet
-  const sheet_tr = ss_tr.getSheetByName(target_sh[SheetName] || SheetName);           // Declare sheet_tr outside the conditional scope
+  const ss_tr = SpreadsheetApp.openById(Target_Id);                                                    // Target spreadsheet
+  const sheet_tr = ss_tr.getSheetByName(exportExtraConfig.target_sh[SheetName] || SheetName);          // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
     return;
