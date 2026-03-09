@@ -488,10 +488,10 @@ function doExportProventos() {
   Data = Data.map(row => row.map(value => value === 0 ? "" : value));
 
   var ss_tr = SpreadsheetApp.openById(Target_Id);
-  var sheet_tr = ss_tr.getSheetByName('Poventos');
+  var sheet_tr = ss_tr.getSheetByName('Proventos');
 
   if (!sheet_tr) {
-    LogDebug(`❌ ERROR EXPORT: 'Poventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: 'Proventos' not found in spreadsheet ID ${Target_Id}`, 'MIN');
     return;
   }
 

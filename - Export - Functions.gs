@@ -147,7 +147,7 @@ function doIsInfoExported() {
 /////////////////////////////////////////////////////////////////////CLEAR EXPORTED to EXPORTED Source/////////////////////////////////////////////////////////////////////
 
 function doClearExportAll() {
-  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUTURE, FUND, 'Poventos', BLC, DRE, FLC, DVA, 'Right', 'Receipt', 'Warrant', 'Block'];
+  const SheetNames = [SWING_4, SWING_12, SWING_52, OPCOES, BTC, TERMO, AFTER, FUTURE, FUND, 'Proventos', BLC, DRE, FLC, DVA, 'Right', 'Receipt', 'Warrant', 'Block'];
 
   _doGroup(SheetNames, doClearExport, "Clearing", "cleared", "");
 }
