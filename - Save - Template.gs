@@ -281,11 +281,6 @@ function doSaveFinancial(SheetName) {
     return;
   }
 
-  if (!isValidDate(New_sr)) {
-    LogDebug(`❌ ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid: doSaveFinancial`, 'MIN');
-    return;
-  }
-
   processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
   // Recurse if needed
   if (cfg.recurse) {
