@@ -6,8 +6,7 @@ const basicSaveMap = [
     saveKey: STR,
     editKey: DTR,
     checks: ['B2','C2'],
-    conditions: ([b2, c2]) => {
-      const Class = getConfigValue(IST, 'Config');
+    conditions: ([b2, c2], Class) => {
       if (Class === 'STOCK') return b2 != 0 && c2 > 0;
       return Class.match(/BDR|ETF|ADR/) && c2 > 0;
     },
@@ -127,8 +126,9 @@ function doSaveBasic(SheetName) {
   const Save = getConfigValue(cfg.saveKey);
   const Edit = getConfigValue(cfg.editKey);
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
+  const Class = getConfigValue(IST, 'Config');                                          // read once here, not inside lambda
 
-  if (cfg.conditions(vals)) {
+  if (cfg.conditions(vals, Class)) {
     if (SheetName === FUND) {
       const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
       const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
