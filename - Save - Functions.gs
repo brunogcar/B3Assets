@@ -27,9 +27,9 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   }
 
   const totalSheets = SheetNamesToSave.length;
-  if (totalSheets === 0) { 
-    LogDebug(`No valid data found. Skipping save operation.`, 'MIN'); 
-    return; 
+  if (totalSheets === 0) {
+    LogDebug(`No valid data found. Skipping save operation.`, 'MIN');
+    return;
   }
 
   SpreadsheetApp.flush();
@@ -92,49 +92,50 @@ function doCheckDATAS() {
 
 /////////////////////////////////////////////////////////////////////DO CHECK TEMPLATE/////////////////////////////////////////////////////////////////////
 
+const checkDataMap = {
+  [PROV]:       { sheet: PROV,     cell:"B4",  toggleHide:false, classSheet:false, forceHide:"DEFAULT", cells:null },
+  [OPCOES]:     { sheet: 'OPT',    cell:"B2",  toggleHide:true,  classSheet:false, forceHide:HOP, cells:null },
+  [SWING_4]:    { sheet: 'DATA',   cell:"B3",  toggleHide:false, classSheet:true,  forceHide:HTR, cells:null },
+  [SWING_12]:   { sheet: 'DATA',   cell:"B3",  toggleHide:false, classSheet:true,  forceHide:HTR, cells:null },
+  [SWING_52]:   { sheet: 'DATA',   cell:"B3",  toggleHide:false, classSheet:true,  forceHide:HTR, cells:null },
+  [BTC]:        { sheet: 'DATA',   cell:"B7",  toggleHide:false, classSheet:false, forceHide:HBT, cells:null },
+  [TERMO]:      { sheet: 'DATA',   cell:"B28", toggleHide:false, classSheet:false, forceHide:HTE, cells:null },
+  [FUND]:       { sheet: 'Index',  cell:"D2",  toggleHide:false, classSheet:false, forceHide:HFU, cells:null },
+  [FUTURE]:     { sheet: 'DATA',   cell:null,  toggleHide:false, classSheet:false, forceHide:HFT, cells:["B36","B37","B38"] },
+  [FUTURE_1]:   { sheet: 'DATA',   cell:"B36", toggleHide:false, classSheet:false, forceHide:true, cells:null },
+  [FUTURE_2]:   { sheet: 'DATA',   cell:"B37", toggleHide:false, classSheet:false, forceHide:true, cells:null },
+  [FUTURE_3]:   { sheet: 'DATA',   cell:"B38", toggleHide:false, classSheet:false, forceHide:true, cells:null },
+  [RIGHT_1]:    { sheet: 'DATA',   cell:"C42", toggleHide:false, classSheet:false, forceHide:HRT, cells:null },
+  [RIGHT_2]:    { sheet: 'DATA',   cell:"C43", toggleHide:false, classSheet:false, forceHide:HRT, cells:null },
+  [RECEIPT_9]:  { sheet: 'DATA',   cell:"C48", toggleHide:false, classSheet:false, forceHide:HRC, cells:null },
+  [RECEIPT_10]: { sheet: 'DATA',   cell:"C49", toggleHide:false, classSheet:false, forceHide:HRC, cells:null },
+  [WARRANT_11]: { sheet: 'DATA',   cell:"C54", toggleHide:false, classSheet:false, forceHide:HWT, cells:null },
+  [WARRANT_12]: { sheet: 'DATA',   cell:"C55", toggleHide:false, classSheet:false, forceHide:HWT, cells:null },
+  [WARRANT_13]: { sheet: 'DATA',   cell:"C56", toggleHide:false, classSheet:false, forceHide:HWT, cells:null },
+  [BLOCK]:      { sheet: 'DATA',   cell:null,  toggleHide:false, classSheet:false, forceHide:HBK, cells:["C60","C61","C62"] },
+  [AFTER]:      { sheet: 'DATA',   cell:"C66", toggleHide:false, classSheet:false, forceHide:HAF, cells:null },
+  [BLC]:        { sheet: Balanco,  cell:"B1",  toggleHide:false, classSheet:false, forceHide:HBL, cells:null },
+  [DRE]:        { sheet: Resultado,cell:"C1",  toggleHide:false, classSheet:false, forceHide:HDE, cells:null },
+  [FLC]:        { sheet: Fluxo,    cell:"C1",  toggleHide:false, classSheet:false, forceHide:HFL, cells:null },
+  [DVA]:        { sheet: Valor,    cell:"C1",  toggleHide:false, classSheet:false, forceHide:HDV, cells:null }
+};
+
 function doCheckDATA(SheetName) {
+
   const sheet_sr = getSheet(SheetName);    // Source sheet
-  const sheet_i  = getSheet('Index');      // Index sheet
-  const sheet_d  = getSheet('DATA');       // DATA sheet
-  const sheet_p  = getSheet(PROV);         // PROV sheet
-  const sheet_o  = getSheet('OPT');        // OPT sheet
-  const sheet_b  = getSheet(Balanco);      // Balanco sheet
-  const sheet_r  = getSheet(Resultado);    // Resultado sheet
-  const sheet_f  = getSheet(Fluxo);        // Fluxo sheet
-  const sheet_v  = getSheet(Valor);        // Valor sheet
 
   LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
 
-  const cfg = {
-    [PROV]:       { sheetVar: sheet_p, cell:  "B4",        toggleHide: false, classSheet: false, forceHide:"DEFAULT", cells: null },
-    [OPCOES]:     { sheetVar: sheet_o, cell:  "B2",        toggleHide: true,  classSheet: false, forceHide:HOP,       cells: null },
-    [SWING_4]:    { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
-    [SWING_12]:   { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
-    [SWING_52]:   { sheetVar: sheet_d, cell:  "B3",        toggleHide: false, classSheet: true,  forceHide:HTR ,      cells: null },
-    [BTC]:        { sheetVar: sheet_d, cell:  "B7",        toggleHide: false, classSheet: false, forceHide:HBT,       cells: null },
-    [TERMO]:      { sheetVar: sheet_d, cell:  "B28",       toggleHide: false, classSheet: false, forceHide:HTE,       cells: null },
-    [FUND]:       { sheetVar: sheet_i, cell:  "D2",        toggleHide: false, classSheet: false, forceHide:HFU,       cells: null },
-    [FUTURE]:     { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:HFT,       cells: ["B36","B37","B38"] },
-    [FUTURE_1]:   { sheetVar: sheet_d, cell:  "B36",       toggleHide: false, classSheet: false, forceHide:true,      cells: null },
-    [FUTURE_2]:   { sheetVar: sheet_d, cell:  "B37",       toggleHide: false, classSheet: false, forceHide:true,      cells: null },
-    [FUTURE_3]:   { sheetVar: sheet_d, cell:  "B38",       toggleHide: false, classSheet: false, forceHide:true,      cells: null },
-    [RIGHT_1]:    { sheetVar: sheet_d, cell:  "C42",       toggleHide: false, classSheet: false, forceHide:HRT,       cells: null },
-    [RIGHT_2]:    { sheetVar: sheet_d, cell:  "C43",       toggleHide: false, classSheet: false, forceHide:HRT,       cells: null },
-    [RECEIPT_9]:  { sheetVar: sheet_d, cell:  "C48",       toggleHide: false, classSheet: false, forceHide:HRC,       cells: null },
-    [RECEIPT_10]: { sheetVar: sheet_d, cell:  "C49",       toggleHide: false, classSheet: false, forceHide:HRC,       cells: null },
-    [WARRANT_11]: { sheetVar: sheet_d, cell:  "C54",       toggleHide: false, classSheet: false, forceHide:HWT,       cells: null },
-    [WARRANT_12]: { sheetVar: sheet_d, cell:  "C55",       toggleHide: false, classSheet: false, forceHide:HWT,       cells: null },
-    [WARRANT_13]: { sheetVar: sheet_d, cell:  "C56",       toggleHide: false, classSheet: false, forceHide:HWT,       cells: null },
-    [BLOCK]:      { sheetVar: sheet_d, cell:  null,        toggleHide: false, classSheet: false, forceHide:HBK,       cells: ["C60","C61","C62"] },
-    [AFTER]:      { sheetVar: sheet_d, cell:  "C66",       toggleHide: false, classSheet: false, forceHide:HAF,       cells: null },
-    [BLC]:        { sheetVar: sheet_b, cell:  "B1",        toggleHide: false, classSheet: false, forceHide:HBL,       cells: null },
-    [DRE]:        { sheetVar: sheet_r, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:HDE,       cells: null },
-    [FLC]:        { sheetVar: sheet_f, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:HFL,       cells: null },
-    [DVA]:        { sheetVar: sheet_v, cell:  "C1",        toggleHide: false, classSheet: false, forceHide:HDV,       cells: null },
-  }[SheetName];
-
+  const cfg = checkDataMap[SheetName];
   if (!cfg) {
     LogDebug(`Sheet Name "${SheetName}" not recognized.`, 'MIN');
+    return processCheckDATA(sheet_sr, SheetName, 'FALSE');
+  }
+
+  const sheetVar = cfg.sheet ? getSheet(cfg.sheet) : null;
+
+  if (!sheetVar) {
+    LogDebug(`Missing sheet in config for ${SheetName}`, 'MIN');
     return processCheckDATA(sheet_sr, SheetName, 'FALSE');
   }
 
@@ -142,26 +143,26 @@ function doCheckDATA(SheetName) {
 
   // 1) toggleHide case (OPCOES)
   if (cfg.toggleHide) {
-    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
+    Check = sheetVar.getRange(cfg.cell).getValue();
     if (Check === '') {
-      sheet_o.hideSheet();
-      LogDebug(`🔒 HIDDEN: OPT`, 'MIN');
-    } else if (sheet_o.isSheetHidden()) {
-      sheet_o.showSheet();
-      LogDebug(`🔓 DISPLAYED: ${SheetName}`, 'MIN');
+      sheetVar.hideSheet();
+      LogDebug(`🔒 HIDDEN: ${cfg.sheet}`, 'MIN');
+    } else if (sheetVar.isSheetHidden()) {
+      sheetVar.showSheet();
+      LogDebug(`🔓 DISPLAYED: ${cfg.sheet}`, 'MIN');
     }
 
   // 2) classSheet case (SWING_x)
   } else if (cfg.classSheet) {
     const Class   = getConfigValue(IST, 'Config');
     Check = (Class === 'STOCK')
-      ? sheet_d.getRange(cfg.cell).getValue()
+      ? sheetVar.getRange(cfg.cell).getValue()
       : 'TRUE';
 
   // 3) cells array case (FUTURE, BLOCK)
   } else if (cfg.cells) {
     for (let addr of cfg.cells) {
-      const val = sheet_d.getRange(addr).getValue();
+      const val = sheetVar.getRange(addr).getValue();
       if (!ErrorValues.includes(val)) {
         Check = val;
         break;
@@ -170,7 +171,7 @@ function doCheckDATA(SheetName) {
 
   // 4) simple cell case
   } else {
-    Check = cfg.sheetVar.getRange(cfg.cell).getValue();
+    Check = sheetVar.getRange(cfg.cell).getValue();
   }
 
   let hideOpt;

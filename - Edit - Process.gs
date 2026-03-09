@@ -73,8 +73,7 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
  */
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
   const SheetName = sheet_tr.getSheetName();
-  const cfg       = Object.values(financialSaveMap)
-                            .find(c => c.sh_tr === SheetName);
+  const cfg = financialSaveMap[SheetName];
   if (!cfg) {
     LogDebug(`🚩 No financialSaveMap entry: ${SheetName}`, 'MIN');
     return;
