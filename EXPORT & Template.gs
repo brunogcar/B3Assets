@@ -150,7 +150,7 @@ function doExportBasic(SheetName) {
     const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
     const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
 
-    filtered = filterFundRow(row, Minimum, Maximum);                                  // function in Save - Fuynction
+    filtered = filterFundRow(row, Minimum, Maximum);                                  // function in Save - Function
 
   } else {
     filtered = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
@@ -213,6 +213,11 @@ function doExportExtra(SheetName) {
     O       // Fim
   ] = row;
 
+  if (ErrorValues.includes(A)) {
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - ErrorValues in Data A ${A}: doExportExtra.`, 'MIN');
+    return;
+  }
+
   var Range = [B, C, D, E, F, G, H, I];
 
   var hasNonBlankCell = Range.some(cell => cell !== '' && cell !== null);            // Check if at least one cell is not blank
@@ -226,11 +231,6 @@ function doExportExtra(SheetName) {
     ShouldExport = true;                                                             // Set ShouldExport to true if conditions are met
   }
 //-------------------------------------------------------------------Foot-------------------------------------------------------------------//
-  if (ErrorValues.includes(A)) {
-    LogDebug(`❌ ERROR EXPORT: ${SheetName} - ErrorValues in Data A ${A}: doExportExtra.`, 'MIN');
-    return;
-  }
-
   if (ShouldExport != true) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportExtra.`, 'MIN');
     return;
@@ -244,7 +244,7 @@ function doExportExtra(SheetName) {
   const ss_tr = SpreadsheetApp.openById(Target_Id);                                                    // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(exportExtraConfig.target_sh[SheetName] || SheetName);          // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
-    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportBasic`, 'MIN');
     return;
   }
   processExport(TKT, Data, sheet_tr, SheetName);
@@ -273,10 +273,13 @@ function doExportFinancial(SheetName) {
   }
 
   const target_co = {
-    [BLC]: EBL, [DRE]: EDR, [FLC]: EFL, [DVA]: EDV
+    [BLC]: EBL,                                        // EBL = Export to BLC
+    [DRE]: EDR,                                        // EDR = Export to DRE
+    [FLC]: EFL,                                        // EFL = Export to FLC
+    [DVA]: EDV                                         // EDV = Export to DVA
   };
 
-  var Export = getConfigValue(target_co[SheetName]) || FALSE;
+  let Export = getConfigValue(target_co[SheetName]) || FALSE;
   if (Export !== "TRUE") {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
     return;
@@ -289,74 +292,77 @@ function doExportFinancial(SheetName) {
 //-------------------------------------------------------------------BLC-------------------------------------------------------------------//
     case BLC:
 
-    Export = getConfigValue(EBL)                                                      // EBL = Export to BLC
+      var A = sheet_sr.getRange("D5").getValue();                         // Balanço Atual
 
-    var A = sheet_sr.getRange("D5").getValue();                                       // Balanço Atual
+      var rows = sheet_sr.getRange("B43:B49").getValues();                 // Ativo → Patrim. Líq
 
-    var B = sheet_sr.getRange("B43").getValue();                                      // Ativo
-    var C = sheet_sr.getRange("B44").getValue();                                      // A. Circulante
-    var D = sheet_sr.getRange("B45").getValue();                                      // A. Não Circulante
-    var E = sheet_sr.getRange("B46").getValue();                                      // Passivo
-    var F = sheet_sr.getRange("B47").getValue();                                      // Passivo Circulante
-    var G = sheet_sr.getRange("B48").getValue();                                      // Passivo Não Circ
-    var H = sheet_sr.getRange("B49").getValue();                                      // Patrim. Líq
+      var B = rows[0][0];                                                  // Ativo
+      var C = rows[1][0];                                                  // A. Circulante
+      var D = rows[2][0];                                                  // A. Não Circulante
+      var E = rows[3][0];                                                  // Passivo
+      var F = rows[4][0];                                                  // Passivo Circulante
+      var G = rows[5][0];                                                  // Passivo Não Circ
+      var H = rows[6][0];                                                  // Patrim. Líq
 
-    Data.push([A, B, C, D, E, F, G, H]);
+      Data.push([A, B, C, D, E, F, G, H]);
 
     break;
 //-------------------------------------------------------------------DRE-------------------------------------------------------------------//
     case DRE:
 
-    Export = getConfigValue(EDR)                                                     // EDR = Export to DRE
+      var A = sheet_sr.getRange("D5").getValue();                           // Balanço Atual
 
-    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
+      var colB = sheet_sr.getRange("B52:B57").getValues();                   // 12 MESES
+      var colD = sheet_sr.getRange("D52:D57").getValues();                   // 3 MESES
 
-    var B = sheet_sr.getRange("B52").getValue();                                     // Receita Líquida 12 MESES
-    var C = sheet_sr.getRange("B53").getValue();                                     // Resultado Bruto 12 MESES
-    var D = sheet_sr.getRange("B54").getValue();                                     // EBIT 12 MESES
-    var E = sheet_sr.getRange("B55").getValue();                                     // EBITDA 12 MESES
-    var F = sheet_sr.getRange("B57").getValue();                                     // Lucro Líquido 12 MESES
+      var B = colB[0][0];                                                    // Receita Líquida 12 MESES
+      var C = colB[1][0];                                                    // Resultado Bruto 12 MESES
+      var D = colB[2][0];                                                    // EBIT 12 MESES
+      var E = colB[3][0];                                                    // EBITDA 12 MESES
+      var F = colB[5][0];                                                    // Lucro Líquido 12 MESES
 
-    var G = sheet_sr.getRange("D52").getValue();                                     // Receita Líquida 3 MESES
-    var H = sheet_sr.getRange("D53").getValue();                                     // Resultado Bruto 3 MESES
-    var I = sheet_sr.getRange("D54").getValue();                                     // EBIT 3 MESES
-    var J = sheet_sr.getRange("D55").getValue();                                     // EBITDA 3 MESES
-    var K = sheet_sr.getRange("D57").getValue();                                     // Lucro Líquido 3 MESES
+      var G = colD[0][0];                                                    // Receita Líquida 3 MESES
+      var H = colD[1][0];                                                    // Resultado Bruto 3 MESES
+      var I = colD[2][0];                                                    // EBIT 3 MESES
+      var J = colD[3][0];                                                    // EBITDA 3 MESES
+      var K = colD[5][0];                                                    // Lucro Líquido 3 MESES
 
-    Data.push([A, B, C, D, E, F, G, H, I, J, K]);
+      Data.push([A, B, C, D, E, F, G, H, I, J, K]);
 
     break;
 //-------------------------------------------------------------------FLC-------------------------------------------------------------------//
     case FLC:
 
-    Export = getConfigValue(EFL)                                                     // EFL = Export to FLC
+      var A = sheet_sr.getRange("D5").getValue();                            // Balanço Atual
 
-    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
+      var rows = sheet_sr.getRange("B69:B75").getValues();                    // Fluxo de Caixa
 
-    var B = sheet_sr.getRange("B69").getValue();                                     // FCO
-    var C = sheet_sr.getRange("B70").getValue();                                     // FCI
-    var D = sheet_sr.getRange("B71").getValue();                                     // FCF
-    var E = sheet_sr.getRange("B72").getValue();                                     // FCT
-    var F = sheet_sr.getRange("B73").getValue();                                     // FCL
-    var G = sheet_sr.getRange("B74").getValue();                                     // Saldo Inicial
-    var H = sheet_sr.getRange("B75").getValue();                                     // Saldo Final
+      var B = rows[0][0];                                                     // FCO
+      var C = rows[1][0];                                                     // FCI
+      var D = rows[2][0];                                                     // FCF
+      var E = rows[3][0];                                                     // FCT
+      var F = rows[4][0];                                                     // FCL
+      var G = rows[5][0];                                                     // Saldo Inicial
+      var H = rows[6][0];                                                     // Saldo Final
 
-    Data.push([A, B, C, D, E, F, G, H]);
+      Data.push([A, B, C, D, E, F, G, H]);
 
     break;
 //-------------------------------------------------------------------DVA-------------------------------------------------------------------//
     case DVA:
 
-    Export = getConfigValue(EDV)                                                     // EDV = Export to DVA
+      var A = sheet_sr.getRange("D5").getValue();                                 // Balanço Atual
 
-    var A = sheet_sr.getRange("D5").getValue();                                      // Balanço Atual
+      var colB = sheet_sr.getRange("B77:B79").getValues();                    // Receitas → Depreciação
+      var colD = sheet_sr.getRange("D77:D79").getValues();                    // Valores adicionados
 
-    var B = sheet_sr.getRange("B77").getValue();                                     // Receitas
-    var C = sheet_sr.getRange("B78").getValue();                                     // Insumos Adquiridos de Terceiros
-    var D = sheet_sr.getRange("D77").getValue();                                     // Valor Adicionado Bruto
-    var E = sheet_sr.getRange("B79").getValue();                                     // Depreciação, Amortização e Exaustão
-    var F = sheet_sr.getRange("D78").getValue();                                     // Valor Adicionado Recebido em Transferência
-    var G = sheet_sr.getRange("D79").getValue();                                     // Valor Adicionado Total a Distribuir
+      var B = colB[0][0];                                                     // Receitas
+      var C = colB[1][0];                                                     // Insumos Adquiridos de Terceiros
+      var D = colB[2][0];                                                     // Depreciação, Amortização e Exaustão
+
+      var E = colD[0][0];                                                     // Valor Adicionado Bruto
+      var F = colD[1][0];                                                     // Valor Adicionado Recebido em Transferência
+      var G = colD[2][0];                                                     // Valor Adicionado Total a Distribuir
 
     Data.push([A, B, C, D, E, F, G]);
 

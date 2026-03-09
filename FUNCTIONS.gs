@@ -32,9 +32,14 @@ function LogDebug(msg, level = 'MIN') {
 }
 
 /**
- * Generic batch‐runner for sheet operations (save/edit/export/import).
+ * Generic batch runner with progress logging and error isolation. (save/edit/export/import/etc).
  *
- * @param {string[]} SheetNames         List of sheet‐name constants.
+ * Executes an operation for each item in a list while providing:
+ * - progress logging
+ * - per-item try/catch protection
+ * - execution summary
+ *
+ * @param {string[]} SheetNames         List of itens constants.
  * @param {function(string):void} fn    Operation to perform on each sheet.
  * @param {string} actionLabel          Verb in gerund form ("Editing", "Exporting", "Importing").
  * @param {string} resultLabel          Past‐tense for summary ("edited", "exported", "imported").
@@ -69,7 +74,7 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     }
   }
   LogDebug(
-      `💾 ` + 
+      `💾 ` +
       `${actionLabel} completed: ${count} of ${totalSheets} ` +
       `${groupLabel} sheets ${resultLabel} successfully`
     , 'MAX');

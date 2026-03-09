@@ -135,7 +135,7 @@ function doSaveBasic(SheetName) {
       const LC = sheet_sr.getLastColumn();
       const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
 
-      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Function
 
       sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
     }
@@ -281,16 +281,15 @@ function doSaveFinancial(SheetName) {
     return;
   }
 
-  if (isValidDate(New_sr)) {
-  processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
-    // Recurse if needed
-    if (cfg.recurse) {
-      doSaveFinancial(cfg.sh_sr);
-    }
-  }
-  else {
+  if (!isValidDate(New_sr)) {
     LogDebug(`❌ ERROR SAVE: ${SheetName} - New_sr '${New_sr}' is invalid: doSaveFinancial`, 'MIN');
     return;
+  }
+
+  processSaveFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
+  // Recurse if needed
+  if (cfg.recurse) {
+    doSaveFinancial(cfg.sh_sr);
   }
 }
 

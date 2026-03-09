@@ -42,8 +42,7 @@ const basicEditMap = [
     names: [SWING_4, SWING_12, SWING_52],
     editKey: DTR,
     checks: ['C2'],
-    conditions: ([c2]) => {
-      const Class = getConfigValue(IST, 'Config');
+    conditions: ([c2], Class) => {
       return c2 > 0 && ['STOCK','BDR','ETF','ADR'].includes(Class);
     },
     handler: processEditBasic
@@ -148,15 +147,16 @@ function doEditBasic(SheetName) {
 
   const Edit = getConfigValue(cfg.editKey);
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
+  const Class = getConfigValue(IST, 'Config');                                          // read once here, not inside lambda
 
-  if (cfg.conditions(vals)) {
+  if (cfg.conditions(vals, Class)) {
     if (SheetName === FUND) {
       const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
       const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
       const LC = sheet_sr.getLastColumn();
       const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
 
-      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Fuynction
+      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Function
 
       sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
     }
@@ -203,16 +203,15 @@ function doEditFinancial(SheetName) {
     return;
   }
 
-  if (isValidDate(New_sr)) {
-  processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
-    // Recurse if needed
-    if (cfg.recurse) {
-      doEditFinancial(cfg.sh_sr);
-    }
-  }
-  else {
+  if (!isValidDate(New_sr)) {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - New_sr '${New_sr}' is invalid: doEditFinancial`, 'MIN');
     return;
+  }
+
+  processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr);
+  // Recurse if needed
+  if (cfg.recurse) {
+    doEditFinancial(cfg.sh_sr);
   }
 }
 
