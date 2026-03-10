@@ -223,65 +223,98 @@ function runSafely(fn, ctx) {
 /////////////////////////////////////////////////////////////////////CONFIG/////////////////////////////////////////////////////////////////////
 
 /**
- * Retrieves a configuration value based on the provided acronym and source.
+ * In‑memory cache for configuration values retrieved from named ranges.
+ * The cache key is a combination of Source and Acronym (e.g., "Both:TAX_RATE").
+ * @type {Object.<string, string|null>}
+ */
+const _CONFIG_VALUE_CACHE = {};
+
+/**
+ * Retrieves a configuration value from named ranges in the Settings and/or Config sheets.
+ * Results are cached to avoid repeated lookups within the same script execution.
  *
- * This function checks the 'Settings' sheet first (if enabled),
- * then falls back to the 'Config' sheet if needed. You can explicitly
- * force which sheet to check by passing "Settings" or "Config" as the source.
+ * @param {string} Acronym         The named range to look up (e.g., "TAX_RATE", "COMPANY_NAME").
+ * @param {string} [Source='Both'] Which sheet(s) to search:
+ *                                  - 'Settings' : only the Settings sheet.
+ *                                  - 'Config'   : only the Config sheet.
+ *                                  - 'Both'     : try Settings first, fall back to Config.
+ * @returns {string|null}          The trimmed value if found, otherwise null.
  *
- * If the value is "DEFAULT" or one of the error values, it tries to get
- * the value from the other sheet (when using default behavior).
+ * Behavior:
+ * - The cache key is `${Source}:${Acronym}`. If the key exists in `_CONFIG_VALUE_CACHE`,
+ *   its value (which may be null) is returned immediately.
+ * - If the required sheet(s) cannot be obtained via `getSheet()` (e.g., sheet missing),
+ *   a warning is logged at level "MIN" and the function returns null for that source.
+ * - For each sheet accessed, `getRange(Acronym).getDisplayValue()` is attempted.
+ *   - If the named range does not exist or causes an error, the error is caught and
+ *     a warning is logged at level "MIN".
+ *   - The returned value is trimmed (`trim()`).
+ *   - If the trimmed value is empty, equals "DEFAULT", or is included in the external
+ *     `ErrorValues` array, it is treated as not found (value = null).
+ * - Source-specific logic:
+ *   - `'Settings'`: Returns the value from Settings only (or null).
+ *   - `'Config'`  : Returns the value from Config only (or null).
+ *   - `'Both'`    : If Settings yields a non‑null value, that value is returned immediately.
+ *                   Otherwise, Config is consulted and its value (or null) is returned.
+ * - The final value (even null) is stored in the cache before being returned.
  *
- * @param {string} Acronym - A named cell reference (e.g., "ETE", "ITR") representing a config setting.
- * @param {string} [source="Both"] - Optional source: "Settings", "Config", or "Both".
- * @returns {string|null} The retrieved value, or null if not found or invalid.
- *
- * Usage:
- *   const val1 = getConfigValue(ETE);                // Default behavior (Settings -> Config)
- *   const val2 = getConfigValue(ETE, 'Settings');    // Only from Settings
- *   const val3 = getConfigValue(ETE, 'Config');      // Only from Config
+ * Dependencies:
+ * - `getSheet(sheetName)`         – retrieves a cached sheet object.
+ * - `LogDebug(message, level)`    – logging function with "MIN"/"MAX" levels.
+ * - `ErrorValues` (global array)  – list of strings that should be treated as errors/missing.
  */
 function getConfigValue(Acronym, Source = 'Both') {
-  // Only fetch the sheets you need
+
+  const key = `${Source}:${Acronym}`;
+
+  if (_CONFIG_VALUE_CACHE[key] !== undefined)
+    return _CONFIG_VALUE_CACHE[key];
+
   const sheet_se = (Source !== 'Config')   ? getSheet('Settings') : null;
   const sheet_co = (Source !== 'Settings') ? getSheet('Config')   : null;
 
-  // If we needed Settings but didn't get it, bail
-  if (Source !== 'Config' && !sheet_se) { LogDebug('⚠️ Settings sheet not found', 'MIN');
+  if (Source !== 'Config' && !sheet_se) {
+    LogDebug('⚠️ Settings sheet not found', 'MIN');
     return null;
   }
-  // If we needed Config but didn't get it, bail
-  if (Source !== 'Settings' && !sheet_co) { LogDebug('⚠️ Config sheet not found', 'MIN');
+
+  if (Source !== 'Settings' && !sheet_co) {
+    LogDebug('⚠️ Config sheet not found', 'MIN');
     return null;
   }
 
   let Value = null;
 
-  // Try Settings first if applicable
   if (sheet_se) {
     try {
       Value = sheet_se.getRange(Acronym).getDisplayValue().trim();
-      if (!Value || Value === 'DEFAULT' || ErrorValues.includes(Value)) {
-        Value = null;  // fall back to Config
-      } else if (Source === 'Settings') {
-        return Value;  // short‑circuit if only pulling from Settings
+
+      if (!Value || Value === 'DEFAULT' || ErrorValues.includes(Value))
+        Value = null;
+      else if (Source === 'Settings') {
+        _CONFIG_VALUE_CACHE[key] = Value;
+        return Value;
       }
+
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, 'MIN');
+      LogDebug(`⚠️ const ${Acronym} not found in Settings`, 'MIN');
     }
   }
 
-  // Then Config if we still need a value
   if (!Value && sheet_co) {
     try {
       Value = sheet_co.getRange(Acronym).getDisplayValue().trim();
-      if (!Value || ErrorValues.includes(Value)) {
+
+      if (!Value || ErrorValues.includes(Value))
         Value = null;
-      }
+
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Config: getConfigValue`, 'MIN');
+      LogDebug(`⚠️ const ${Acronym} not found in Config`, 'MIN');
     }
   }
+
+  _CONFIG_VALUE_CACHE[key] = Value;
+
   return Value;
 }
 

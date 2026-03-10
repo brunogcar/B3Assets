@@ -69,7 +69,7 @@ function processEditExtra(sheet_sr, SheetName, Edit) {
  * @param {number|string}                           Old_tr    Old template date millis or blank.
  * @param {number|string}                           New_sr    New source date millis or blank.
  * @param {number|string}                           Old_sr    Old source date millis or blank.
- * @param {string}                                  Edit      “TRUE” if EDIT is enabled.
+ * @param {boolean|string}                          Edit      “TRUE” if EDIT is enabled in config.
  */
 function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr) {
   const SheetName = sheet_tr.getSheetName();
@@ -98,10 +98,15 @@ function processEditFinancial(sheet_tr, sheet_sr, New_tr, Old_tr, New_sr, Old_sr
       return;
     }
 
-    // Apply updates one‐by‐one (to preserve blanks/unmodified cells)
+    // Apply updates in batch
+    const range = sheet_tr.getRange(1, cfg.col_trg, LR, 1);
+    const values = range.getValues();
+
     updates.forEach(u => {
-      sheet_tr.getRange(u.row, cfg.col_trg).setValue(u.value);
+      values[u.row - 1][0] = u.value;
     });
+
+    range.setValues(values);
     LogDebug(`✏️ EDIT Applied ${updates.length} edits on ${SheetName} col ${cfg.col_trg}`, 'MIN');
 
     if (cfg.recurse) {

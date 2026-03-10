@@ -84,10 +84,9 @@ function doSaveAllFinancials() {
 function doSaveBasics() {
   const SheetNames = SheetsBasic;
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
+  for (const SheetName of SheetNames) {
     try { doSaveBasic(SheetName); }
-    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
+    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN'); }
   }
 }
 
@@ -96,10 +95,9 @@ function doSaveBasics() {
 function doSaveExtras() {
   const SheetNames = SheetsExtra;
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
+  for (const SheetName of SheetNames) {
     try { doSaveBasic(SheetName); }
-    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
+    catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN'); }
   }
 }
 
@@ -112,11 +110,10 @@ function doSaveFinancials() {
   const ACTV = sheet_up.getRange(`B3`).getValue();
   const SOMA = sheet_up.getRange(`K8`).getValue();
 
-  if (!ACTV || (ACTV && ((SOMA >= 450 && SOMA <= 460) || (SOMA === 0 || SOMA > 125000)))) {
-    for (let i = 0; i < SheetNames.length; i++) {
-      const SheetName = SheetNames[i];
+  if (!ACTV || (SOMA >= 450 && SOMA <= 460) || SOMA === 0 || SOMA > 125000) {
+    for (const SheetName of SheetNames) {
       try { doSaveFinancial(SheetName); }
-      catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN');  }
+      catch (error) { LogDebug(`Error saving: ${SheetName}: ${error}`, 'MIN'); }
     }
   }
 }

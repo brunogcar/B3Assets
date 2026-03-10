@@ -129,7 +129,7 @@ function doExportBasic(SheetName) {
 
   const vals = cfg.checks.map(a1 => sheet_sr.getRange(a1).getValue());
   if (!cfg.conditions(vals)) {
-    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`);
+    LogDebug(`❌ ERROR EXPORT: ${SheetName} - Conditions arent met: doExportBasic.`, 'MIN');
 
     if (SheetName === OPCOES && [1, 16].includes(new Date().getDate())) {
      tryCleanOpcaoExportRow(sheet_tr, TKT);
@@ -139,7 +139,8 @@ function doExportBasic(SheetName) {
 
   const Export = getConfigValue(cfg.exportKey);
   if (Export !== 'TRUE') {
-    LogDebug(`EXPORT: ${SheetName} - Export is set to FALSE: doExportBasic.`);
+    LogDebug(`EXPORT: ${SheetName} - Export is set to FALSE: doExportBasic.`, 'MIN');
+
     return;
   }
 
@@ -188,7 +189,7 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  var Export = getConfigValue(exportExtraConfig.target_co[SheetName], 'Config') || FALSE;
+  let Export = getConfigValue(exportExtraConfig.target_co[SheetName], 'Config') || FALSE;
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
   const row = sheet_sr.getRange("A2:O2").getValues()[0];
 
@@ -279,7 +280,7 @@ function doExportFinancial(SheetName) {
     [DVA]: EDV                                         // EDV = Export to DVA
   };
 
-  let Export = getConfigValue(target_co[SheetName]) || FALSE;
+  let Export = getConfigValue(target_co[SheetName], 'Config') || FALSE;
   if (Export !== "TRUE") {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
     return;
@@ -319,12 +320,14 @@ function doExportFinancial(SheetName) {
       var C = colB[1][0];                                                    // Resultado Bruto 12 MESES
       var D = colB[2][0];                                                    // EBIT 12 MESES
       var E = colB[3][0];                                                    // EBITDA 12 MESES
+// colB[4] = Depr & Amort, intentionally skipped
       var F = colB[5][0];                                                    // Lucro Líquido 12 MESES
 
       var G = colD[0][0];                                                    // Receita Líquida 3 MESES
       var H = colD[1][0];                                                    // Resultado Bruto 3 MESES
       var I = colD[2][0];                                                    // EBIT 3 MESES
       var J = colD[3][0];                                                    // EBITDA 3 MESES
+// colD[4] = Depr & Amort, intentionally skipped
       var K = colD[5][0];                                                    // Lucro Líquido 3 MESES
 
       Data.push([A, B, C, D, E, F, G, H, I, J, K]);
@@ -433,10 +436,7 @@ function doExportInfo() {
 
 function doExportProventos() {
   const sheet_pv = getSheet(PROV);
-  if (!sheet_pv) return;
-
   const sheet_ix = getSheet('Index');
-  if (!sheet_ix) return;
 
   if (!sheet_ix || !sheet_pv) return;
 
