@@ -78,10 +78,9 @@ function doFinancialDateHelper(dateArr) {
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
 
 function doCheckDATAS() {
-  const SheetNames = [...SheetsBasic,...SheetsExtra];
+  const SheetNames = [...SheetsBasic, ...SheetsExtra];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
+  for (const SheetName of SheetNames) {
     try {
       doCheckDATA(SheetName);
     } catch (error) {
@@ -121,7 +120,6 @@ const checkDataMap = {
 };
 
 function doCheckDATA(SheetName) {
-
   const sheet_sr = getSheet(SheetName);    // Source sheet
 
   LogDebug(`DATA CHECK Sheet: ${SheetName}`, 'MIN');
@@ -271,8 +269,7 @@ function filterFundRow(row, Minimum, Maximum) {
 function doTrim() {
   const SheetNames = [SWING_4, SWING_12, SWING_52];
 
-  for (let i = 0; i < SheetNames.length; i++) {
-    const SheetName = SheetNames[i];
+  for (const SheetName of SheetNames) {
     try {
       doTrimSheet(SheetName);
     } catch (error) {
@@ -332,70 +329,85 @@ function doTrimSheet(SheetName) {
  * @returns {void}
  */
 function doDisableSheets() {
+
   const ss       = SpreadsheetApp.getActiveSpreadsheet();          // cant remove
   const sheet_co = getSheet('Config');
   if (!sheet_co) return;
 
-  const Class = getConfigValue(IST, 'Config');                     // IST = asset class
+  const Class = getConfigValue(IST, 'Config');                      // IST = asset class
 
   const sheets = ss.getSheets();
 
   switch (Class) {
+
     case 'STOCK': {
-      var Hidden = [
+
+      const Hidden = new Set([
         'DATA','Prov_','FIBO','Cotações','UPDATE','Balanço',
         'Balanço Ativo','Balanço Passivo','Resultado','Demonstração',
         'Fluxo','Fluxo de Caixa','Valor','Demonstração do Valor Adicionado'
-      ];
-      for (let i = 0; i < sheets.length; i++) {
-        const sheet = sheets[i];
+      ]);
+
+      for (const sheet of sheets) {
         const SheetName = sheet.getName();
-        if (!sheet.isSheetHidden() && Hidden.indexOf(SheetName) !== -1) {
+
+        if (!sheet.isSheetHidden() && Hidden.has(SheetName)) {
           sheet.hideSheet();
           LogDebug(`🔒 HIDDEN: ${SheetName}`, 'MIN');
         }
       }
+
       break;
     }
+
     case 'ADR': {
-      var Keep = new Set([
+
+      const Keep = new Set([
         'Config','Settings','Index','Preço','FIBO',
         SWING_4, SWING_12, SWING_52,'Cotações'
       ]);
-      // reverse order to safely delete
+
       for (let i = sheets.length - 1; i >= 0; i--) {
         const sheet = sheets[i];
         const SheetName = sheet.getName();
+
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
           LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
         }
       }
+
       break;
     }
+
     case 'BDR':
     case 'ETF': {
-      var Keep = new Set([
+
+      const Keep = new Set([
         'Config','Settings','Index','Prov','Prov_','Preço','FIBO',
         SWING_4, SWING_12, SWING_52,'Cotações','DATA','OPT','Opções','BTC','Termo'
       ]);
+
       for (let i = sheets.length - 1; i >= 0; i--) {
         const sheet = sheets[i];
         const SheetName = sheet.getName();
+
         if (!Keep.has(SheetName)) {
           ss.deleteSheet(sheet);
           LogDebug(`🗑️ DELETED: ${SheetName}`, 'MIN');
         }
       }
+
       break;
     }
+
     default:
       LogDebug(`Class "${Class}" not recognized. No sheets modified.`, 'MIN');
   }
 
-  // Always run hideConfig() to re‐hide Config/Settings if needed
-  hideConfig();
+  hideConfig();                                                     // Always run hideConfig() to re-hide Config/Settings if needed
 }
+
 
 /////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
 

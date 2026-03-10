@@ -19,16 +19,16 @@ function Import(){
   if (Option === "AUTO")
   {
     // open the source spreadsheet & sheet
-    const ss_s    = SpreadsheetApp.openById(Source_Id);
-    const sheet_s = ss_s.getSheetByName('Index');                                // Source Sheet
-    if (!sheet_s) {
+    const ss_sr    = getSpreadsheetById(Source_Id);
+    const sheet_sr = ss_sr.getSheetByName('Index');                              // Source Sheet
+    if (!sheet_sr) {
       LogDebug(`❌ ERROR IMPORT: sheet_s not found in source.`, 'MIN');
       return;
     }
 
     // read the trigger cell
     const triggerCell = 'K1';
-    const cellValue   = sheet_s.getRange(triggerCell).getDisplayValue();
+    const cellValue   = sheet_sr.getRange(triggerCell).getDisplayValue();
 
     // define your “old” vs “new” markers
     const OLD_MARKER = '';
@@ -116,7 +116,7 @@ function doImportProv(ProvName){
 
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Prov');         // Source Sheet
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName('Prov');              // Source Sheet
   const sheet_tr = getSheet('Prov');
   if (!sheet_tr) return;
 
@@ -166,9 +166,9 @@ function import_config() {
   _DBG_CACHE = null;
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('Config');       // Source Sheet
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName('Config');            // Source Sheet
   {
-    const sheet_co = getSheet('Config');                                      // cant be deleted because of sheet_co.getRange(COR)
+    const sheet_co = getSheet('Config');                                              // cant be deleted because of sheet_co.getRange(COR)
     if (!sheet_co) return;
 
     var Data = sheet_sr.getRange(COR).getValues();                                    // Does not use getConfigValue because it gets data from another spreadsheet
@@ -181,10 +181,10 @@ function import_config() {
 function doImportShares() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName('DATA');              // Source Sheet
     var L5 = sheet_sr.getRange("L5").getValue();
     var L6 = sheet_sr.getRange("L6").getValue();
-  const sheet_tr = getSheet('DATA');                                          // Target Sheet
+  const sheet_tr = getSheet('DATA');                                                  // Target Sheet
   if (!sheet_tr) return;
 
     var SheetName = sheet_tr.getName()
@@ -249,7 +249,7 @@ function doImportBasic(SheetName) {
     return;
   }
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName(SheetName);
   if (!sheet_sr) {
     LogDebug(`❌ ERROR IMPORT: Source sheet ${SheetName} not found in ${Source_Id}.`, 'MIN');
     return;
@@ -315,7 +315,7 @@ function doImportFinancial(SheetName) {
     return;
   }
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName(SheetName);
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName(SheetName);
   if (!sheet_sr) {
     LogDebug(`❌ ERROR IMPORT: "${SheetName}" not found in source ${Source_Id}.`, 'MIN');
     return;
@@ -373,8 +373,8 @@ function doMergeFinancials() {
       if (!opts.flag) return;
 
       // Open source sheets
-      const src1 = SpreadsheetApp.openById(Merge_Id_1).getSheetByName(SheetName);
-      const src2 = SpreadsheetApp.openById(Merge_Id_2).getSheetByName(SheetName);
+      const src1 = getSpreadsheetById(Merge_Id_1).getSheetByName(SheetName);
+      const src2 = getSpreadsheetById(Merge_Id_2).getSheetByName(SheetName);
       const dest = ss.getSheetByName(SheetName);
 
       if (!src1 || !src2 || !dest) {
@@ -426,16 +426,16 @@ function doMergeFinancials() {
 
 function doCheckMergeFinancials() {
   try {
-    const Merge_Id_1 = getConfigValue(MG1, 'Config'); 
-    const Merge_Id_2 = getConfigValue(MG2, 'Config'); 
+    const Merge_Id_1 = getConfigValue(MG1, 'Config');
+    const Merge_Id_2 = getConfigValue(MG2, 'Config');
 
     if (!Merge_Id_1 || !Merge_Id_2) {
       LogDebug(`❌ ERROR COMPARE: MG1 or MG2 is empty.`, 'MIN');
       return;
     }
 
-    const ss_s1 = SpreadsheetApp.openById(Merge_Id_1);
-    const ss_s2 = SpreadsheetApp.openById(Merge_Id_2);
+    const ss_s1 = getSpreadsheetById(Merge_Id_1);
+    const ss_s2 = getSpreadsheetById(Merge_Id_2);
 
     Object.entries(financialImportMap).forEach(([SheetName, opts]) => {
       if (!opts.flag) return;

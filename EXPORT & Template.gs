@@ -115,7 +115,7 @@ function doExportBasic(SheetName) {
     return;
   }
 
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                                     // Target spreadsheet
+  const ss_tr    = getSpreadsheetById(Target_Id);                                       // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                     // Target sheet - does not use getSheet, because gets data from diferent spreadsheet
   if (!sheet_tr) return;
 
@@ -241,7 +241,7 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                                                    // Target spreadsheet
+  const ss_tr    = getSpreadsheetById(Target_Id);                                                      // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(exportExtraConfig.target_sh[SheetName] || SheetName);          // Declare sheet_tr outside the conditional scope
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportBasic`, 'MIN');
@@ -265,7 +265,7 @@ function doExportFinancial(SheetName) {
   const sheet_sr = getSheet('Index');
   if (!sheet_sr) return;
 
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                                    // Target spreadsheet
+  const ss_tr    = getSpreadsheetById(Target_Id);                                      // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                                    // Target sheet - does not use getSheet, because gets data from diferent spreadsheet
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - Does not exist: doExportFinancial`, 'MIN');
@@ -411,7 +411,7 @@ function doExportInfo() {
   // Convert 0 values to blank ("")
   var Data = [[A, B, C, D, E, F, G, H, I, J, K]].map(row => row.map(value => value === 0 ? "" : value));
 
-  var ss_tr = SpreadsheetApp.openById(Data_Id);                     // Target spreadsheet
+  var ss_tr    = getSpreadsheetById(Data_Id);                       // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                   // Target sheet
 
   if (!sheet_tr) {
@@ -487,7 +487,7 @@ function doExportProventos() {
   // Convert any 0 values to blank ("")
   Data = Data.map(row => row.map(value => value === 0 ? "" : value));
 
-  var ss_tr = SpreadsheetApp.openById(Target_Id);
+  var ss_tr    = getSpreadsheetById(Target_Id);
   var sheet_tr = ss_tr.getSheetByName('Proventos');
 
   if (!sheet_tr) {

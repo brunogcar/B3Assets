@@ -21,7 +21,7 @@ function setSheetID() {
   const Sheet_Id = SpreadsheetApp.getActiveSpreadsheet().getId();
 
   // 3) Open the external “Relação” sheet
-  const ss_tr    = SpreadsheetApp.openById(Data_Id);
+  const ss_tr    = getSpreadsheetById(Data_Id);
   const sheet_tr = ss_tr.getSheetByName('Relação');
   if (!sheet_tr) {
     LogDebug('🔎Target sheet not found: Relação', 'MIN');
@@ -76,7 +76,7 @@ function doClearSheetID() {
     return;
   }
 
-  var ss_tr = SpreadsheetApp.openById(Data_Id);                                    // Target spreadsheet
+  var ss_tr    = getSpreadsheetById(Data_Id);                                      // Target spreadsheet
   var sheet_tr = ss_tr.getSheetByName('Relação');                                  // Target sheet
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} Target sheet not found.`, 'MIN');
@@ -159,7 +159,7 @@ function doClearExport(SheetName) {
     LogDebug(`❌ ERROR EXPORT: ${Target_Id} Target ID is empty.`, 'MIN');
     return;
   }
-  const ss_tr = SpreadsheetApp.openById(Target_Id);                               // Target spreadsheet
+  const ss_tr    = getSpreadsheetById(Target_Id);                                 // Target spreadsheet
   const sheet_tr = ss_tr.getSheetByName(SheetName);                               // Target sheet
   if (!sheet_tr) {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} Target sheet not found.`, 'MIN');

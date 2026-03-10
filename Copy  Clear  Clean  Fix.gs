@@ -177,30 +177,75 @@ function fixSplit() {
  *   - op:   `"mul"` (default) or `"div"`
  */
 function processSplitBlocks(SheetName, multiplierA1, startRowA1, blocks) {
+
   const sheet = getSheet(SheetName);
   if (!sheet) return;
 
   const M  = sheet.getRange(multiplierA1).getValue();
   const SR = sheet.getRange(startRowA1).getValue();
   const LR = sheet.getLastRow();
+
+  if (SR > LR) {
+    LogDebug(`⚠️ FIX skipped: ${SheetName} startRow (${SR}) > lastRow (${LR})`, 'MIN');
+    return;
+  }
+
   LogDebug(`FIX: ${SheetName} starting at row ${SR} with multiplier ${M}`, 'MIN');
 
-  blocks.forEach(({from, to = from, op = 'mul'}) => {
-    const RangeA1 = `${from}${SR}:${to}${LR}`;
-    const Values = sheet.getRange(RangeA1).getValues();
-
-    for (let i = 0; i < Values.length; i++) {
-      for (let j = 0; j < Values[i].length; j++) {
-        const v = Values[i][j];
-        if (v !== '' && v !== 0) {
-          Values[i][j] = (op === 'div') ? v / M : v * M;
-        }
-      }
+  // Convert column letters to numbers
+  const colToNum = c => {
+    let n = 0;
+    for (let i = 0; i < c.length; i++) {
+      n = n * 26 + (c.charCodeAt(i) - 64);
     }
-    sheet.getRange(RangeA1).setValues(Values);
+    return n;
+  };
+
+  // Determine global column bounds
+  let minCol = Infinity;
+  let maxCol = -Infinity;
+
+  const parsedBlocks = blocks.map(({from, to = from, op = 'mul'}) => {
+    const c1 = colToNum(from);
+    const c2 = colToNum(to);
+    minCol = Math.min(minCol, c1);
+    maxCol = Math.max(maxCol, c2);
+    return {c1, c2, op};
   });
 
+  const numRows = LR - SR + 1;
+  const numCols = maxCol - minCol + 1;
+
+  const range = sheet.getRange(SR, minCol, numRows, numCols);
+  const values = range.getValues();
+
+  for (const {c1, c2, op} of parsedBlocks) {
+
+    const start = c1 - minCol;
+    const end   = c2 - minCol;
+
+    for (let r = 0; r < values.length; r++) {
+
+      const row = values[r];
+
+      for (let c = start; c <= end; c++) {
+
+        const v = row[c];
+
+        if (v !== '' && v !== 0) {
+          row[c] = (op === 'div') ? v / M : v * M;
+        }
+
+      }
+
+    }
+
+  }
+
+  range.setValues(values);
+
   LogDebug(`✅ SUCCESS FIX: ${SheetName}`, 'MIN');
+
 }
 
 // Generic split-processor has been defined separately as processSplitBlocks
@@ -270,13 +315,13 @@ function fixFutureSplit() {
 //......................................................................................................................................//
 function fixFUTPlusSplits() {
   const SheetNames = [FUTURE_1, FUTURE_2, FUTURE_3];
-  SheetNames.forEach(name => {
+  for (const name of SheetNames) {
     processSplitBlocks(name, 'Z4', 'Y4', [
       { from: 'B', to: 'C', op: 'mul' },
       { from: 'P', to: 'S', op: 'mul' },
-      { from: 'H',        op: 'div' }
+      { from: 'H',          op: 'div' }
     ]);
-  });
+  }
 }
 //-------------------------------------------------------------------Extra-------------------------------------------------------------------//
 function fixEXTRASplits() {

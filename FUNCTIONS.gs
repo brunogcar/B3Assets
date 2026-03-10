@@ -1,6 +1,8 @@
 //@NotOnlyCurrentDoc
 /////////////////////////////////////////////////////////////////////Helper functions/////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////DEBUG/////////////////////////////////////////////////////////////////////
+
 /**
  * Conditional debug logger based on Config‑tab cell DBG.
  * DBG cell must contain one of: 'MIN', 'MID', or 'MAX'.
@@ -80,18 +82,68 @@ function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
     , 'MAX');
 }
 
+/////////////////////////////////////////////////////////////////////CACHE/////////////////////////////////////////////////////////////////////
+
+//-------------------------------------------------------------------SPREADSHEET-------------------------------------------------------------------//
+
 /**
- * IMPORTANT:
- * Because this function already calls SpreadsheetApp.getActiveSpreadsheet(),
- * you do NOT need to manually declare `var ss = SpreadsheetApp.getActiveSpreadsheet()`
- * in any function that only uses this to access sheets.
+ * In-memory cache for opened spreadsheets.
+ * Used to avoid repeated calls to SpreadsheetApp.openById() within the same script execution.
+ * @type {Object.<string, GoogleAppsScript.Spreadsheet.Spreadsheet>}
+ */
+const _SPREADSHEET_CACHE = {};
+
+/**
+ * Returns a cached spreadsheet object for the given ID.
+ * If the spreadsheet hasn't been opened yet in this execution, it opens and caches it.
  *
- * @param {string} SheetName - The exact name of the sheet to fetch.
- * @returns {GoogleAppsScript.Spreadsheet.Sheet | null} - The Sheet object if found; otherwise, null.
+ * @param {string} id  The ID of the spreadsheet to retrieve.
+ * @returns {GoogleAppsScript.Spreadsheet.Spreadsheet} The spreadsheet object.
+ *
+ * Behavior:
+ * - The cache is purely in‑memory and lasts only for the current script execution.
+ * - If the same ID is requested multiple times, the cached object is returned immediately,
+ *   saving time and avoiding redundant API calls.
+ * - If the ID is invalid or the spreadsheet cannot be opened, the error from
+ *   SpreadsheetApp.openById() is propagated.
+ */
+function getSpreadsheetById(id) {
+  if (!_SPREADSHEET_CACHE[id]) {
+    _SPREADSHEET_CACHE[id] = SpreadsheetApp.openById(id);
+  }
+  return _SPREADSHEET_CACHE[id];
+}
+
+//-------------------------------------------------------------------SS-------------------------------------------------------------------//
+
+/**
+ * The active spreadsheet instance, cached for the entire script execution.
+ * This avoids repeated calls to SpreadsheetApp.getActiveSpreadsheet().
+ * @type {GoogleAppsScript.Spreadsheet.Spreadsheet}
  */
 const _SS_CACHE = SpreadsheetApp.getActiveSpreadsheet();
+
+/**
+ * In‑memory cache for sheets retrieved from the active spreadsheet.
+ * Keys are sheet names (strings); values are Sheet objects.
+ * @type {Object.<string, GoogleAppsScript.Spreadsheet.Sheet>}
+ */
 const _SHEET_CACHE = {};
 
+/**
+ * Retrieves a sheet by name from the active spreadsheet, with caching.
+ *
+ * @param {string}  SheetName      The exact name of the sheet to retrieve.
+ * @param {boolean} [forceRefresh] If true, bypass the cache and force a fresh lookup.
+ *                                  Defaults to false.
+ * @returns {GoogleAppsScript.Spreadsheet.Sheet|null} The sheet object if found, otherwise null.
+ *
+ * Behavior:
+ * - If SheetName is falsy (empty, null, undefined), returns null immediately.
+ * - If forceRefresh is false and the sheet is already in _SHEET_CACHE, returns the cached sheet.
+ * - Otherwise, attempts to get the sheet via _SS_CACHE.getSheetByName(SheetName).
+ * - If the sheet is found, it is stored in the cache (overwriting any stale entry) and returned.
+ */
 function getSheet(SheetName, forceRefresh = false) {
 
   if (!SheetName) return null;
@@ -117,6 +169,8 @@ function getSheet(SheetName, forceRefresh = false) {
 function clearSheetCache() {
   for (const k in _SHEET_CACHE) delete _SHEET_CACHE[k];
 }
+
+/////////////////////////////////////////////////////////////////////VALUES/////////////////////////////////////////////////////////////////////
 
 /**
  * Safe getValues wrapper; returns empty array if range invalid.
@@ -165,6 +219,8 @@ function runSafely(fn, ctx) {
     return null;
   }
 }
+
+/////////////////////////////////////////////////////////////////////CONFIG/////////////////////////////////////////////////////////////////////
 
 /**
  * Retrieves a configuration value based on the provided acronym and source.
@@ -383,48 +439,56 @@ function doSettings() {
 
   const Activate = getConfigValue(ACT, 'Settings');                                     // ACT = Activate
 
-  if (Class == 'STOCK')
-  {
-    if ( Activate == "TRUE")                                              // TRUE
-    {
-      const True = getConfigValue(TRU, 'Settings');                                     // TRU = True
+  if (Class !== 'STOCK' || Activate !== 'TRUE') return;
 
-      if ( True == 'SAVE')                                                // SAVE
-      {
-        const Save = getConfigValue(SAV, 'Settings');                                    // SAV = SAVE
+  const True = getConfigValue(TRU, 'Settings');
 
-        if ( Save == 'SHEETS') { doSaveAllBasics(); }
-        if ( Save == 'EXTRAS') { doSaveAllExtras(); }
-        if ( Save == 'DATAS')  { doSaveAllFinancials(); }
-        if ( Save == 'ALL')    { doSaveAll(); }
-        if ( Save == 'INDIVIDUAL')
-          {
-            const Individual = getConfigValue(IND, 'Settings');                          // IND = INDIVIDUAL
+  switch (True) {
+    case 'SAVE': {
+      const Save = getConfigValue(SAV, 'Settings');                                    // SAV = SAVE
 
-            if ( Individual == 'SWING')  { doSaveSWING(); }
-            if ( Individual == 'OPCOES') { doSaveBasic(OPCOES); }
-            if ( Individual == 'BTC')    { doSaveBasic(BTC); }
-            if ( Individual == 'TERMO')  { doSaveBasic(TERMO); }
-            if ( Individual == 'FUND')   { doSaveBasic(FUND); }
-            if ( Individual == 'FUTURE') { doSaveBasic(FUTURE); }
+      switch (Save) {
+        case 'SHEETS':     doSaveAllBasics();    break;
+        case 'EXTRAS':     doSaveAllExtras();    break;
+        case 'DATAS':      doSaveAllFinancials(); break;
+        case 'ALL':        doSaveAll();           break;
+        case 'INDIVIDUAL': {
+          const Individual = getConfigValue(IND, 'Settings');                          // IND = INDIVIDUAL
+
+          switch (Individual) {
+            case 'SWING':  doSaveSWING();          break;
+            case 'OPCOES': doSaveBasic(OPCOES);    break;
+            case 'BTC':    doSaveBasic(BTC);       break;
+            case 'TERMO':  doSaveBasic(TERMO);     break;
+            case 'FUND':   doSaveBasic(FUND);      break;
+            case 'FUTURE': doSaveBasic(FUTURE);    break;
           }
+          break;
+        }
       }
-      if ( True == 'EXPORT') {doExportAll(); }
-      if ( True == 'OTHER')                                               // OTHER
-      {
-        const Other = getConfigValue(EXT, 'Settings');                                    // EXT = Extra
+      break;
+    }
 
-        if ( Other == 'ZEROS')           { doCleanZeros(); }
-        if ( Other == 'TRIGGERS')        { doCheckTriggers(); }
-        if ( Other == 'CHECK')           { doCheckDATAS(); }                              // Check and hide or show Sheets
-        if ( Other == 'PROV')            { doSaveProventos(); }
-        if ( Other == 'SHARES')          { doSaveShares(); }
-        if ( Other == 'ZEROS OPTIONS')   { doDeleteZeroOptions(); }
-        if ( Other == 'NORM FUND')       { normalizeFund(); }
+    case 'EXPORT':
+      doExportAll();
+      break;
+
+    case 'OTHER': {
+      const Other = getConfigValue(EXT, 'Settings');                                    // EXT = Extra
+
+      switch (Other) {
+        case 'ZEROS':        doCleanZeros();          break;
+        case 'TRIGGERS':     doCheckTriggers();       break;
+        case 'CHECK':        doCheckDATAS();          break;                            // Check and hide or show Sheets
+        case 'PROV':         doSaveProventos();       break;
+        case 'SHARES':       doSaveShares();          break;
+        case 'ZEROS OPTIONS':doDeleteZeroOptions();   break;
+        case 'NORM FUND':    normalizeFund();         break;
       }
+      break;
     }
   }
-};
+}
 
 /////////////////////////////////////////////////////////////////////RETIRE/////////////////////////////////////////////////////////////////////
 
@@ -606,9 +670,8 @@ function SNAME(option) {
 function doCleanZeros() {
   const SheetNames = SheetsBasic;
 
-  for (let idx = 0; idx < SheetNames.length; idx++) {
-    const SheetName = SheetNames[idx];
-    const sheet     = getSheet(SheetName);
+  for (const SheetName of SheetNames) {
+    const sheet = getSheet(SheetName);
     if (!sheet) continue;
 
     const LR = sheet.getLastRow();
@@ -619,10 +682,10 @@ function doCleanZeros() {
     const Data = Range.getValues();
     let Modified = false;
 
-    for (let i = 0; i < Data.length; i++) {
-      for (let j = 0; j < Data[i].length; j++) {
-        if (Data[i][j] === 0) {
-          Data[i][j] = "";
+    for (const row of Data) {
+      for (let j = 0; j < row.length; j++) {
+        if (row[j] === 0) {
+          row[j] = "";
           Modified = true;
         }
       }
@@ -630,7 +693,7 @@ function doCleanZeros() {
 
     if (Modified) {
       Range.setValues(Data);
-      Logger.log(`Zeros cleaned in sheet: ${SheetName}`);
+      LogDebug(`Zeros cleaned in sheet: ${SheetName}`, 'MIN');
     }
   }
 }

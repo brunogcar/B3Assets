@@ -63,10 +63,10 @@ function import_Upgrade_Sheets()
 function doImportShares_Upgrade() {
   const Source_Id = getConfigValue(SIR, 'Config');                                    // SIR = Source ID
 
-  const sheet_sr = SpreadsheetApp.openById(Source_Id).getSheetByName('DATA');         // Source Sheet
+  const sheet_sr = getSpreadsheetById(Source_Id).getSheetByName('DATA');              // Source Sheet
   const L1 = sheet_sr.getRange("L1").getValue();
   const L2 = sheet_sr.getRange("L2").getValue();
-  const sheet_tr = getSheet('DATA');                                          // Target Sheet
+  const sheet_tr = getSheet('DATA');                                                  // Target Sheet
   if (!sheet_tr) return;
 
     var SheetName = sheet_tr.getName()
