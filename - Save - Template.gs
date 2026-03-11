@@ -148,7 +148,7 @@ function doSaveBasic(SheetName) {
 /////////////////////////////////////////////////////////////////////FINANCIAL TEMPLATE/////////////////////////////////////////////////////////////////////
 
 const financialSaveMap = {
-  BLC: {
+  [BLC]: {
     saveKey: SBL,   editKey: DBL,
     sh_sr: Balanco, sh_tr: BLC,   recurse: true,
     col_new: 2, col_old: 3, col_old_src: 3,
@@ -159,7 +159,7 @@ const financialSaveMap = {
       return B2!=0 && B2!=="" && B27!=0 && B27!=="";
     }
   },
-  DRE: {
+  [DRE]: {
     saveKey: SDE,   editKey: DDE,
     sh_sr: Resultado, sh_tr: DRE, recurse: true,
     col_new: 2, col_old: 3, col_old_src: 4,
@@ -170,7 +170,7 @@ const financialSaveMap = {
       return B4!=0 && B4!=="" && B27!=0 && B27!=="";
     }
   },
-  FLC: {
+  [FLC]: {
     saveKey: SFL,   editKey: DFL,
     sh_sr: Fluxo,     sh_tr: FLC, recurse: true,
     col_new: 2, col_old: 3, col_old_src: 4,
@@ -181,7 +181,7 @@ const financialSaveMap = {
       return v!=0 && v!=="";
     }
   },
-  DVA: {
+  [DVA]: {
     saveKey: SDV,   editKey: DDV,
     sh_sr: Valor,     sh_tr: DVA, recurse: true,
     col_new: 2, col_old: 3, col_old_src: 4,
@@ -192,7 +192,7 @@ const financialSaveMap = {
       return v!=0 && v!=="";
     }
   },
-  Balanco: {
+  [Balanco]: {
     saveKey: SBL,   editKey: DBL,
     sh_sr: Balanco, sh_tr: Balanco, recurse: false,
     col_new: 2, col_old: 3, col_old_src: 3,
@@ -202,7 +202,7 @@ const financialSaveMap = {
       return B2!=0 && B2!=="" && B27!=0 && B27!=="";
     }
   },
-  Resultado: {
+  [Resultado]: {
     saveKey: SDE,   editKey: DDE,
     sh_sr: Resultado, sh_tr: Resultado, recurse: false,
     col_new: 3, col_old: 4, col_old_src: 4,
@@ -212,7 +212,7 @@ const financialSaveMap = {
       return B4!=="" && B27!=0 && B27!=="";
     }
   },
-  Fluxo: {
+  [Fluxo]: {
     saveKey: SFL,   editKey: DFL,
     sh_sr: Fluxo,     sh_tr: Fluxo, recurse: false,
     col_new: 3, col_old: 4, col_old_src: 4,
@@ -222,7 +222,7 @@ const financialSaveMap = {
       return v!=0 && v!=="";
     }
   },
-  Valor: {
+  [Valor]: {
     saveKey: SDV,   editKey: DDV,
     sh_sr: Valor,     sh_tr: Valor, recurse: false,
     col_new: 3, col_old: 4, col_old_src: 4,
@@ -622,22 +622,33 @@ function doSaveShares() {
   if (!sheet_sr) return;
 
   try {
-    let M5 = sheet_sr.getRange("M5").getValue();
-    let M6 = sheet_sr.getRange("M6").getValue();
+    const M5 = sheet_sr.getRange("M5").getValue();
+    const M6 = sheet_sr.getRange("M6").getValue();
 
     LogDebug(`SAVE: Shares and FF`, 'MIN');
 
-    if (!isNaN(M5) && !isNaN(M6) && !ErrorValues.includes(M5) && !ErrorValues.includes(M6)) {
-      M5 = Number(M5);
-      M6 = Number(M6);
+    const M5_valid = !isNaN(M5) && !ErrorValues.includes(M5);
+    const M6_valid = !isNaN(M6) && !ErrorValues.includes(M6);
 
-      const Data = sheet_sr.getRange("M5:M6").getValues();
-      sheet_sr.getRange("L5:L6").setValues(Data);
-
-      LogDebug(`✅ SUCCESS SAVE: Shares and FF`, 'MIN');
-    } else {
+    if (!M5_valid && !M6_valid) {
       LogDebug(`❌ ERROR SAVE: Invalid values in M5 ${M5} / M6 ${M6}`, 'MIN');
+      return;
     }
+
+    if (M5_valid) {
+      sheet_sr.getRange("L5").setValue(Number(M5));
+      LogDebug(`✅ SUCCESS SAVE: Shares (M5 → L5): ${Number(M5)}`, 'MIN');
+    } else {
+      LogDebug(`⚠️ SKIP: M5 invalid (${M5}), L5 not updated`, 'MIN');
+    }
+
+    if (M6_valid) {
+      sheet_sr.getRange("L6").setValue(Number(M6));
+      LogDebug(`✅ SUCCESS SAVE: FF (M6 → L6): ${Number(M6)}`, 'MIN');
+    } else {
+      LogDebug(`⚠️ SKIP: M6 invalid (${M6}), L6 not updated`, 'MIN');
+    }
+
   } catch (error) {
     LogDebug(`❌ ERROR in doSaveShares: ${error.message}`, 'MIN');
   }
