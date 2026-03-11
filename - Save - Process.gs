@@ -13,16 +13,18 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   // Read the entire sheet once
   const data = sheet_sr.getRange(1,1,LR,LC).getValues();
 
-  const A1 = data[0][0];
-  const A2 = data[1][0];
-  const A5 = data[4][0];
+  const toTs = v => v instanceof Date ? v.getTime() : v;
+
+  const A1 = toTs(data[0][0]);
+  const A2 = toTs(data[1][0]);
+  const A5 = toTs(data[4][0]);
 
   // Full row comparisons starting from column B
   const Row1 = data[0].slice(1);
   const Row2 = data[1].slice(1);
   const Row5 = data[4].slice(1);
 
-  const IsEqual = Row2.some((val, i) => val === Row1[i] || val === Row5[i]);
+  const IsEqual = Row2.every((val, i) => val === Row1[i] || val === Row5[i]);
 
   const Header = [data[1]];
 
@@ -55,7 +57,7 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   }
 
   if (
-    ((A2 === A5 || A2 === A1) && IsEqual) ||
+    ((A2 == A5 || A2 == A1) && !IsEqual) ||
     ErrorValues.includes(A1) ||
     ErrorValues.includes(A5)
   ) {

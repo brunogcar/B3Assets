@@ -150,6 +150,8 @@ function doEditBasic(SheetName) {
   const Class = getConfigValue(IST, 'Config');                                          // read once here, not inside lambda
 
   if (cfg.conditions(vals, Class)) {
+    cfg.handler(sheet_sr, SheetName, Edit);
+
     if (SheetName === FUND) {
       const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
       const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
@@ -158,9 +160,8 @@ function doEditBasic(SheetName) {
 
       const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Function
 
-      sheet_sr.getRange(2, 1, 1, LC-1).setValues([filtered]);
+      sheet_sr.getRange(5, 1, 1, LC-1).setValues([filtered]);
     }
-    cfg.handler(sheet_sr, SheetName, Edit);
   } else {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: doEditBasic`, 'MIN');
   }
