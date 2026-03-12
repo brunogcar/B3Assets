@@ -16,13 +16,12 @@
  */
 function doSaveGroup(SheetNames, checkCallback, saveFunction) {
   const SheetNamesToSave = [];
-  for (let i = 0; i < SheetNames.length; i++) {
-    const Name = SheetNames[i];
-    const sheet = getSheet(Name);
+  for (const SheetName of SheetNames) {
+    const sheet = getSheet(SheetName);
     if (!sheet) continue;                                         // skip missing sheet
 
-    if (checkCallback(Name) === "TRUE") {
-      SheetNamesToSave.push(Name);
+    if (checkCallback(SheetName) === "TRUE") {
+      SheetNamesToSave.push(SheetName);
     }
   }
 
@@ -32,47 +31,9 @@ function doSaveGroup(SheetNames, checkCallback, saveFunction) {
     return;
   }
 
-  SpreadsheetApp.flush();
+  SpreadsheetApp.flush();                                         //Possibly redudant
 
   _doGroup(SheetNamesToSave, saveFunction, "Saving", "saved", "");
-}
-
-/**
- * Convert an array of “date‐like” values (strings or Date objects)
- * into timestamps (ms since epoch), or return “” if invalid.
- *
- * @param {Array<string|Date|number>} dateArr
- * @returns {Array<number|string>} [newDateTs, oldDateTs, …]
- */
-function doFinancialDateHelper(dateArr) {
-  return dateArr.map(v => {
-    // 1) If it’s already a Date, grab its ms
-    if (v instanceof Date && !isNaN(v)) {
-      return v.getTime();
-    }
-    // 2) If it’s a number (timestamp), leave it
-    if (typeof v === 'number' && !isNaN(v)) {
-      return v;
-    }
-    // 3) Everything else -> string
-    const str = v != null ? v.toString().trim() : '';
-    // DD/MM/YYYY
-    if (str.includes('/')) {
-      const [d,m,y] = str.split('/');
-      if (d && m && y) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    }
-    // YYYY-MM-DD
-    if (str.includes('-')) {
-      const [y,m,d] = str.split('-');
-      if (y && m && d) {
-        return new Date(+y, +m - 1, +d).getTime();
-      }
-    }
-    // fallback
-    return '';
-  });
 }
 
 /////////////////////////////////////////////////////////////////////CHECK/////////////////////////////////////////////////////////////////////
@@ -245,6 +206,112 @@ function processCheckDATA(sheet_sr, SheetName, Check, hideSetting) {
   return result;
 }
 
+/////////////////////////////////////////////////////////////////////Check Dates/////////////////////////////////////////////////////////////////////
+
+/**
+ * Convert a date-like value or array of date-like values (Date objects, timestamps,
+ * or date strings in DD/MM/YYYY or YYYY-MM-DD format) into timestamps (ms since epoch).
+ *
+ * Invalid or empty values return `null`.
+ *
+ * @param {string|Date|number|Array<string|Date|number>} input - A single value or an array of values to normalize.
+ * @returns {number|null|Array<number|null>}                   - Timestamp(s) in milliseconds since epoch, or `null` for invalid entries.
+ */
+function doDateHelper(input) {
+  const arr = Array.isArray(input) ? input : [input];
+  const result = arr.map(v => {
+
+    // 1) If it's already a Date, grab its ms
+    if (v instanceof Date && !isNaN(v)) {
+      return v.getTime();
+    }
+
+    // 2) If it's a number (timestamp), leave it
+    if (typeof v === 'number' && !isNaN(v)) {
+      return v;
+    }
+
+    // 3) Everything else -> string
+    const str = v != null ? v.toString().trim() : '';
+    if (!str) return null;
+
+    // DD/MM/YYYY
+    if (str.includes('/')) {
+      const [d,m,y] = str.split('/');
+      const day = +d, month = +m, year = +y;
+      if (day && month && year) {
+        return new Date(year, month-1, day).getTime();
+      }
+    }
+
+    // YYYY-MM-DD
+    if (str.includes('-')) {
+      const [y,m,d] = str.split('-');
+      const day = +d, month = +m, year = +y;
+      if (day && month && year) {
+        return new Date(year, month-1, day).getTime();
+      }
+    }
+    return null;
+  });
+  return Array.isArray(input) ? result : result[0];
+}
+
+/**
+ * Reads and validates the “New” and “Old” date values from both target (TR) and source (SR) sheets.
+ *
+ * Raw values are parsed using doDateHelper() into timestamps
+ * (milliseconds since epoch). If any date is invalid, the function
+ * logs which one(s) failed and returns null.
+ *
+ * @param {Sheet}  sheet_tr   The target (ticker) sheet.
+ * @param {Sheet}  sheet_sr   The source (template) sheet.
+ * @param {Object} cfg        The financialMap entry for this sheet.
+ * @param {string} SheetName  The sheet name (used for logging).
+ * @param {string} action     Operation name ("SAVE" or "EDIT") for logging.
+ *
+ * @returns {{New_tr:number, Old_tr:number, New_sr:number, Old_sr:number}|null}
+ *   Object containing four timestamps (ms since epoch), or null if validation fails.
+ */
+function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
+
+  // 1️⃣ Read TR dates
+  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
+  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
+
+  LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
+
+  const [New_tr, Old_tr] = doDateHelper([raw_New_tr, raw_Old_tr]);
+
+  // 2️⃣ Read SR dates (conditional old column)
+  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
+  const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
+  const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
+
+  LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
+
+  const [New_sr, Old_sr] = doDateHelper([raw_New_sr, raw_Old_sr]);
+
+  // 3️⃣ Validate parsed timestamps
+  const badDates = [];
+
+  if (New_tr === null) badDates.push(`New_tr='${raw_New_tr}'`);
+  if (Old_tr === null) badDates.push(`Old_tr='${raw_Old_tr}'`);
+  if (New_sr === null) badDates.push(`New_sr='${raw_New_sr}'`);
+  if (Old_sr === null) badDates.push(`Old_sr='${raw_Old_sr}'`);
+
+  if (badDates.length) {
+    LogDebug(`❌ ERROR ${action}: ${SheetName} - Invalid date(s): ${badDates.join(', ')}`, 'MID');
+    return null;
+  }
+
+  // 4️⃣ Success log
+  LogDebug(`[${SheetName}] ⏳ ${action} DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
+
+  // 5️⃣ Return timestamps
+  return { New_tr, Old_tr, New_sr, Old_sr };
+}
+
 /////////////////////////////////////////////////////////////////////FILTER FUND/////////////////////////////////////////////////////////////////////
 
 function filterFundRow(row, Minimum, Maximum) {
@@ -407,7 +474,6 @@ function doDisableSheets() {
 
   hideConfig();                                                     // Always run hideConfig() to re-hide Config/Settings if needed
 }
-
 
 /////////////////////////////////////////////////////////////////////HIDE CONFIG/////////////////////////////////////////////////////////////////////
 

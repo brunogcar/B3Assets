@@ -297,7 +297,7 @@ function getConfigValue(Acronym, Source = 'Both') {
       }
 
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Settings`, 'MIN');
+      LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, 'MIN');
     }
   }
 
@@ -309,7 +309,7 @@ function getConfigValue(Acronym, Source = 'Both') {
         Value = null;
 
     } catch (e) {
-      LogDebug(`⚠️ const ${Acronym} not found in Config`, 'MIN');
+      LogDebug(`⚠️ const ${Acronym} not found in Config: getConfigValue`, 'MIN');
     }
   }
 
@@ -342,74 +342,6 @@ function setConfigValue(Acronym, value) {
     LogDebug(`🛑 Failed to write ${Acronym} to Config: ${e.message}`, 'MIN');
     return false;
   }
-}
-
-/////////////////////////////////////////////////////////////////////Check Dates/////////////////////////////////////////////////////////////////////
-
-/**
- * Reads and validates the “New” and “Old” date values from both target (TR) and source (SR) sheets.
- *
- * @param {Sheet}      sheet_tr   The “target” sheet (ticker sheet).
- * @param {Sheet}      sheet_sr   The “source” sheet (template sheet).
- * @param {Object}     cfg        The financialMap entry for this sheet.
- * @param {string}     SheetName  The sheet’s name (for logging).
- * @param {string}     action     Either "SAVE" or "EDIT" (for clearer logging).
- *
- * @returns {{New_tr: Date, Old_tr: Date, New_sr: Date, Old_sr: Date}|null}
- *   Returns the four parsed Date objects if all are valid.
- *   If any is invalid, logs which one(s) and returns null.
- */
-function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
-  // 1) Read TR dates
-  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
-  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
-  LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
-
-  const [New_tr, Old_tr] = doFinancialDateHelper([raw_New_tr, raw_Old_tr]);
-
-  // 2) Read SR dates (conditional old-date column)
-  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
-  const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
-  const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
-  LogDebug(`[${cfg.sh_sr}] Raw Dates (SR): New=${raw_New_sr}, Old=${raw_Old_sr}, col_new=${cfg.col_new}, col_old_src=${oldCol}`, 'MAX');
-  const [New_sr, Old_sr] = doFinancialDateHelper([raw_New_sr, raw_Old_sr]);
-
-  // 3) Validate each Date using isValidDate()
-  const dateNames  = ['New_tr','Old_tr','New_sr','Old_sr'];
-  const dateValues = [New_tr,  Old_tr,  New_sr,  Old_sr];
-
-  const badDates = [];
-  for (let i = 0; i < dateValues.length; i++) {
-    if (!isValidDate(dateValues[i])) {
-      badDates.push(`${dateNames[i]}='${dateValues[i]}'`);
-    }
-  }
-  if (badDates.length) {
-    // Example log: “❌ ERROR SAVE: BalanceSheet2019 – Invalid date(s): New_sr='-', Old_tr='foo'”
-    LogDebug(
-      `❌ ERROR ${action}: ${SheetName} - Invalid date(s): ${badDates.join(', ')}`,
-      'MID'
-    );
-    return null;
-  }
-  LogDebug(`[${SheetName}] ⏳ ${action} DATES: SR New=${New_sr}-(${raw_New_sr}), TR New=${New_tr}-(${raw_New_tr})`, 'MAX');
-
-  // 4) Everything’s valid—return parsed Dates
-  return { New_tr, Old_tr, New_sr, Old_sr };
-}
-
-/**
- * @param {Date|string} dateCandidate
- * @returns {boolean} true if `dateCandidate` is a valid Date or parseable string
- */
-function isValidDate(dateCandidate) {
-  // If it’s already a Date, check .valueOf()
-  if (dateCandidate instanceof Date) {
-    return !isNaN(dateCandidate.valueOf());
-  }
-  // If it’s a string, try to convert
-  const parsed = new Date(dateCandidate);
-  return !isNaN(parsed.valueOf());
 }
 
 /////////////////////////////////////////////////////////////////////Compare Columns/////////////////////////////////////////////////////////////////////

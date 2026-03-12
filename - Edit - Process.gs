@@ -12,11 +12,9 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   // Read rows 1–5 once
   const data = sheet_sr.getRange(1,1,5,LC).getValues();
 
-  const toTs = v => v instanceof Date ? v.getTime() : v;
-
-  const A1 = toTs(data[0][0]);
-  const A2 = toTs(data[1][0]);
-  const A5 = toTs(data[4][0]);
+  const A1 = doDateHelper(data[0][0]);
+  const A2 = doDateHelper(data[1][0]);
+  const A5 = doDateHelper(data[4][0]);
 
   if (ErrorValues.includes(A2)) {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2}: processEditGeneric`, 'MIN');
@@ -35,12 +33,17 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   ) {
     const columnCount = (SheetName === FUND) ? LC : LC - 4;
 
-    const Minimum = getConfigValue(MIN, 'Settings');
-    const Maximum = getConfigValue(MAX, 'Settings');
+    let rawHeader = data[1];
 
-    const rawHeader = SheetName === FUND
-      ? filterFundRow(data[1].slice(0, LC-1), Minimum, Maximum).concat(data[1].slice(LC-1))
-      : data[1];
+    if (SheetName === FUND) {
+
+      const Minimum = getConfigValue(MIN, 'Settings');
+      const Maximum = getConfigValue(MAX, 'Settings');
+
+      rawHeader =
+        filterFundRow(data[1].slice(0, LC-1), Minimum, Maximum)
+        .concat(data[1].slice(LC-1));
+    }
 
     const Header = [rawHeader.slice(0, columnCount)];
 

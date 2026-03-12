@@ -13,11 +13,9 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   // Read the entire sheet once
   const data = sheet_sr.getRange(1,1,LR,LC).getValues();
 
-  const toTs = v => v instanceof Date ? v.getTime() : v;
-
-  const A1 = toTs(data[0][0]);
-  const A2 = toTs(data[1][0]);
-  const A5 = toTs(data[4][0]);
+  const A1 = doDateHelper(data[0][0]);
+  const A2 = doDateHelper(data[1][0]);
+  const A5 = doDateHelper(data[4][0]);
 
   // Full row comparisons starting from column B
   const Row1 = data[0].slice(1);
@@ -26,12 +24,19 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   const IsEqual = Row2.every((val, i) => val === Row1[i] || val === Row5[i]);
 
-  const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
-  const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
+  let rawHeader = data[1];
 
-  const rawHeader = SheetName === FUND
-    ? filterFundRow(data[1].slice(0, LC-1), Minimum, Maximum).concat(data[1].slice(LC-1))
-    : data[1];
+  if (SheetName === FUND) {
+
+    const Minimum = getConfigValue(MIN, 'Settings');
+    const Maximum = getConfigValue(MAX, 'Settings');
+
+    rawHeader = filterFundRow(
+      data[1].slice(0, LC-1),
+      Minimum,
+      Maximum
+    ).concat(data[1].slice(LC-1));
+  }
 
   const Header = [rawHeader];
 
