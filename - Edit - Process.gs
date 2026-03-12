@@ -12,12 +12,14 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   // Read rows 1–5 once
   const data = sheet_sr.getRange(1,1,5,LC).getValues();
 
-  const A1 = data[0][0];
-  const A2 = data[1][0];
-  const A5 = data[4][0];
+  const toTs = v => v instanceof Date ? v.getTime() : v;
+
+  const A1 = toTs(data[0][0]);
+  const A2 = toTs(data[1][0]);
+  const A5 = toTs(data[4][0]);
 
   if (ErrorValues.includes(A2)) {
-    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2} : processEditGeneric`, 'MIN');
+    LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2}: processEditGeneric`, 'MIN');
     return;
   }
 
@@ -27,15 +29,20 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   }
 
   if (
-    A2 >= A5 || A2 >= A1 ||
+    A2 === A5 || A2 === A1 ||
     ErrorValues.includes(A1) ||
     ErrorValues.includes(A5)
   ) {
+    const columnCount = (SheetName === FUND) ? LC : LC - 4;
 
-    const condition = (SheetName === FUND);
-    const columnCount = condition ? LC : LC - 4;
+    const Minimum = getConfigValue(MIN, 'Settings');
+    const Maximum = getConfigValue(MAX, 'Settings');
 
-    const Header = [data[1].slice(0, columnCount)];
+    const rawHeader = SheetName === FUND
+      ? filterFundRow(data[1].slice(0, LC-1), Minimum, Maximum).concat(data[1].slice(LC-1))
+      : data[1];
+
+    const Header = [rawHeader.slice(0, columnCount)];
 
     sheet_sr.getRange(5,1,1,columnCount).setValues(Header);
     sheet_sr.getRange(1,1,1,columnCount).setValues(Header);

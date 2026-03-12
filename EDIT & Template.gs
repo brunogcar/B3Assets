@@ -151,17 +151,6 @@ function doEditBasic(SheetName) {
 
   if (cfg.conditions(vals, Class)) {
     cfg.handler(sheet_sr, SheetName, Edit);
-
-    if (SheetName === FUND) {
-      const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
-      const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
-      const LC = sheet_sr.getLastColumn();
-      const row = sheet_sr.getRange(2, 1, 1, LC-1).getValues()[0];
-
-      const filtered = filterFundRow(row, Minimum, Maximum);                            // function in Save - Function
-
-      sheet_sr.getRange(5, 1, 1, LC-1).setValues([filtered]);
-    }
   } else {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - Conditions arent met: doEditBasic`, 'MIN');
   }

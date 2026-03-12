@@ -26,7 +26,14 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   const IsEqual = Row2.every((val, i) => val === Row1[i] || val === Row5[i]);
 
-  const Header = [data[1]];
+  const Minimum = getConfigValue(MIN, 'Settings');                                  // -500 - Default
+  const Maximum = getConfigValue(MAX, 'Settings');                                  //  500 - Default
+
+  const rawHeader = SheetName === FUND
+    ? filterFundRow(data[1].slice(0, LC-1), Minimum, Maximum).concat(data[1].slice(LC-1))
+    : data[1];
+
+  const Header = [rawHeader];
 
   if (ErrorValues.includes(A2)) {
     LogDebug(`❌ ERROR SAVE: ${SheetName} - ErrorValues in A2 ${A2}: processSaveGeneric`, 'MIN');
@@ -57,7 +64,7 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   }
 
   if (
-    ((A2 == A5 || A2 == A1) && !IsEqual) ||
+    ((A2 === A5 || A2 === A1) && !IsEqual) ||
     ErrorValues.includes(A1) ||
     ErrorValues.includes(A5)
   ) {
