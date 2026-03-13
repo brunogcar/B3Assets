@@ -21,7 +21,7 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
     return;
   }
 
-  if (A5 === "" || A2 > A5 || A2 > A1) {
+  if (A5 == null || A2 > A5 || A2 > A1) {
     doSaveBasic(SheetName);
     return;
   }
