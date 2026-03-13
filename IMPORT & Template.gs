@@ -122,11 +122,12 @@ function doImportProv(ProvName){
 
   if (ProvName == 'Proventos')
   {
-    var Check = sheet_sr.getRange("B3").getDisplayValue();
+    const Check = sheet_sr.getRange("B3").getDisplayValue();
 
     if( Check == "Proventos" )  // check if error
     {
-      var Data = sheet_sr.getRange(PRV).getValues();                                  // PRV = Provento Range
+      const PRV = "B3:H60"                                                            // Tab: Prov
+      const Data = sheet_sr.getRange(PRV).getValues();                                // PRV = Provento Range
       sheet_tr.getRange(PRV).setValues(Data);
 
       LogDebug(`✅ SUCCESS IMPORT: ${ProvName}.`, 'MIN');
@@ -171,7 +172,8 @@ function import_config() {
     const sheet_co = getSheet('Config');                                              // cant be deleted because of sheet_co.getRange(COR)
     if (!sheet_co) return;
 
-    var Data = sheet_sr.getRange(COR).getValues();                                    // Does not use getConfigValue because it gets data from another spreadsheet
+    const COR = "I4:J7"  // COR = Config Options Range                                // Tab: Config
+    var Data = sheet_sr.getRange(COR).getValues();                                    // COR = Config Options Range                          // Does not use getConfigValue because it gets data from another spreadsheet
     sheet_co.getRange(COR).setValues(Data);
   }
 };

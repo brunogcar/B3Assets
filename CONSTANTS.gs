@@ -51,10 +51,6 @@
 
   const TKR = "B3"     // TKR = Ticker                     // Tab: Config
 
-  const PRV = "B3:H60" // PRV = Provento Range             // Tab: Prov
-
-  const TIR = "C3:D4"  // TIR = Tab Info Range             // Tab: Info
-
   const SIR = "D3"     // SIR = Source ID                  // Tab: Config
   const IDR = "D10"    // IDR = ID Sheet                   // Tab: Config
   const EPR = "D13"    // EPR = Exportable?                // Tab: Config
@@ -82,26 +78,24 @@
   const TG4 = "N30"    // TG4 = Settings Trigger Event     // Tab: Config
   const TG5 = "N33"    // TG5 = SaveAll Trigger Event      // Tab: Config
 
-  const COR = "I4:J7"  // COR = Config Options Range       // Tab: Config
-
 /////////////////////////////////////////////////////////////////////Export/////////////////////////////////////////////////////////////////////
 
-  const ETR = "P4"     // ETR = Export to Swing            // Tab: Config
-  const EOP = "P6"     // EOP = Export to Option           // Tab: Config
-  const EBT = "P8"     // EBT = Export to BTC              // Tab: Config
-  const ETE = "P10"    // ETE = Export to Termo            // Tab: Config
-  const EFU = "P12"    // EFU = Export to Fund             // Tab: Config
+  const ETR = "P4"     // ETR = Export to Swing            // Tab: Config, Settings
+  const EOP = "P6"     // EOP = Export to Option           // Tab: Config, Settings
+  const EBT = "P8"     // EBT = Export to BTC              // Tab: Config, Settings
+  const ETE = "P10"    // ETE = Export to Termo            // Tab: Config, Settings
+  const EFU = "P12"    // EFU = Export to Fund             // Tab: Config, Settings
 
-  const EBL = "P15"    // EBL = Export to BLC              // Tab: Config
-  const EDR = "P17"    // EDR = Export to DRE              // Tab: Config
-  const EFL = "P19"    // EFL = Export to FLC              // Tab: Config
-  const EDV = "P21"    // EDV = Export to DVA              // Tab: Config
+  const EBL = "P15"    // EBL = Export to BLC              // Tab: Config, Settings
+  const EDR = "P17"    // EDR = Export to DRE              // Tab: Config, Settings
+  const EFL = "P19"    // EFL = Export to FLC              // Tab: Config, Settings
+  const EDV = "P21"    // EDV = Export to DVA              // Tab: Config, Settings
 
-  const ETF = "P24"    // ETF = Export to Future           // Tab: Config
-  const ERT = "P26"    // ERT = Export to Right            // Tab: Config
-  const EWT = "P28"    // EWT = Export to Warrant          // Tab: Config
-  const ERC = "P30"    // ERC = Export to Receipt          // Tab: Config
-  const EBK = "P32"    // EBK = Export to Block            // Tab: Config
+  const ETF = "P24"    // ETF = Export to Future           // Tab: Config, Settings
+  const ERT = "P26"    // ERT = Export to Right            // Tab: Config, Settings
+  const EWT = "P28"    // EWT = Export to Warrant          // Tab: Config, Settings
+  const ERC = "P30"    // ERC = Export to Receipt          // Tab: Config, Settings
+  const EBK = "P32"    // EBK = Export to Block            // Tab: Config, Settings
   const EAF = "P34"    // EAF = Export to After            // Tab: Config, Settings
 
 /////////////////////////////////////////////////////////////////////Import/////////////////////////////////////////////////////////////////////

@@ -130,13 +130,19 @@ function doIsInfoExported() {
 
   if (EXP === "TRUE") {
     const sheet_in = getSheet('Info');
-    if (!sheet_in) return;
+    const sheet_co = getSheet('Config');
+    if (!sheet_in || !sheet_co) return;
 
+    const TIR = "C3:D4"                                                            // Tab: Info
     const Range = sheet_in.getRange(TIR).getValues();                              // TIR = Tab Info Range
     sheet_in.getRange(TIR).setValues(Range);                                       // Copy Paste Info
 
-    setConfigValue(EXR, "TRUE");                                                   // Set Formula to TRUE // EXP === "TRUE"
-
+    try {
+      sheet_co.getRange(EXR).setValue("TRUE");                                     // Set Formula to TRUE // EXP === "TRUE"
+      LogDebug(`🆗 Wrote "TRUE" to Config!${EXR}`, 'MID');
+    } catch (e) {
+      LogDebug(`🛑 Failed to write ${EXR} to Config: ${e.message}`, 'MIN');
+    }
     setSheetID();
   }
   else {

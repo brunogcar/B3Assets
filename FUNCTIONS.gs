@@ -108,8 +108,15 @@ const _SPREADSHEET_CACHE = {};
  *   SpreadsheetApp.openById() is propagated.
  */
 function getSpreadsheetById(id) {
+  if (!id) {
+    throw new Error("getSpreadsheetById: missing spreadsheet ID");
+  }
+
   if (!_SPREADSHEET_CACHE[id]) {
+    LogDebug(`📂 Opening spreadsheet: ${id}`, "MAX");
     _SPREADSHEET_CACHE[id] = SpreadsheetApp.openById(id);
+  } else {
+    LogDebug(`📦 Spreadsheet cache hit: ${id}`, "MAX");
   }
   return _SPREADSHEET_CACHE[id];
 }
@@ -148,8 +155,10 @@ function getSheet(SheetName, forceRefresh = false) {
 
   if (!SheetName) return null;
 
-  if (!forceRefresh && _SHEET_CACHE[SheetName])
+  if (!forceRefresh && _SHEET_CACHE[SheetName]) {
+    LogDebug(`📦 Sheet cache hit: ${SheetName}`, "MAX");
     return _SHEET_CACHE[SheetName];
+  }
 
   const sh = _SS_CACHE.getSheetByName(SheetName);
 
@@ -223,15 +232,7 @@ function runSafely(fn, ctx) {
 /////////////////////////////////////////////////////////////////////CONFIG/////////////////////////////////////////////////////////////////////
 
 /**
- * In‑memory cache for configuration values retrieved from named ranges.
- * The cache key is a combination of Source and Acronym (e.g., "Both:TAX_RATE").
- * @type {Object.<string, string|null>}
- */
-const _CONFIG_VALUE_CACHE = {};
-
-/**
  * Retrieves a configuration value from named ranges in the Settings and/or Config sheets.
- * Results are cached to avoid repeated lookups within the same script execution.
  *
  * @param {string} Acronym         The named range to look up (e.g., "TAX_RATE", "COMPANY_NAME").
  * @param {string} [Source='Both'] Which sheet(s) to search:
@@ -241,8 +242,6 @@ const _CONFIG_VALUE_CACHE = {};
  * @returns {string|null}          The trimmed value if found, otherwise null.
  *
  * Behavior:
- * - The cache key is `${Source}:${Acronym}`. If the key exists in `_CONFIG_VALUE_CACHE`,
- *   its value (which may be null) is returned immediately.
  * - If the required sheet(s) cannot be obtained via `getSheet()` (e.g., sheet missing),
  *   a warning is logged at level "MIN" and the function returns null for that source.
  * - For each sheet accessed, `getRange(Acronym).getDisplayValue()` is attempted.
@@ -254,9 +253,8 @@ const _CONFIG_VALUE_CACHE = {};
  * - Source-specific logic:
  *   - `'Settings'`: Returns the value from Settings only (or null).
  *   - `'Config'`  : Returns the value from Config only (or null).
- *   - `'Both'`    : If Settings yields a non‑null value, that value is returned immediately.
+ *   - `'Both'`    : If Settings yields a non-null value, that value is returned immediately.
  *                   Otherwise, Config is consulted and its value (or null) is returned.
- * - The final value (even null) is stored in the cache before being returned.
  *
  * Dependencies:
  * - `getSheet(sheetName)`         – retrieves a cached sheet object.
@@ -264,11 +262,6 @@ const _CONFIG_VALUE_CACHE = {};
  * - `ErrorValues` (global array)  – list of strings that should be treated as errors/missing.
  */
 function getConfigValue(Acronym, Source = 'Both') {
-
-  const key = `${Source}:${Acronym}`;
-
-  if (_CONFIG_VALUE_CACHE[key] !== undefined)
-    return _CONFIG_VALUE_CACHE[key];
 
   const sheet_se = (Source !== 'Config')   ? getSheet('Settings') : null;
   const sheet_co = (Source !== 'Settings') ? getSheet('Config')   : null;
@@ -291,10 +284,8 @@ function getConfigValue(Acronym, Source = 'Both') {
 
       if (!Value || Value === 'DEFAULT' || ErrorValues.includes(Value))
         Value = null;
-      else if (Source === 'Settings') {
-        _CONFIG_VALUE_CACHE[key] = Value;
+      else if (Source === 'Settings')
         return Value;
-      }
 
     } catch (e) {
       LogDebug(`⚠️ const ${Acronym} not found in Settings: getConfigValue`, 'MIN');
@@ -313,35 +304,7 @@ function getConfigValue(Acronym, Source = 'Both') {
     }
   }
 
-  _CONFIG_VALUE_CACHE[key] = Value;
-
   return Value;
-}
-
-/**
- * Writes a single value into the Config sheet at the given A1‑notation.
- *
- * @param {string} Acronym  The A1‑notation of the cell (e.g. EXR).
- * @param {string|number} value  The value to write into that cell.
- * @returns {boolean}  True if the write succeeded, false otherwise.
- */
-function setConfigValue(Acronym, value) {
-  // Fetch the Config sheet
-  const sheet_co = getSheet('Config');
-  if (!sheet_co) {
-    LogDebug(`⚠️ Config sheet not found; cannot set ${Acronym}`, 'MIN');
-    return false;
-  }
-
-  try {
-    // Write the value
-    sheet_co.getRange(Acronym).setValue(value);
-    LogDebug(`🆗 Wrote value "${value}" to Config!${Acronym}`, 'MID');
-    return true;
-  } catch (e) {
-    LogDebug(`🛑 Failed to write ${Acronym} to Config: ${e.message}`, 'MIN');
-    return false;
-  }
 }
 
 /////////////////////////////////////////////////////////////////////Compare Columns/////////////////////////////////////////////////////////////////////
@@ -832,17 +795,6 @@ function reverseRows() {
   const reversed = Values.reverse();
   Range.setValues(reversed);
   LogDebug(`reverseRows: Rows reversed (count = ${Values.length})`, 'MIN');
-}
-
-/////////////////////////////////////////////////////////////////////RESTORE Functions/////////////////////////////////////////////////////////////////////
-
-function doRestoreFundExport() {
-  const sheet_co = getSheet('Config');
-  if (!sheet_co) return;
-
-  var Value = '=IF(OR(AND(Fund!A5="";Fund!A1=""); L18<>"STOCK"); FALSE;TRUE)';
-
-    sheet_co.getRange(EFU).setValue(Value);                                 // EFU = Export to Fund
 }
 
 /////////////////////////////////////////////////////////////////////fixNumericFormatting Function/////////////////////////////////////////////////////////////////////
