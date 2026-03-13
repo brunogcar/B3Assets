@@ -45,7 +45,7 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
     return;
   }
 
-  if (A5 === "") {
+  if (A5 == null) {
     // Save only Header
     sheet_sr.getRange(5,1,1,LC).setValues(Header);
     sheet_sr.getRange(1,1,1,LC).setValues(Header);
