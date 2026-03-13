@@ -189,7 +189,7 @@ function doExportExtra(SheetName) {
     return;
   }
 
-  let Export = getConfigValue(exportExtraConfig.target_co[SheetName], 'Config') || FALSE;
+  const Export = getConfigValue(exportExtraConfig.target_co[SheetName], 'Config');
 //-------------------------------------------------------------------Structure-------------------------------------------------------------------//
   const row = sheet_sr.getRange("A2:O2").getValues()[0];
 
@@ -280,7 +280,7 @@ function doExportFinancial(SheetName) {
     [DVA]: EDV                                         // EDV = Export to DVA
   };
 
-  let Export = getConfigValue(target_co[SheetName], 'Config') || FALSE;
+  const Export = getConfigValue(target_co[SheetName], 'Config');
   if (Export !== "TRUE") {
     LogDebug(`❌ ERROR EXPORT: ${SheetName} - EXPORT is set to FALSE: doExportFinancial`, 'MIN');
     return;
