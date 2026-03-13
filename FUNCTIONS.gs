@@ -16,7 +16,8 @@ function LogDebug(msg, level = 'MIN') {
   const ORDER = ['MIN', 'MID', 'MAX'];
   // lazy fetch / cache dbgLevel; refresh if cache is null
   if (_DBG_CACHE === null) {
-    const dbgVal = runSafely(() => getConfigValue(DBG, 'Config'), 'LogDebug:getConfigValue');      // DBG = "L12"
+    const dbgVal = getConfigValue(DBG, 'Config');                                                  // DBG = "L12"
+
     _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : 'MIN';
   }
   const dbgLevel = _DBG_CACHE;
@@ -32,6 +33,8 @@ function LogDebug(msg, level = 'MIN') {
     console.log(msg);
   }
 }
+
+/////////////////////////////////////////////////////////////////////VALUES/////////////////////////////////////////////////////////////////////
 
 /**
  * Generic batch runner with progress logging and error isolation. (save/edit/export/import/etc).
@@ -177,56 +180,6 @@ function getSheet(SheetName, forceRefresh = false) {
  */
 function clearSheetCache() {
   for (const k in _SHEET_CACHE) delete _SHEET_CACHE[k];
-}
-
-/////////////////////////////////////////////////////////////////////VALUES/////////////////////////////////////////////////////////////////////
-
-/**
- * Safe getValues wrapper; returns empty array if range invalid.
- * @param {Sheet} sh
- * @param {number} row
- * @param {number} col
- * @param {number} numRows
- * @param {number} numCols
- */
-function getValuesSafe(sh, r, c, numRows, numCols) {
-  if (!sh) return [];
-  if (numRows <= 0 || numCols <= 0) return [];
-  try {
-    return sh.getRange(r, c, numRows, numCols).getValues();
-  } catch (e) {
-    LogDebug(`getValuesSafe failed: ${e.message}`, 'MIN');
-    return [];
-  }
-}
-
-/**
- * Safe setValues wrapper with a small guard.
- */
-function setValuesSafe(sh, r, c, values) {
-  if (!sh) return false;
-  if (!Array.isArray(values) || values.length === 0) return false;
-  try {
-    sh.getRange(r, c, values.length, values[0].length).setValues(values);
-    return true;
-  } catch (e) {
-    LogDebug(`setValuesSafe failed: ${e.message}`, 'MIN');
-    return false;
-  }
-}
-
-/**
- * Utility to run a function with error handling and consistent logging.
- * @param {function():any} fn
- * @param {string} ctx
- */
-function runSafely(fn, ctx) {
-  try {
-    return fn();
-  } catch (e) {
-    LogDebug(`Error in ${ctx}: ${e && e.message ? e.message : e}`, 'MIN');
-    return null;
-  }
 }
 
 /////////////////////////////////////////////////////////////////////CONFIG/////////////////////////////////////////////////////////////////////
