@@ -34,55 +34,67 @@ function LogDebug(msg, level = 'MIN') {
   }
 }
 
-/////////////////////////////////////////////////////////////////////VALUES/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////Group try/catch/////////////////////////////////////////////////////////////////////
 
 /**
- * Generic batch runner with progress logging and error isolation. (save/edit/export/import/etc).
+ * Executes a batch operation over a list of sheet names with progress tracking
+ * and per-item error isolation.
  *
- * Executes an operation for each item in a list while providing:
- * - progress logging
- * - per-item try/catch protection
- * - execution summary
+ * This helper runs a provided function sequentially for each sheet name in the
+ * supplied list while providing structured logging, execution progress, and
+ * safe failure handling. If an operation fails for a specific sheet, the error
+ * is logged and processing continues for the remaining sheets.
  *
- * @param {string[]} SheetNames         List of itens constants.
+ * Typical usage includes batch workflows such as saving, importing, exporting,
+ * editing, or cleaning groups of sheets.
+ *
+ * Execution model:
+ * - Sequential processing (one sheet at a time)
+ * - Each operation runs inside its own try/catch block
+ * - Failures do not stop the batch
+ *
+ * Logging behavior:
+ * - Logs the start of the batch operation
+ * - Logs progress for each sheet: `[i/N] (P%)`
+ * - Logs success or failure for each sheet
+ * - Logs a final execution summary
+ *
+ * @param {string[]} SheetNames         List of item constants.
  * @param {function(string):void} fn    Operation to perform on each sheet.
  * @param {string} actionLabel          Verb in gerund form ("Editing", "Exporting", "Importing").
- * @param {string} resultLabel          Past‐tense for summary ("edited", "exported", "imported").
+ * @param {string} resultLabel          Past tense for summary ("edited", "exported", "imported").
  * @param {string} groupLabel           Descriptor for logging ("basic", "extra", "financial", etc.).
  *
- * Behavior:
- * - If a sheet does not exist, logs an error and skips it.
- * - If no sheets have data (`totalSheets === 0`), logs a “skipping” message.
- * - Otherwise, for each sheet:
- *    • Logs `[i/N] (P%) action <SheetName>...`
- *    • Calls `fn(SheetName)` inside a try/catch
+ * @returns {void}
  */
 function _doGroup(SheetNames, fn, actionLabel, resultLabel, groupLabel) {
+
   const totalSheets = SheetNames.length;
-  let count = 0;
+  let processed = 0;
+  let successCount = 0;
 
-  LogDebug(`Starting ${actionLabel.toLowerCase()} of ${totalSheets} ${groupLabel} sheets...`, 'MAX');
+  const actionLower = actionLabel.toLowerCase();
 
-  for (let i = 0; i < totalSheets; i++) {
-    const SheetName = SheetNames[i];
-    count++;
-    const progress = Math.round((count / totalSheets) * 100);
+  LogDebug(`Starting ${actionLower} of ${totalSheets} ${groupLabel} sheets...`, 'MAX');
 
-    LogDebug(`[⏳ ${count}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, 'MAX');
+  for (const SheetName of SheetNames) {
+    processed++;
+    const progress = Math.round((processed / totalSheets) * 100);
+
+    LogDebug(`[⏳ ${processed}/${totalSheets}] (${progress}%) ${actionLabel} ${SheetName}...`, 'MAX');
 
     try {
       fn(SheetName);
-      LogDebug(`[🆗 ${count}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, 'MAX');
+      successCount++;
+
+      LogDebug(
+        `[🆗 ${processed}/${totalSheets}] (${progress}%) ${SheetName} ${resultLabel} successfully`, 'MAX');
 
     } catch (error) {
-      LogDebug(`[🛑 ${count}/${totalSheets}] (${progress}%) Error ${actionLabel.toLowerCase()} ${SheetName}: ${error}`, 'MAX');
+      LogDebug(`[🛑 ${processed}/${totalSheets}] (${progress}%) Error ${actionLower} ${SheetName}: ${error.message || error}`, 'MAX');
     }
   }
-  LogDebug(
-      `💾 ` +
-      `${actionLabel} completed: ${count} of ${totalSheets} ` +
-      `${groupLabel} sheets ${resultLabel} successfully`
-    , 'MAX');
+  LogDebug(`💾 ${actionLabel} completed: ${successCount} of ${totalSheets} ${groupLabel} sheets ${resultLabel} successfully`, 'MAX');
 }
 
 /////////////////////////////////////////////////////////////////////CACHE/////////////////////////////////////////////////////////////////////
@@ -258,57 +270,6 @@ function getConfigValue(Acronym, Source = 'Both') {
   }
 
   return Value;
-}
-
-/////////////////////////////////////////////////////////////////////Compare Columns/////////////////////////////////////////////////////////////////////
-
-/**
- * Compares two single‐column ranges (same number of rows) and returns an array of differences.
- *
- * @param {Sheet}   sheetA    The “source” sheet (where updated values live).
- * @param {Sheet}   sheetB    The “target” sheet (where current values live).
- * @param {number}  colA      Column index (1-based) in sheetA.
- * @param {number}  colB      Column index (1-based) in sheetB.
- * @param {number}  lastRow   Number of rows to compare (starting at row 1).
- *
- * @return {Array<{row: number, value: any}>}
- *   An array of objects, one per row where sheetA ≠ sheetB:
- *   – `row`: the 1-based row index
- *   – `value`: the sheetA value at that row/column
- *
- * Example:
- *   //   If sheetA!A1:A3 = [10, 20, 30]
- *   //   and sheetB!B1:B3 = [10, 25, 30]
- *   //   getColumnDifferences(sheetA, sheetB, 1, 2, 3)
- *   //   → [ {row: 2, value: 20} ]
- */
-function getColumnDifferences(sheetA, sheetB, colA, colB, lastRow) {
-  // Read both columns in one go each, then flatten to 1-D arrays
-  const valuesA = sheetA.getRange(1, colA, lastRow, 1).getValues().flat();
-  const valuesB = sheetB.getRange(1, colB, lastRow, 1).getValues().flat();
-  const diffs   = [];
-
-  // Compare row by row
-  for (let i = 0; i < lastRow; i++) {
-    if (valuesA[i] !== valuesB[i]) {
-      diffs.push({ row: i + 1, value: valuesA[i] });
-    }
-  }
-
-  return diffs;
-}
-
-/////////////////////////////////////////////////////////////////////Compare arrays/////////////////////////////////////////////////////////////////////
-
-function arraysAreEqual(arr1, arr2) {
-  if (arr1.length !== arr2.length) return false;
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i].length !== arr2[i].length) return false;
-    for (let j = 0; j < arr1[i].length; j++) {
-      if (arr1[i][j] !== arr2[i][j]) return false;
-    }
-  }
-  return true;
 }
 
 /////////////////////////////////////////////////////////////////////Settings/////////////////////////////////////////////////////////////////////
@@ -548,6 +509,35 @@ function SNAME(option) {
 
 /////////////////////////////////////////////////////////////////////CLEAN SHEETS/////////////////////////////////////////////////////////////////////
 
+/**
+ * Replaces numeric zero values with blank cells in all basic data sheets.
+ *
+ * The function iterates through the sheet names defined in `SheetsBasic`
+ * and scans their data region starting from row 5 (rows 1–4 are assumed
+ * to contain headers or metadata). Any cell containing the numeric value
+ * `0` is replaced with an empty string (`""`).
+ *
+ * Processing strategy:
+ * - The entire data block is read into memory with `getValues()`.
+ * - Zeros are replaced in-place within the 2D array.
+ * - The sheet is only updated with `setValues()` if at least one change
+ *   was made, minimizing unnecessary write operations.
+ *
+ * Range affected:
+ * - Rows: 5 → last row
+ * - Columns: 1 → last column
+ *
+ * Logging:
+ * - Logs a message for each sheet where zero values were cleaned.
+ *
+ * Dependencies:
+ * - `SheetsBasic` list defining which sheets to process
+ * - `getSheet()` helper for sheet retrieval
+ * - `LogDebug()` for controlled logging
+ *
+ * @function doCleanZeros
+ * @returns {void}
+ */
 function doCleanZeros() {
   const SheetNames = SheetsBasic;
 
@@ -579,6 +569,34 @@ function doCleanZeros() {
   }
 }
 
+
+/**
+ * Removes invalid or incomplete option rows from the OPCOES sheet.
+ *
+ * The function scans rows starting at row 5 and deletes rows where:
+ *
+ * 1. Column C or Column E contains the numeric value 0
+ *    (typically indicating invalid call/put values).
+ *
+ * 2. Columns H, I, and J are all blank
+ *    (usually indicating missing ratio or pricing data).
+ *
+ * To improve performance, the function reads the data block A:J into
+ * memory once, determines which rows should be removed, and then deletes
+ * them from bottom to top to avoid row index shifting.
+ *
+ * Range scanned:
+ * - Rows: 5 → last row
+ * - Columns: A → J
+ *
+ * Logging:
+ * - Logs the reason for each row deletion.
+ * - Reports when no rows require deletion.
+ * - Reports the final number of rows removed.
+ *
+ * @function doDeleteZeroOptions
+ * @returns {void}
+ */
 function doDeleteZeroOptions() {
   LogDebug(`DELETE: 0 values from call put / blank values from ratios: ${OPCOES}`, 'MIN');
 
@@ -648,6 +666,30 @@ function doDeleteZeroOptions() {
   );
 }
 
+/**
+ * Searches an exported options sheet for a specific ticker and clears
+ * the entire row if it exists.
+ *
+ * The function scans column A (starting at row 2 to skip headers) to find
+ * the first row matching the provided ticker. If found, the entire row
+ * content is cleared. This is typically used to remove rows generated
+ * from incomplete or inconsistent option export data (e.g. mismatched
+ * call/put values or missing ratios).
+ *
+ * Behavior:
+ * - Only column A is scanned for the ticker.
+ * - Row 1 is skipped (assumed header).
+ * - When a match is found, all columns in that row are cleared.
+ *
+ * Logging:
+ * - Reports successful row cleanup.
+ * - Reports when the ticker cannot be found.
+ *
+ * @function tryCleanOpcaoExportRow
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet_tr - Target exported options sheet where the cleanup should occur.
+ * @param {string} TKT                                  - Ticker symbol to search for in column A.
+ * @returns {void}
+ */
 function tryCleanOpcaoExportRow(sheet_tr, TKT) {
   LogDebug(`CLEAN: rows with values from call put / blank values from ratios from EXPORTED Source SpreadSheet: ${sheet_tr}`, 'MIN');
 
@@ -664,6 +706,39 @@ function tryCleanOpcaoExportRow(sheet_tr, TKT) {
   }
 }
 
+/**
+ * Normalizes numeric values in the FUND sheet by clamping them to a
+ * configured minimum and maximum range.
+ *
+ * The function reads the data block from columns D–BI (rows 5 → last row)
+ * and adjusts every numeric value so it remains within the range defined
+ * in the Settings sheet.
+ *
+ * Behavior:
+ * - Values lower than MINIMUM are replaced with MINIMUM.
+ * - Values greater than MAXIMUM are replaced with MAXIMUM.
+ * - Non-numeric cells remain unchanged.
+ *
+ * Configuration:
+ * - MINIMUM value is retrieved from Settings via the MIN key.
+ * - MAXIMUM value is retrieved from Settings via the MAX key.
+ *
+ * Range affected:
+ * - Rows: 5 → last row
+ * - Columns: D → BI
+ *
+ * Processing strategy:
+ * - The entire block is read once into memory.
+ * - Values are adjusted directly in the 2D array.
+ * - The block is written back in a single `setValues()` call to minimize
+ *   Spreadsheet API operations.
+ *
+ * Logging:
+ * - Reports the normalization range applied and the processed rows.
+ *
+ * @function normalizeFund
+ * @returns {void}
+ */
 function normalizeFund() {
   LogDebug(`NORMALIZE: Values: ${FUND}`, 'MIN');
 
@@ -700,58 +775,42 @@ function normalizeFund() {
   LogDebug(`NORMALIZE: Clamped FUND cols D–BI, rows ${rowStart}–${lastRow} to [${MINIMUM}, ${MAXIMUM}]`, 'MIN');
 }
 
-/////////////////////////////////////////////////////////////////////reverse/////////////////////////////////////////////////////////////////////
-
-function reverseColumns() {
-  const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const SheetName = sheet.getName();
-  LogDebug(`reverseColumns: Starting: "${SheetName}"`, 'MIN');
-
-  const active = getSheet(SheetName);
-  if (!active) {
-    LogDebug(`reverseColumns: "${SheetName}" not found`, 'MIN');
-    return;
-  }
-
-  const LR = active.getLastRow();
-  const LC = active.getLastColumn();
-  const Range = active.getRange(1, 4, LR, LC - 3);  // cols D→last
-  LogDebug(`reverseColumns: Range = ${Range.getA1Notation()}`, 'MAX');
-
-  const Values = Range.getValues();
-  LogDebug(`reverseColumns: Original values snapshot: ${JSON.stringify(Values)}`, 'MAX');
-
-  const reversed = Values.map(row => row.reverse());
-  Range.setValues(reversed);
-  LogDebug(`reverseColumns: Columns reversed for ${Values.length} rows`, 'MIN');
-}
-
-function reverseRows() {
-  const sheet     = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const SheetName = sheet.getName();
-  LogDebug(`reverseRows: Starting: "${SheetName}"`, 'MIN');
-
-  const active = getSheet(SheetName);
-  if (!active) {
-    LogDebug(`reverseRows: "${SheetName}" not found`, 'MIN');
-    return;
-  }
-
-  const LR = active.getLastRow();
-  const LC = active.getLastColumn();
-  const Range = active.getRange(5, 1, LR - 4, LC);  // rows 5→last
-  LogDebug(`reverseRows: Range = ${Range.getA1Notation()}`, 'MAX');
-
-  const Values = Range.getValues();
-  LogDebug(`reverseRows: Original values snapshot: ${JSON.stringify(Values)}`, 'MAX');
-
-  const reversed = Values.reverse();
-  Range.setValues(reversed);
-  LogDebug(`reverseRows: Rows reversed (count = ${Values.length})`, 'MIN');
-}
-
 /////////////////////////////////////////////////////////////////////fixNumericFormatting Function/////////////////////////////////////////////////////////////////////
 
+/**
+ * Scans financial statement sheets and corrects numeric formatting issues
+ * caused by import or copy-paste inconsistencies.
+ *
+ * The function processes rows 5 → last row of several financial sheets and
+ * fixes two common data problems:
+ *
+ * 1. Text numbers containing thousand separators (e.g. "54.334.248")
+ *    → converted to real numeric values (54334248).
+ *
+ * 2. Numeric values incorrectly interpreted as decimals instead of thousands
+ *    (e.g. 462.764 instead of 462764). When a value appears suspiciously
+ *    small but has a large fractional component, it is multiplied by 1000
+ *    to restore the expected magnitude.
+ *
+ * Corrections are applied in memory and written back to the sheet only when
+ * changes are detected, minimizing write operations.
+ *
+ * Sheets processed:
+ * - Balanço Ativo
+ * - Balanço Passivo
+ * - Demonstração
+ * - Fluxo de Caixa
+ * - Demonstração do Valor Adicionado
+ *
+ * Rows 1–4 are intentionally skipped to preserve headers and metadata.
+ *
+ * Logging:
+ * - Reports per-sheet correction counts.
+ * - Warns if a target sheet is missing.
+ *
+ * @function fixNumericFormatting
+ * @returns {void}
+ */
 function fixNumericFormatting() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const SheetNames = [

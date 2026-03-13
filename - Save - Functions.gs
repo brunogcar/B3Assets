@@ -221,39 +221,57 @@ function doDateHelper(input) {
   const arr = Array.isArray(input) ? input : [input];
   const result = arr.map(v => {
 
-    // 1) If it's already a Date, grab its ms
+    // 1️⃣ If already a Date
     if (v instanceof Date && !isNaN(v)) {
       return v.getTime();
     }
 
-    // 2) If it's a number (timestamp), leave it
+    // 2️⃣ If already a timestamp
     if (typeof v === 'number' && !isNaN(v)) {
       return v;
     }
 
-    // 3) Everything else -> string
+    // 3️⃣ Convert to string
     const str = v != null ? v.toString().trim() : '';
     if (!str) return null;
 
+    let day, month, year;
+
     // DD/MM/YYYY
     if (str.includes('/')) {
-      const [d,m,y] = str.split('/');
-      const day = +d, month = +m, year = +y;
-      if (day && month && year) {
-        return new Date(year, month-1, day).getTime();
+      const parts = str.split('/');
+      if (parts.length === 3) {
+        day = +parts[0];
+        month = +parts[1];
+        year = +parts[2];
       }
     }
 
     // YYYY-MM-DD
-    if (str.includes('-')) {
-      const [y,m,d] = str.split('-');
-      const day = +d, month = +m, year = +y;
-      if (day && month && year) {
-        return new Date(year, month-1, day).getTime();
+    else if (str.includes('-')) {
+      const parts = str.split('-');
+      if (parts.length === 3) {
+        year = +parts[0];
+        month = +parts[1];
+        day = +parts[2];
+      }
+    }
+
+    if (day && month && year) {
+      const date = new Date(year, month - 1, day);
+
+      // 🔒 Validate that JS didn't auto-correct the date
+      if (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
+      ) {
+        return date.getTime();
       }
     }
     return null;
   });
+
   return Array.isArray(input) ? result : result[0];
 }
 
@@ -276,15 +294,15 @@ function doDateHelper(input) {
 function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
 
   // 1️⃣ Read TR dates
-  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getDisplayValue();
-  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getDisplayValue();
+  const raw_New_tr = sheet_tr.getRange(1, cfg.col_new).getValue();         // Old workaround using getDisplayValue() replaced by getValue() in case of string
+  const raw_Old_tr = sheet_tr.getRange(1, cfg.col_old).getValue();
 
   LogDebug(`[${cfg.sh_tr}] Raw Dates (TR): New=${raw_New_tr}, Old=${raw_Old_tr}, col_new=${cfg.col_new}, col_old=${cfg.col_old}`, 'MAX');
 
   const [New_tr, Old_tr] = doDateHelper([raw_New_tr, raw_Old_tr]);
 
   // 2️⃣ Read SR dates (conditional old column)
-  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getDisplayValue();
+  const raw_New_sr = sheet_sr.getRange(1, cfg.col_new).getValue();
   const oldCol     = cfg.recurse ? cfg.col_old_src : cfg.col_old;
   const raw_Old_sr = sheet_sr.getRange(1, oldCol).getDisplayValue();
 
@@ -314,6 +332,21 @@ function extractAndValidateDates(sheet_tr, sheet_sr, cfg, SheetName, action) {
 
 /////////////////////////////////////////////////////////////////////FILTER FUND/////////////////////////////////////////////////////////////////////
 
+/**
+ * Filters numeric values in a FUND sheet row based on a min/max range.
+ *
+ * Columns A–B (index 0–1) and columns BJ+ (index ≥62) are always preserved.
+ * For other columns:
+ *  - Non-numeric values are returned unchanged.
+ *  - Numeric values outside the specified range are replaced with an empty string.
+ *
+ * Intended for processing rows returned by Range.getValues().
+ *
+ * @param {Array<*>} row            A single row array from getValues().
+ * @param {number} Minimum          Minimum allowed numeric value (inclusive).
+ * @param {number} Maximum          Maximum allowed numeric value (inclusive).
+ * @returns {Array<*>}              The filtered row with out-of-range values cleared.
+ */
 function filterFundRow(row, Minimum, Maximum) {
   return row.map((v, i) => {
 
@@ -329,6 +362,44 @@ function filterFundRow(row, Minimum, Maximum) {
       : '';
 
   });
+}
+
+/////////////////////////////////////////////////////////////////////Compare Columns/////////////////////////////////////////////////////////////////////
+
+/**
+ * Compares two single‐column ranges (same number of rows) and returns an array of differences.
+ *
+ * @param {Sheet}   sheetA    The “source” sheet (where updated values live).
+ * @param {Sheet}   sheetB    The “target” sheet (where current values live).
+ * @param {number}  colA      Column index (1-based) in sheetA.
+ * @param {number}  colB      Column index (1-based) in sheetB.
+ * @param {number}  lastRow   Number of rows to compare (starting at row 1).
+ *
+ * @return {Array<{row: number, value: any}>}
+ *   An array of objects, one per row where sheetA ≠ sheetB:
+ *   – `row`: the 1-based row index
+ *   – `value`: the sheetA value at that row/column
+ *
+ * Example:
+ *   //   If sheetA!A1:A3 = [10, 20, 30]
+ *   //   and sheetB!B1:B3 = [10, 25, 30]
+ *   //   getColumnDifferences(sheetA, sheetB, 1, 2, 3)
+ *   //   → [ {row: 2, value: 20} ]
+ */
+function getColumnDifferences(sheetA, sheetB, colA, colB, lastRow) {
+  // Read both columns in one go each, then flatten to 1-D arrays
+  const valuesA = sheetA.getRange(1, colA, lastRow, 1).getValues().flat();
+  const valuesB = sheetB.getRange(1, colB, lastRow, 1).getValues().flat();
+  const diffs   = [];
+
+  // Compare row by row
+  for (let i = 0; i < lastRow; i++) {
+    if (valuesA[i] !== valuesB[i]) {
+      diffs.push({ row: i + 1, value: valuesA[i] });
+    }
+  }
+
+  return diffs;
 }
 
 /////////////////////////////////////////////////////////////////////TRIM TEMPLATE/////////////////////////////////////////////////////////////////////
