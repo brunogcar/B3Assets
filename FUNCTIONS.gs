@@ -10,26 +10,27 @@
  * @param {string} msg     The message to log.
  * @param {'MIN'|'MID'|'MAX'} level  How verbose this message is.
  */
-let _DBG_CACHE = null;
+let _DBG_CACHE    = null;
+let _DBG_FETCHING = false;
 
 function LogDebug(msg, level = 'MIN') {
-  const ORDER = ['MIN', 'MID', 'MAX'];
-  // lazy fetch / cache dbgLevel; refresh if cache is null
-  if (_DBG_CACHE === null) {
-    const dbgVal = getConfigValue(DBG, 'Config');                                                  // DBG = "L12"
+  const ORDER = ['MIN', 'MID', 'MAX', 'ALL'];
 
+  if (_DBG_CACHE === null && !_DBG_FETCHING) {
+    _DBG_FETCHING = true;
+    const dbgVal = getConfigValue(DBG, 'Config');
+    _DBG_FETCHING = false;
     _DBG_CACHE = (dbgVal && typeof dbgVal === 'string' && dbgVal.trim()) ? dbgVal.trim() : 'MIN';
   }
-  const dbgLevel = _DBG_CACHE;
-  if (!ORDER.includes(dbgLevel)) _DBG_CACHE = 'MIN';                                               // fallback if invalid
+
+  const dbgLevel = _DBG_CACHE ?? 'MIN';
+  if (!ORDER.includes(dbgLevel)) _DBG_CACHE = 'MIN';
 
   try {
     if (ORDER.indexOf(dbgLevel) >= ORDER.indexOf(level)) {
-      // Prefer Logger.log so Apps Script IDE shows messages
       Logger.log(msg);
     }
   } catch {
-    // last resort
     console.log(msg);
   }
 }
@@ -128,10 +129,10 @@ function getSpreadsheetById(id) {
   }
 
   if (!_SPREADSHEET_CACHE[id]) {
-    LogDebug(`📂 Opening spreadsheet: ${id}`, "MAX");
+    LogDebug(`📂 Opening spreadsheet: ${id}`, "ALL");
     _SPREADSHEET_CACHE[id] = SpreadsheetApp.openById(id);
   } else {
-    LogDebug(`📦 Spreadsheet cache hit: ${id}`, "MAX");
+    LogDebug(`📦 Spreadsheet cache hit: ${id}`, "ALL");
   }
   return _SPREADSHEET_CACHE[id];
 }
@@ -171,7 +172,7 @@ function getSheet(SheetName, forceRefresh = false) {
   if (!SheetName) return null;
 
   if (!forceRefresh && _SHEET_CACHE[SheetName]) {
-    LogDebug(`📦 Sheet cache hit: ${SheetName}`, "MAX");
+    LogDebug(`📦 Sheet cache hit: ${SheetName}`, "ALL");
     return _SHEET_CACHE[SheetName];
   }
 

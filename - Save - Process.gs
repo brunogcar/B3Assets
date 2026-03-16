@@ -15,14 +15,14 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
 
   const A1 = doDateHelper(data[0][0]);
   const A2 = doDateHelper(data[1][0]);
-  const A5 = doDateHelper(data[4][0]);
+  const A5 = LR >= 5 ? doDateHelper(data[4][0]) : null;
 
   // Full row comparisons starting from column B
   const Row1 = data[0].slice(1);
   const Row2 = data[1].slice(1);
-  const Row5 = data[4].slice(1);
+  const Row5 = LR >= 5 ? data[4].slice(1) : [];
 
-  const IsEqual = Row2.every((val, i) => val === Row1[i] || val === Row5[i]);
+  const IsEqual = Row2.some((val, i) => val === Row1[i] || val === Row5[i]);
 
   let rawHeader = data[1];
 
@@ -69,7 +69,7 @@ function processSaveGeneric(sheet_sr, SheetName, Save, Edit, exportFn) {
   }
 
   if (
-    ((A2 === A5 || A2 === A1) && !IsEqual) ||
+    ((A2 === A5 || A2 === A1) && IsEqual) ||
     ErrorValues.includes(A1) ||
     ErrorValues.includes(A5)
   ) {
@@ -103,8 +103,6 @@ function processSaveSwing(sheet_sr, SheetName, Save, Edit) {
 function processSaveExtra(sheet_sr, SheetName, Save, Edit) {
   processSaveGeneric(sheet_sr, SheetName, Save, Edit, doExportExtra);
 }
-
-
 
 /////////////////////////////////////////////////////////////////////PROCESS FINANCIAL/////////////////////////////////////////////////////////////////////
 

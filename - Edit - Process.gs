@@ -8,13 +8,15 @@ function processEditGeneric(sheet_sr, SheetName, Edit, exportFn) {
   }
 
   const LC = sheet_sr.getLastColumn();
+  const LR = sheet_sr.getLastRow();
 
   // Read rows 1–5 once
-  const data = sheet_sr.getRange(1,1,5,LC).getValues();
+  const rowsToRead = Math.min(5, LR);
+  const data = sheet_sr.getRange(1, 1, rowsToRead, LC).getValues();
 
   const A1 = doDateHelper(data[0][0]);
   const A2 = doDateHelper(data[1][0]);
-  const A5 = doDateHelper(data[4][0]);
+  const A5 = rowsToRead >= 5 ? doDateHelper(data[4][0]) : null;
 
   if (ErrorValues.includes(A2)) {
     LogDebug(`❌ ERROR EDIT: ${SheetName} - ErrorValues in A2 ${A2}: processEditGeneric`, 'MIN');

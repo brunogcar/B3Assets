@@ -68,12 +68,6 @@ const basicExportMap = [
     conditions: vals => vals.some(v => !ErrorValues.includes(v))
   },
   {
-    names: [FUTURE_1, FUTURE_2, FUTURE_3],
-    exportKey: ETF,
-    checks: ['B2','C2'],
-    conditions: ([b2, c2]) => !ErrorValues.includes(b2) && c2 > 0
-  },
-  {
     names: [FUND],
     exportKey: EFU,
     checks: ['B2'],
@@ -179,6 +173,11 @@ const exportExtraConfig = {
 
 function doExportExtra(SheetName) {
   LogDebug(`EXPORT: ${SheetName}`, 'MIN');
+
+  if (!exportExtraConfig.target_co[SheetName]) {
+    LogDebug(`⏭️ EXPORT skipped: ${SheetName} - not exportable`, 'MID');
+    return;
+  }
 
   const sheet_sr = getSheet(SheetName);
   if (!sheet_sr) return;
