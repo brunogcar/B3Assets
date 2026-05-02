@@ -1,0 +1,32 @@
+# Local documentation - do not push to GitHub
+docs/
+
+# Backup directories from git amendment process (can be cleaned up)
+bkp/
+bkp 2/
+bkp 3/
+bkp 4/
+bkp 5/
+bkp 6/
+bkp 7/
+
+# PowerShell scripts used for amendments (optional - remove if not needed)
+*.ps1
+amend_commits.ps1
+Applied-All-Amends.ps1
+Run-Amend-PowerShell.ps1
+Amend-All-Simple.ps1
+
+# Batch files from amendment process (optional - remove if not needed)
+*.bat
+amend_commits.bat
+amend_simple.bat
+PROGRESS-WAIT.bat
+
+# Temporary amend command files (cleanup as needed)
+AMEND-COMMANDS.txt
+APPLY-AMEND-COMMANDS.txt
+EXECUTE-ALL.txt
+GIT-COMMANDS-READY.txt
+GIT-STATUS-CHECK.txt
+RUN-AMEND-COMMANDS.txt
